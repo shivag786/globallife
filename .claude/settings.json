@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:windows.php.net)",
+      "WebFetch(domain:downloads.php.net)",
+      "PowerShell(& \"C:\\\\php83\\\\composer.bat\" -V)",
+      "PowerShell(& \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root -e \"CREATE DATABASE IF NOT EXISTS global_life_new CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; SHOW DATABASES LIKE 'global_life_new';\")",
+      "PowerShell(& \"C:\\\\php83\\\\composer.bat\" create-project laravel/laravel . --prefer-dist --no-interaction)",
+      "PowerShell($session.Cookies.GetCookies\\(\"http://127.0.0.1:8000\"\\) | Select-Object Name, Value, Domain)",
+      "WebFetch(domain:globallife.in)",
+      "PowerShell(npm install bootstrap@5 @popperjs/core sass --save-dev 2>&1)",
+      "PowerShell(Get-Process -Name mysqld -ErrorAction SilentlyContinue)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue)",
+      "PowerShell(C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe -u root global_life_new -e \"SHOW COLUMNS FROM home_sections LIKE 'type';\" 2>&1)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 8000 -WarningAction SilentlyContinue)",
+      "PowerShell(C:\\\\php83\\\\php.exe artisan view:cache 2>&1)"
+    ],
+    "additionalDirectories": [
+      "C:\\php83"
+    ]
+  }
+}

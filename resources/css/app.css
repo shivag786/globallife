@@ -1,0 +1,307 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+    --font-heading: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-50: #f4f9f6;
+    --color-brand-100: #e3f1e9;
+    --color-brand-200: #c2e1ce;
+    --color-brand-300: #93c8a9;
+    --color-brand-400: #5fa97e;
+    --color-brand-500: #3d8c61;
+    --color-brand-600: #2c704c;
+    --color-brand-700: #245a3f;
+    --color-brand-800: #1f4834;
+    --color-brand-900: #1b3c2c;
+    --color-brand-950: #0d2118;
+
+    --color-gold-400: #e8c873;
+    --color-gold-500: #d4af37;
+    --color-gold-600: #b5912b;
+
+    --color-cream: #f8f5ef;
+    --color-cream-dark: #efe9dc;
+}
+
+@layer base {
+    .premium-shadow {
+        box-shadow: 0 20px 50px -20px rgb(15 41 28 / 0.25);
+    }
+
+    /* Scroll-reveal: progressive enhancement — content is visible by default, and only
+       hidden-then-revealed once JS confirms it can observe + animate it (js-ready on <html>). */
+    .js-ready .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+
+    .js-ready .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out both;
+    }
+
+    @keyframes float-slow {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .animate-float {
+        animation: float-slow 4s ease-in-out infinite;
+    }
+
+    @keyframes gentle-pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgb(34 197 94 / 0.45);
+        }
+        70% {
+            box-shadow: 0 0 0 12px rgb(34 197 94 / 0);
+        }
+    }
+
+    .animate-pulse-ring {
+        animation: gentle-pulse 2.2s ease-out infinite;
+    }
+
+    /* Typography for CKEditor-rendered HTML (no @tailwindcss/typography dependency). */
+    .editor-content {
+        color: var(--color-slate-600);
+        line-height: 1.75;
+    }
+
+    .editor-content > * + * {
+        margin-top: 1em;
+    }
+
+    .editor-content h1, .editor-content h2, .editor-content h3 {
+        font-family: var(--font-display);
+        font-weight: 700;
+        color: var(--color-brand-900);
+        margin-top: 1.5em;
+    }
+
+    .editor-content h2 { font-size: 1.5rem; }
+    .editor-content h3 { font-size: 1.25rem; }
+
+    .editor-content ul, .editor-content ol {
+        padding-left: 1.5em;
+    }
+
+    .editor-content ul { list-style: disc; }
+    .editor-content ol { list-style: decimal; }
+
+    .editor-content a {
+        color: var(--color-brand-700);
+        text-decoration: underline;
+    }
+
+    .editor-content img {
+        border-radius: 1rem;
+        max-width: 100%;
+    }
+
+    .editor-content blockquote {
+        border-left: 3px solid var(--color-brand-300);
+        padding-left: 1em;
+        font-style: italic;
+        color: var(--color-brand-800);
+    }
+
+    /* Reveal direction variants — same one-shot IntersectionObserver toggles .is-visible
+       on any .reveal element (see app.js); these just change the hidden/shown transform. */
+    .js-ready .reveal[data-reveal='left'] { transform: translateX(-32px); }
+    .js-ready .reveal[data-reveal='left'].is-visible { transform: translateX(0); }
+
+    .js-ready .reveal[data-reveal='right'] { transform: translateX(32px); }
+    .js-ready .reveal[data-reveal='right'].is-visible { transform: translateX(0); }
+
+    .js-ready .reveal[data-reveal='zoom'] { transform: scale(0.94); }
+    .js-ready .reveal[data-reveal='zoom'].is-visible { transform: scale(1); }
+
+    @keyframes float-y {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-14px); }
+    }
+
+    .animate-float-y {
+        animation: float-y 5s ease-in-out infinite;
+    }
+}
+
+/* ---------------------------------------------------------------------
+ * VIP Business Microsite design system — premium public profile pages.
+ * Pure CSS-transform transitions per performance requirements (no JS-driven
+ * animation library on this page).
+ * --------------------------------------------------------------------- */
+@layer components {
+    .msite-container {
+        max-width: 1320px;
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .msite-container { padding-inline: 2.5rem; }
+    }
+
+    .msite-section {
+        padding-block: 5rem;
+    }
+
+    @media (min-width: 1024px) {
+        .msite-section { padding-block: 7rem; }
+    }
+
+    .msite-heading {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        line-height: 1.2;
+        color: var(--color-brand-950);
+    }
+
+    .msite-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid var(--color-slate-100);
+        box-shadow: 0 1px 3px rgb(15 41 28 / 0.06);
+        transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+    }
+
+    .msite-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 48px -20px rgb(15 41 28 / 0.22);
+        border-color: var(--color-brand-200);
+    }
+
+    .msite-card-img {
+        overflow: hidden;
+    }
+
+    .msite-card-img img {
+        transition: transform 500ms ease;
+    }
+
+    .msite-card:hover .msite-card-img img {
+        transform: scale(1.06);
+    }
+
+    .msite-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 3rem;
+        padding-inline: 1.75rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+        white-space: nowrap;
+    }
+
+    .msite-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .msite-btn:active {
+        transform: translateY(0);
+    }
+
+    .msite-btn-primary {
+        background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-800));
+        color: white;
+        box-shadow: 0 10px 30px -10px rgb(36 90 63 / 0.55);
+    }
+
+    .msite-btn-primary:hover {
+        box-shadow: 0 16px 36px -10px rgb(36 90 63 / 0.65);
+        filter: brightness(1.05);
+    }
+
+    .msite-btn-secondary {
+        background: rgb(255 255 255 / 0.15);
+        color: white;
+        border: 1.5px solid rgb(255 255 255 / 0.5);
+        backdrop-filter: blur(6px);
+    }
+
+    .msite-btn-secondary:hover {
+        background: rgb(255 255 255 / 0.25);
+    }
+
+    .msite-btn-whatsapp {
+        background: linear-gradient(135deg, #25d366, #1da851);
+        color: white;
+        box-shadow: 0 10px 30px -10px rgb(29 168 81 / 0.55);
+    }
+
+    .msite-btn-whatsapp:hover {
+        filter: brightness(1.05);
+    }
+
+    .msite-glass {
+        background: rgb(255 255 255 / 0.7);
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+    }
+
+    .msite-nav-link {
+        position: relative;
+        padding-block: 0.25rem;
+    }
+
+    .msite-nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0;
+        height: 2px;
+        background: var(--color-brand-600);
+        transition: width 250ms ease;
+    }
+
+    .msite-nav-link:hover::after,
+    .msite-nav-link.is-active::after {
+        width: 100%;
+    }
+
+    .msite-nav-link.is-active {
+        color: var(--color-brand-700);
+    }
+
+    .msite-float-btn {
+        transition: transform 300ms ease, opacity 300ms ease;
+    }
+
+    .msite-float-btn.is-hidden {
+        transform: translateY(24px) scale(0.85);
+        opacity: 0;
+        pointer-events: none;
+    }
+}
