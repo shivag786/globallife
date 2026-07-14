@@ -30,6 +30,7 @@ Route::get('/scooter',function()
 {
     return view('scooter');
 });
+Route::post('/test-ride', [TestRideController::class, 'store'])->name('test-ride.store');
 Route::get('/vip-plans', [PublicController::class, 'vipPlans'])->name('vip-plans.index');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');

@@ -713,7 +713,7 @@
       @endif
     </div>
 
-    <form class="ride-form" method="POST" action="{{ route('test-ride.store') }}">
+    <form class="ride-form" method="POST">
       @csrf
       <div class="form-row">
         <div class="field">
