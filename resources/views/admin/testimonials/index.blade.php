@@ -35,7 +35,7 @@
                                 <a href="{{ route('admin.testimonials.edit', $testimonial) }}" class="text-indigo-600 hover:underline">Edit</a>
                             @endcan
                             @can('testimonials.delete')
-                                <form action="{{ route('admin.testimonials.destroy', $testimonial) }}" method="POST" class="inline" onsubmit="return confirm('Delete this testimonial?');">
+                                <form action="{{ route('admin.testimonials.destroy', $testimonial) }}" method="POST" class="inline" data-confirm="Delete this testimonial?" data-confirm-danger>
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline">Delete</button>
                                 </form>

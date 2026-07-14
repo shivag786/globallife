@@ -32,7 +32,7 @@ class UpdateHomeSectionRequest extends FormRequest
                 'nullable', 'string',
                 'required_if:type,features', 'required_if:type,stats',
                 'required_if:type,business_opportunity', 'required_if:type,process_steps',
-                'required_if:type,team',
+                'required_if:type,team', 'required_if:type,certifications', 'required_if:type,quality',
             ],
             'status' => ['required', 'in:active,inactive'],
             'display_order' => ['nullable', 'integer', 'min:0'],

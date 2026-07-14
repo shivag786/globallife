@@ -36,7 +36,7 @@
                                 <a href="{{ route('admin.products.edit', $product) }}" class="text-indigo-600 hover:underline">Edit</a>
                             @endcan
                             @can('products.delete')
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="inline" onsubmit="return confirm('Delete this product?');">
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="inline" data-confirm="Delete this product?" data-confirm-danger>
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline">Delete</button>
                                 </form>

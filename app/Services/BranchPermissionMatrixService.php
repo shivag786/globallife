@@ -16,7 +16,6 @@ class BranchPermissionMatrixService
         'leads',
         'vip-enquiries',
         'sales-tracking',
-        'revenue-tracking',
         'discount-management',
         'customer-management',
     ];

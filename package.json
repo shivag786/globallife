@@ -20,8 +20,10 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "apexcharts": "^5.16.0",
         "gsap": "^3.15.0",
         "motion": "^12.42.2",
+        "sweetalert2": "^11.26.25",
         "three": "^0.185.1"
     }
 }

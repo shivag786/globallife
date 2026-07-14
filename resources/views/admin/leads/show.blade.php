@@ -68,7 +68,7 @@
             </form>
 
             @can('leads.delete')
-                <form action="{{ route('admin.leads.destroy', $lead) }}" method="POST" class="mt-3" onsubmit="return confirm('Delete this lead?');">
+                <form action="{{ route('admin.leads.destroy', $lead) }}" method="POST" class="mt-3" data-confirm="Delete this lead?" data-confirm-danger>
                     @csrf @method('DELETE')
                     <button type="submit" class="w-full text-red-600 text-sm hover:underline">Delete Lead</button>
                 </form>

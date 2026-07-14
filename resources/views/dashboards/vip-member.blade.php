@@ -31,11 +31,11 @@
     @if ($microsite)
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
             @foreach ($tiles as $tile)
-                <div class="bg-gradient-to-br from-white to-brand-50/40 rounded-2xl p-5 border border-slate-100 premium-shadow">
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 premium-shadow">
                     <div class="w-9 h-9 rounded-full bg-brand-700/10 flex items-center justify-center mb-3">
                         <x-icon name="{{ $tile['icon'] }}" class="w-5 h-5 text-brand-700" />
                     </div>
-                    <p class="text-2xl font-bold text-brand-900">{{ $tile['value'] }}</p>
+                    <p class="text-2xl font-bold text-brand-900" data-countup="{{ $tile['value'] }}">0</p>
                     <p class="text-xs uppercase tracking-wide text-slate-400 mt-1">{{ $tile['label'] }}</p>
                 </div>
             @endforeach
@@ -46,6 +46,24 @@
                 <div class="w-full h-2 bg-white/10 rounded-full mt-3 overflow-hidden">
                     <div class="h-full bg-gold-400 rounded-full" style="width: {{ $stats['completion'] }}%"></div>
                 </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4 mb-8">
+            <div class="lg:col-span-2 bg-white rounded-2xl p-5 border border-slate-100 premium-shadow">
+                <h2 class="font-semibold text-brand-900 mb-1">Visitors</h2>
+                <p class="text-xs text-slate-400 mb-3">Page views over the last 14 days</p>
+                <x-apex-chart id="chart-vip-visitors" type="area" :height="290"
+                    :series="[['name' => 'Visitors', 'data' => $visitorsChart['data']]]"
+                    :categories="$visitorsChart['categories']" :colors="['#2c704c']" />
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-slate-100 premium-shadow">
+                <h2 class="font-semibold text-brand-900 mb-1">Engagement</h2>
+                <p class="text-xs text-slate-400 mb-3">Contact button clicks</p>
+                <x-apex-chart id="chart-vip-clicks" type="donut" :height="290"
+                    :series="[$stats['whatsapp_clicks'], $stats['call_clicks'], $stats['direction_clicks'], $stats['website_clicks']]"
+                    :labels="['WhatsApp', 'Call', 'Directions', 'Website']"
+                    :colors="['#25d366', '#2c704c', '#d4af37', '#5fa97e']" />
             </div>
         </div>
 

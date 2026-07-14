@@ -21,6 +21,29 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label for="price" class="block text-sm font-medium text-slate-700">Selling Price <span class="text-slate-400">(₹)</span></label>
+            <div class="relative mt-1">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">₹</span>
+                <input id="price" type="number" step="0.01" min="0" name="price" value="{{ old('price', $product->price ?? '') }}"
+                       placeholder="0.00"
+                       class="block w-full rounded-md border-slate-300 shadow-sm pl-7 focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <p class="mt-1 text-xs text-slate-400">Leave blank to show “Enquire for price”.</p>
+        </div>
+        <div>
+            <label for="mrp" class="block text-sm font-medium text-slate-700">MRP <span class="text-slate-400">(optional)</span></label>
+            <div class="relative mt-1">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">₹</span>
+                <input id="mrp" type="number" step="0.01" min="0" name="mrp" value="{{ old('mrp', $product->mrp ?? '') }}"
+                       placeholder="0.00"
+                       class="block w-full rounded-md border-slate-300 shadow-sm pl-7 focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <p class="mt-1 text-xs text-slate-400">If higher than price, a discount is shown.</p>
+        </div>
+    </div>
+
     <div>
         <label for="tags" class="block text-sm font-medium text-slate-700">Tags <span class="text-slate-400">(comma separated)</span></label>
         <input id="tags" type="text" name="tags" value="{{ old('tags', isset($product) ? implode(', ', $product->tags ?? []) : '') }}"

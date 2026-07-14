@@ -30,7 +30,7 @@
                         </td>
                         <td class="px-4 py-3 text-right space-x-3">
                             <a href="{{ route('admin.cities.edit', $city) }}" class="text-indigo-600 hover:underline">Edit</a>
-                            <form action="{{ route('admin.cities.destroy', $city) }}" method="POST" class="inline" onsubmit="return confirm('Delete this city?');">
+                            <form action="{{ route('admin.cities.destroy', $city) }}" method="POST" class="inline" data-confirm="Delete this city?" data-confirm-danger>
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:underline">Delete</button>

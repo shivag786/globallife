@@ -21,6 +21,7 @@ class RevenueController extends Controller
         $totals = [
             'count' => CommissionTransaction::where('branch_manager_id', $branchManagerId)->count(),
             'earned' => CommissionTransaction::where('branch_manager_id', $branchManagerId)->sum('branch_manager_amount'),
+            'partners_earned' => CommissionTransaction::where('branch_manager_id', $branchManagerId)->sum('commission_partner_amount'),
         ];
 
         $byPartner = CommissionTransaction::where('branch_manager_id', $branchManagerId)

@@ -13,10 +13,13 @@ class ProductController extends Controller
         return view('products.index', ['products' => $products->publishedPaginated()]);
     }
 
-    public function show(Product $product): View
+    public function show(Product $product, ProductRepository $products): View
     {
         abort_unless($product->status === 'active', 404);
 
-        return view('products.show', ['product' => $product]);
+        return view('products.show', [
+            'product' => $product,
+            'related' => $products->related($product),
+        ]);
     }
 }

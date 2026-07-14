@@ -38,7 +38,8 @@
                                 </span>
                             @else
                                 <form action="{{ route('manager.vip-members.activate', $member) }}" method="POST" class="inline"
-                                      onsubmit="return confirm('Confirm payment received and activate this VIP Member? This records the commission split and cannot be undone.')">
+                                      data-confirm="Confirm payment received? This records the commission split and cannot be undone."
+                                      data-confirm-title="Activate VIP Member" data-confirm-button="Yes, activate">
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" class="bg-gold-500 text-brand-950 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gold-400">

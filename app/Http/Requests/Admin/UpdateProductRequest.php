@@ -25,6 +25,8 @@ class UpdateProductRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:100'],
             'tags' => ['nullable', 'string'],
             'badge' => ['nullable', 'string', 'max:50'],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:9999999.99'],
+            'mrp' => ['nullable', 'numeric', 'min:0', 'max:9999999.99', 'gte:price'],
             'short_description' => ['required', 'string', 'max:255'],
             'long_description' => ['nullable', 'string'],
             'main_image' => ['nullable', 'image', 'max:2048'],

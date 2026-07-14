@@ -31,6 +31,22 @@ class ProductRepository
     }
 
     /**
+     * Other active products to show alongside the one being viewed — same
+     * category first, then filled out with other products if needed.
+     *
+     * @return Collection<int, Product>
+     */
+    public function related(Product $product, int $limit = 4): Collection
+    {
+        return Product::where('status', 'active')
+            ->whereKeyNot($product->getKey())
+            ->orderByRaw('CASE WHEN category = ? THEN 0 ELSE 1 END', [$product->category])
+            ->orderBy('display_order')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      */
     public function create(array $data): Product

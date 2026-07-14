@@ -1,12 +1,16 @@
 <x-layouts.app title="Revenue Tracking" heading="Revenue Tracking">
-    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+    <div class="grid sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
             <p class="text-xs uppercase text-slate-400">VIP Members Activated</p>
             <p class="text-2xl font-bold text-brand-900">{{ $totals['count'] }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
-            <p class="text-xs uppercase text-slate-400">Total Earned</p>
-            <p class="text-2xl font-bold text-brand-900">₹{{ number_format($totals['earned'], 2) }}</p>
+            <p class="text-xs uppercase text-slate-400">You Earned</p>
+            <p class="text-2xl font-bold text-brand-700">₹{{ number_format($totals['earned'], 2) }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
+            <p class="text-xs uppercase text-slate-400">Partners Earned</p>
+            <p class="text-2xl font-bold text-slate-800">₹{{ number_format($totals['partners_earned'], 2) }}</p>
         </div>
     </div>
 
@@ -48,8 +52,8 @@
                     <th class="px-4 py-3">Business</th>
                     <th class="px-4 py-3">City</th>
                     <th class="px-4 py-3">Package Amount</th>
-                    <th class="px-4 py-3">Your %</th>
-                    <th class="px-4 py-3">Your Earning</th>
+                    <th class="px-4 py-3">Partner Earned</th>
+                    <th class="px-4 py-3">You Earned</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,8 +64,14 @@
                         <td class="px-4 py-3 font-medium">{{ $transaction->vipMicrosite->business_name ?? '—' }}</td>
                         <td class="px-4 py-3">{{ $transaction->vipMicrosite->city->name ?? '—' }}</td>
                         <td class="px-4 py-3">₹{{ number_format($transaction->package_amount, 2) }}</td>
-                        <td class="px-4 py-3">{{ $transaction->branch_manager_percentage - $transaction->commission_partner_percentage }}%</td>
-                        <td class="px-4 py-3 font-semibold text-brand-700">₹{{ number_format($transaction->branch_manager_amount, 2) }}</td>
+                        <td class="px-4 py-3">
+                            ₹{{ number_format($transaction->commission_partner_amount, 2) }}
+                            <span class="text-xs text-slate-400">({{ rtrim(rtrim(number_format($transaction->commission_partner_percentage, 2), '0'), '.') }}%)</span>
+                        </td>
+                        <td class="px-4 py-3 font-semibold text-brand-700">
+                            ₹{{ number_format($transaction->branch_manager_amount, 2) }}
+                            <span class="text-xs text-slate-400">({{ rtrim(rtrim(number_format($transaction->branch_manager_percentage - $transaction->commission_partner_percentage, 2), '0'), '.') }}%)</span>
+                        </td>
                     </tr>
                 @empty
                     <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">No activations yet.</td></tr>

@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </form>
-                <form method="POST" action="{{ route('vip.faqs.destroy', $faq) }}" onsubmit="return confirm('Delete this FAQ?')" class="mt-2">
+                <form method="POST" action="{{ route('vip.faqs.destroy', $faq) }}" data-confirm="Delete this FAQ?" data-confirm-danger class="mt-2">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-red-600 hover:underline text-xs">Delete</button>

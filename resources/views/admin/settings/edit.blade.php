@@ -35,6 +35,33 @@
                 </div>
             </div>
 
+            {{-- Homepage & Announcement --}}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h2 class="h6 mb-0 fw-semibold">Homepage &amp; Announcement</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <x-forms.input name="announcement_text" label="Announcement Bar Text" :value="$settings['announcement_text'] ?? ''"
+                                           help="Shown in a thin bar at the very top of the public site. Leave blank to hide it." />
+                        </div>
+                        <div class="col-md-4">
+                            <x-forms.input name="announcement_link" type="url" label="Announcement Link" :value="$settings['announcement_link'] ?? ''"
+                                           placeholder="https://…" />
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.input name="hero_rating" label="Hero Rating" :value="$settings['hero_rating'] ?? ''"
+                                           placeholder="4.8" help="Shows a star-rating chip in the hero. Leave blank to hide." />
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.input name="hero_rating_count" label="Hero Rating Count" :value="$settings['hero_rating_count'] ?? ''"
+                                           placeholder="2,500+" help="e.g. shown as “2,500+ happy customers”." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- SEO --}}
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white">

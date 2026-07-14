@@ -41,7 +41,7 @@
 
     <div>
         <label for="items" class="block text-sm font-medium text-slate-700">
-            Items <span class="text-slate-400">(features/business opportunity/process steps: "Title | Description" per line &middot; stats: "Label | Value" per line &middot; team: "Name | Role" per line &middot; hero: trust badge label per line, optional)</span>
+            Items <span class="text-slate-400">(features/business opportunity/process steps/quality: "Title | Description" per line &middot; stats: "Label | Value" per line &middot; team: "Name | Role" per line &middot; certifications: "Badge | Detail" per line &middot; hero: trust badge label per line, optional)</span>
         </label>
         <textarea id="items" name="items" rows="5"
                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('items', $itemsText) }}</textarea>

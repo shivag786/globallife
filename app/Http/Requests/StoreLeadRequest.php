@@ -22,7 +22,7 @@ class StoreLeadRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:30'],
             'city' => ['nullable', 'string', 'max:100'],
             'message' => ['nullable', 'string', 'max:2000'],
-            'source' => ['required', 'in:contact_page,homepage,chatbot,microsite'],
+            'source' => ['required', 'in:contact_page,homepage,chatbot,microsite,product'],
             'interested_plan_id' => ['nullable', 'integer', 'exists:vip_plans,id'],
             'vip_microsite_id' => ['nullable', 'integer', 'exists:vip_microsites,id'],
             // Honeypot: real visitors never fill this hidden field; bots usually do.

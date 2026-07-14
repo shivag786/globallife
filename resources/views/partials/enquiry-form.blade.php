@@ -4,6 +4,7 @@
     $preselectedPlan = $preselectedPlan ?? null;
     $vipMicrositeId = $vipMicrositeId ?? null;
     $prefillCity = $prefillCity ?? null;
+    $prefillMessage = $prefillMessage ?? null;
 @endphp
 
 @if (session('status'))
@@ -77,7 +78,7 @@
     <div>
         <label for="message-{{ $source }}" class="block text-sm font-medium text-slate-700">Message</label>
         <textarea id="message-{{ $source }}" name="message" rows="4"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('message') }}</textarea>
+                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('message', $prefillMessage) }}</textarea>
     </div>
 
     <button type="submit" class="bg-brand-700 text-white px-6 py-3 rounded-full font-medium hover:bg-brand-800 transition">

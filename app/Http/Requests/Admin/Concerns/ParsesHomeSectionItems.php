@@ -15,7 +15,7 @@ trait ParsesHomeSectionItems
      */
     private function parseItems(?string $text, string $type): ?array
     {
-        $titleDescriptionTypes = ['features', 'business_opportunity', 'process_steps', 'hero'];
+        $titleDescriptionTypes = ['features', 'business_opportunity', 'process_steps', 'hero', 'certifications', 'quality'];
 
         if (! in_array($type, [...$titleDescriptionTypes, 'stats', 'team'], true) || ! $text) {
             return null;

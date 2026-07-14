@@ -26,7 +26,7 @@
                 <img src="{{ $video->thumbnail_url }}" class="w-full h-36 object-cover">
                 <div class="p-3">
                     <p class="text-sm font-medium truncate">{{ $video->title ?: $video->youtube_url }}</p>
-                    <form method="POST" action="{{ route('vip.videos.destroy', $video) }}" onsubmit="return confirm('Remove this video?')" class="mt-2">
+                    <form method="POST" action="{{ route('vip.videos.destroy', $video) }}" data-confirm="Remove this video?" data-confirm-danger class="mt-2">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-600 hover:underline text-xs">Remove</button>

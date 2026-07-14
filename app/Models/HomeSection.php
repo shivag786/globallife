@@ -38,6 +38,8 @@ class HomeSection extends Model
         'enquiry_form' => 'Enquiry Form',
         'gallery' => 'Gallery (live, pulls active media)',
         'team' => 'Team Members',
+        'certifications' => 'Certifications / Trust Badges',
+        'quality' => 'Quality & Transparency',
         'cta' => 'Call to Action',
     ];
 

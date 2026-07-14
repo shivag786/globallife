@@ -50,7 +50,7 @@
                             </form>
                         @endcan
                         @can('media.delete')
-                            <form action="{{ route('admin.media.destroy', $item) }}" method="POST" onsubmit="return confirm('Delete this image?');">
+                            <form action="{{ route('admin.media.destroy', $item) }}" method="POST" data-confirm="Delete this image?" data-confirm-danger>
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-red-600 text-xs hover:underline">Delete</button>
                             </form>

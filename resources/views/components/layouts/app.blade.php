@@ -8,6 +8,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- No-flash theme init: set data-theme before first paint from saved choice or system preference. --}}
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (t !== 'dark' && t !== 'light') {
+                    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <title>{{ $title ?? $adminSiteName }}</title>
     @if (! empty($adminSettings['favicon']))
         <link rel="icon" href="{{ asset('storage/'.$adminSettings['favicon']) }}">
@@ -77,13 +89,12 @@
 
                 @if ($user->hasRole('branch_manager'))
                     <a href="{{ route('branch.dashboard') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
+                    <a href="{{ route('branch.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch Tools</p>
                     @foreach (\App\Services\BranchPermissionMatrixService::MODULES as $module)
                         @if (\App\Services\BranchPermissionMatrixService::userCanAccessModule($user, $module))
                             @if ($module === 'commission-partners')
                                 <a href="{{ route('branch.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
-                            @elseif ($module === 'revenue-tracking')
-                                <a href="{{ route('branch.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                             @else
                                 <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">
                                     {{ ucwords(str_replace('-', ' ', $module)) }}
@@ -146,6 +157,11 @@
                 </div>
                 <div class="flex items-center gap-2 sm:gap-4 text-sm flex-shrink-0">
                     <span class="hidden sm:inline text-slate-500">{{ $user->name }} &middot; {{ $user->getRoleNames()->implode(', ') }}</span>
+                    <button type="button" data-theme-toggle aria-label="Toggle dark mode"
+                            class="text-slate-500 hover:text-slate-800 transition">
+                        <x-icon name="moon" class="w-5 h-5 dark:hidden" />
+                        <x-icon name="sun" class="w-5 h-5 hidden dark:block" />
+                    </button>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-red-600 hover:underline">Logout</button>
@@ -154,16 +170,9 @@
             </header>
 
             <main class="flex-1 p-4 sm:p-6 overflow-x-hidden">
-                @if (session('status'))
-                    <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded p-3">
-                        {{ session('status') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
-                        {{ session('error') }}
-                    </div>
+                @if (session('status') || session('error'))
+                    {{-- Read by resources/js/notify/init.js and shown as a premium toast. --}}
+                    <script id="flash-data" type="application/json">@json(['status' => session('status'), 'error' => session('error')])</script>
                 @endif
 
                 @if ($errors->any())

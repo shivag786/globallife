@@ -21,6 +21,12 @@ if (document.querySelector('.team-card')) {
 if (document.getElementById('msite-nav')) {
     import('./microsite/init').then(({ initMicrosite }) => initMicrosite());
 }
+if (document.querySelector('[data-apex-for]')) {
+    import('./charts/init').then(({ initCharts }) => initCharts());
+}
+if (document.getElementById('flash-data') || document.querySelector('[data-confirm]')) {
+    import('./notify/init').then(({ initNotify }) => initNotify());
+}
 
 const revealObserver = new IntersectionObserver(
     (entries) => {
@@ -35,6 +41,20 @@ const revealObserver = new IntersectionObserver(
 );
 
 document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+// Dark-mode toggle: flips <html data-theme> and persists the choice. The no-flash
+// init script in the panel layout applies the saved value before first paint.
+document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+            localStorage.setItem('theme', next);
+        } catch (e) {
+            /* storage unavailable — theme still applies for this page */
+        }
+    });
+});
 
 // Admin sidebar mobile toggle
 const sidebar = document.getElementById('admin-sidebar');

@@ -36,7 +36,7 @@
                                 <a href="{{ route('admin.events.edit', $event) }}" class="text-indigo-600 hover:underline">Edit</a>
                             @endcan
                             @can('events.delete')
-                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Delete this event?');">
+                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" data-confirm="Delete this event?" data-confirm-danger>
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline">Delete</button>
                                 </form>

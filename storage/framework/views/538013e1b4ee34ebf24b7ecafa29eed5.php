@@ -9,44 +9,26 @@
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php $__currentLoopData = $featuredProducts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <a href="<?php echo e(route('products.show', $product)); ?>"
-                   class="reveal group block bg-white border border-slate-100 rounded-2xl overflow-hidden premium-shadow hover:-translate-y-1 transition"
-                   style="transition-delay: <?php echo e($index * 0.08); ?>s">
-                    <div class="aspect-square bg-brand-50 overflow-hidden">
-                        <?php if($product->main_image): ?>
-                            <img src="<?php echo e(asset('storage/'.$product->main_image)); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <?php endif; ?>
-                    </div>
-                    <div class="p-5">
-                        <?php if($product->badge): ?>
-                            <span class="inline-flex items-center gap-1 text-xs font-semibold bg-gold-500/10 text-gold-600 px-2 py-1 rounded-full mb-2">
-                                <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'sparkles','class' => 'w-3.5 h-3.5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('icon'); ?>
+                <?php if (isset($component)) { $__componentOriginal3fd2897c1d6a149cdb97b41db9ff827a = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal3fd2897c1d6a149cdb97b41db9ff827a = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.product-card','data' => ['product' => $product,'index' => $index]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('product-card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['name' => 'sparkles','class' => 'w-3.5 h-3.5']); ?>
+<?php $component->withAttributes(['product' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($product),'index' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($index)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
-<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
-<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php if (isset($__attributesOriginal3fd2897c1d6a149cdb97b41db9ff827a)): ?>
+<?php $attributes = $__attributesOriginal3fd2897c1d6a149cdb97b41db9ff827a; ?>
+<?php unset($__attributesOriginal3fd2897c1d6a149cdb97b41db9ff827a); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
-<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
-<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
-<?php endif; ?> <?php echo e($product->badge); ?>
-
-                            </span>
-                        <?php endif; ?>
-                        <h3 class="font-display font-semibold text-brand-900"><?php echo e($product->name); ?></h3>
-                        <p class="text-xs text-slate-500 mt-1"><?php echo e($product->short_description); ?></p>
-                    </div>
-                </a>
+<?php if (isset($__componentOriginal3fd2897c1d6a149cdb97b41db9ff827a)): ?>
+<?php $component = $__componentOriginal3fd2897c1d6a149cdb97b41db9ff827a; ?>
+<?php unset($__componentOriginal3fd2897c1d6a149cdb97b41db9ff827a); ?>
+<?php endif; ?>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         <div class="text-center mt-10 reveal">

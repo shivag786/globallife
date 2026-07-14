@@ -44,6 +44,12 @@ class UpdateSettingsRequest extends FormRequest
             'ga_measurement_id' => ['nullable', 'string', 'max:50', 'regex:/^G-[A-Z0-9]+$/i'],
             'gtm_id' => ['nullable', 'string', 'max:50', 'regex:/^GTM-[A-Z0-9]+$/i'],
 
+            // Homepage & Announcement
+            'announcement_text' => ['nullable', 'string', 'max:160'],
+            'announcement_link' => ['nullable', 'url', 'max:255'],
+            'hero_rating' => ['nullable', 'string', 'max:10'],
+            'hero_rating_count' => ['nullable', 'string', 'max:30'],
+
             // Contact
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_whatsapp' => ['nullable', 'string', 'max:30'],

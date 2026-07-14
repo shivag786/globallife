@@ -8,6 +8,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (t !== 'dark' && t !== 'light') {
+                    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <title><?php echo e($title ?? $adminSiteName); ?></title>
     <?php if(! empty($adminSettings['favicon'])): ?>
         <link rel="icon" href="<?php echo e(asset('storage/'.$adminSettings['favicon'])); ?>">
@@ -96,13 +108,12 @@
 
                 <?php if($user->hasRole('branch_manager')): ?>
                     <a href="<?php echo e(route('branch.dashboard')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
+                    <a href="<?php echo e(route('branch.revenue.index')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch Tools</p>
                     <?php $__currentLoopData = \App\Services\BranchPermissionMatrixService::MODULES; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $module): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php if(\App\Services\BranchPermissionMatrixService::userCanAccessModule($user, $module)): ?>
                             <?php if($module === 'commission-partners'): ?>
                                 <a href="<?php echo e(route('branch.commission-partners.index')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
-                            <?php elseif($module === 'revenue-tracking'): ?>
-                                <a href="<?php echo e(route('branch.revenue.index')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                             <?php else: ?>
                                 <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">
                                     <?php echo e(ucwords(str_replace('-', ' ', $module))); ?>
@@ -187,6 +198,49 @@
                 </div>
                 <div class="flex items-center gap-2 sm:gap-4 text-sm flex-shrink-0">
                     <span class="hidden sm:inline text-slate-500"><?php echo e($user->name); ?> &middot; <?php echo e($user->getRoleNames()->implode(', ')); ?></span>
+                    <button type="button" data-theme-toggle aria-label="Toggle dark mode"
+                            class="text-slate-500 hover:text-slate-800 transition">
+                        <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'moon','class' => 'w-5 h-5 dark:hidden']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'moon','class' => 'w-5 h-5 dark:hidden']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                        <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'sun','class' => 'w-5 h-5 hidden dark:block']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'sun','class' => 'w-5 h-5 hidden dark:block']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                    </button>
                     <form method="POST" action="<?php echo e(route('logout')); ?>">
                         <?php echo csrf_field(); ?>
                         <button type="submit" class="text-red-600 hover:underline">Logout</button>
@@ -195,18 +249,9 @@
             </header>
 
             <main class="flex-1 p-4 sm:p-6 overflow-x-hidden">
-                <?php if(session('status')): ?>
-                    <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded p-3">
-                        <?php echo e(session('status')); ?>
-
-                    </div>
-                <?php endif; ?>
-
-                <?php if(session('error')): ?>
-                    <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
-                        <?php echo e(session('error')); ?>
-
-                    </div>
+                <?php if(session('status') || session('error')): ?>
+                    
+                    <script id="flash-data" type="application/json"><?php echo json_encode(['status' => session('status'), 'error' => session('error')], 512) ?></script>
                 <?php endif; ?>
 
                 <?php if($errors->any()): ?>

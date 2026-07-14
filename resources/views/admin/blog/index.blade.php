@@ -38,7 +38,7 @@
                                 <a href="{{ route('admin.blog.edit', $post) }}" class="text-indigo-600 hover:underline">Edit</a>
                             @endcan
                             @can('blog.delete')
-                                <form action="{{ route('admin.blog.destroy', $post) }}" method="POST" class="inline" onsubmit="return confirm('Delete this post?');">
+                                <form action="{{ route('admin.blog.destroy', $post) }}" method="POST" class="inline" data-confirm="Delete this post?" data-confirm-danger>
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline">Delete</button>
                                 </form>

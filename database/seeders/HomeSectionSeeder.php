@@ -31,6 +31,18 @@ class HomeSectionSeeder extends Seeder
                 'display_order' => 1,
             ],
             [
+                'type' => 'certifications',
+                'title' => 'Trusted & Certified',
+                'items' => [
+                    ['title' => 'FSSAI Certified', 'description' => 'Lic. 10012345678'],
+                    ['title' => 'Lab Tested', 'description' => 'Every batch verified'],
+                    ['title' => 'GMP Compliant', 'description' => 'Good manufacturing'],
+                    ['title' => '100% Natural', 'description' => 'No harmful additives'],
+                    ['title' => 'Secure Payments', 'description' => 'SSL encrypted'],
+                    ['title' => 'Pan-India Delivery', 'description' => 'Fast and tracked'],
+                ],
+            ],
+            [
                 'type' => 'founder_quote',
                 'title' => 'Founder, Global Life',
                 'subtitle' => 'Our Promise',
@@ -42,6 +54,17 @@ class HomeSectionSeeder extends Seeder
                 'title' => 'A homegrown brand built on transparency, quality, and people',
                 'content' => '<p>Global Life connects city managers, VIP members, and customers on a single platform.</p><p>From wellness supplements to fine fragrances, every product we sell is verified before it reaches you — and every city has its own dedicated managers driving local growth.</p>',
                 'display_order' => 3,
+            ],
+            [
+                'type' => 'quality',
+                'title' => 'Quality you can actually verify',
+                'subtitle' => 'From sourcing to your doorstep, nothing hidden and everything tested.',
+                'items' => [
+                    ['title' => 'Transparent Sourcing', 'description' => 'We name every ingredient and where it comes from. No proprietary blends hiding fillers.'],
+                    ['title' => 'Third-Party Lab Tested', 'description' => 'Every batch is independently tested for purity, potency and safety before it ships.'],
+                    ['title' => 'Clean Formulations', 'description' => 'No artificial colors and no unnecessary additives. Only what your body actually needs.'],
+                    ['title' => 'Made to Standards', 'description' => 'Produced in GMP-compliant, FSSAI-certified facilities with strict quality control.'],
+                ],
             ],
             [
                 'type' => 'features',
@@ -156,7 +179,8 @@ class HomeSectionSeeder extends Seeder
             ],
         ];
 
-        foreach ($sections as $section) {
+        foreach (array_values($sections) as $index => $section) {
+            $section['display_order'] = $index + 1;
             HomeSection::create($section);
         }
     }

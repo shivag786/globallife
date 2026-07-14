@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Vip;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessProfileEvent;
 use App\Models\Lead;
+use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +30,17 @@ class DashboardController extends Controller
             'completion' => $microsite->completionPercentage(),
         ];
 
-        return view('dashboards.vip-member', ['user' => $user, 'stats' => $stats]);
+        $visitorsChart = ChartData::daily(
+            BusinessProfileEvent::where('vip_microsite_id', $microsite->id)->where('event_type', 'page_view'),
+            'created_at',
+            'COUNT(*)',
+            14
+        );
+
+        return view('dashboards.vip-member', [
+            'user' => $user,
+            'stats' => $stats,
+            'visitorsChart' => $visitorsChart,
+        ]);
     }
 }

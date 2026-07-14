@@ -39,7 +39,7 @@
                         <button type="submit" class="text-indigo-600 hover:underline text-xs">Save</button>
                     </div>
                 </form>
-                <form method="POST" action="{{ route('vip.gallery.destroy', $item) }}" onsubmit="return confirm('Delete this image?')" class="px-3 pb-3">
+                <form method="POST" action="{{ route('vip.gallery.destroy', $item) }}" data-confirm="Delete this image?" data-confirm-danger class="px-3 pb-3">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-red-600 hover:underline text-xs">Delete</button>

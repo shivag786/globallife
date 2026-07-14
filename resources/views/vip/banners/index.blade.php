@@ -52,7 +52,7 @@
                                 Visible
                             </label>
                         </form>
-                        <form method="POST" action="{{ route('vip.banners.destroy', $banner) }}" onsubmit="return confirm('Remove this slide?')" class="mt-1">
+                        <form method="POST" action="{{ route('vip.banners.destroy', $banner) }}" data-confirm="Remove this slide?" data-confirm-danger class="mt-1">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline text-xs">Remove</button>
