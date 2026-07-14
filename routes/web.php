@@ -26,6 +26,10 @@ use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
+Route::get('/scooter',function()
+{
+    $this->load->view('scooter');
+});
 Route::get('/vip-plans', [PublicController::class, 'vipPlans'])->name('vip-plans.index');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
