@@ -216,3 +216,27 @@ Route::post('/{citySlug}/{businessSlug}/{secureId}/reviews', [MicrositeControlle
     ->where(['citySlug' => '[a-z0-9-]+', 'businessSlug' => '[a-z0-9-]+', 'secureId' => '\d+-[A-Za-z0-9]+-\d+'])
     ->middleware('throttle:5,1')
     ->name('microsite.reviews.store');
+Route::get('/fix-storage-link-xyz123', function () {
+    $link = public_path('storage');
+    $target = storage_path('app/public');
+
+    // Remove the fake folder (only if it's NOT a symlink)
+    if (file_exists($link) && !is_link($link)) {
+        // Recursively delete the folder contents first
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($link, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($files as $file) {
+            $file->isDir() ? rmdir($file->getRealPath()) : unlink($file->getRealPath());
+        }
+        rmdir($link);
+    }
+
+    // Now try creating a real symlink
+    if (symlink($target, $link)) {
+        return 'Success! Real symlink created: ' . $link . ' → ' . $target;
+    }
+
+    return 'symlink() failed — function may be disabled on this host. Use the copy-based fallback instead.';
+});
