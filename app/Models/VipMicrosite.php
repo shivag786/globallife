@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\LogOptions;
@@ -87,6 +88,35 @@ class VipMicrosite extends Model
     public function products(): HasMany
     {
         return $this->hasMany(BusinessProduct::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Super-Admin catalog products this VIP has chosen to sell (with commission).
+     * Distinct from `products()`, which are the VIP's own free-text business products.
+     *
+     * @return BelongsToMany<Product, $this>
+     */
+    public function catalogProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'vip_products')
+            ->withPivot(['is_visible', 'is_featured', 'display_order'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Enabled, in-stock catalog products for the public storefront, featured first.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Product>
+     */
+    public function visibleCatalogProducts(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->catalogProducts()
+            ->wherePivot('is_visible', true)
+            ->where('products.status', 'active')
+            ->orderByPivot('is_featured', 'desc')
+            ->orderByPivot('display_order')
+            ->orderBy('products.name')
+            ->get();
     }
 
     /**

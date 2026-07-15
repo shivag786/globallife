@@ -248,7 +248,7 @@
     "src": "_manrope-800-normal-uHUdIJgA.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-GAQYeoxv.css",
+    "file": "assets/app-DnJ_d4Q1.css",
     "name": "app",
     "names": [
       "app.css"
@@ -275,7 +275,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-Dw3ctbBQ.js",
+    "file": "assets/app-DHMVwhvd.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -301,7 +301,7 @@
     "isDynamicEntry": true
   },
   "resources/js/notify/init.js": {
-    "file": "assets/init-DM1u1VSp.js",
+    "file": "assets/init-93R0TKkf.js",
     "name": "init",
     "src": "resources/js/notify/init.js",
     "isDynamicEntry": true,

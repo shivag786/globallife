@@ -52,6 +52,11 @@
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Website</p>
                         <a href="{{ route('admin.home-sections.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Homepage Builder</a>
 
+                        <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Catalog</p>
+                        <a href="{{ route('admin.categories.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Categories</a>
+                        <a href="{{ route('admin.brands.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Brands</a>
+                        <a href="{{ route('admin.commissions.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Commissions</a>
+
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch &amp; Commission Module</p>
                         <a href="{{ route('admin.cities.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Cities</a>
                         <a href="{{ route('admin.branch-managers.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Branch Managers</a>
@@ -85,11 +90,15 @@
                     @if (\App\Services\PermissionMatrixService::userCanAccessModule($user, 'leads'))
                         <a href="{{ route('admin.leads.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Leads</a>
                     @endif
+                    @if ($user->hasAnyRole(['super_admin', 'admin']))
+                        <a href="{{ route('admin.orders.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Orders</a>
+                    @endif
                 @endif
 
                 @if ($user->hasRole('branch_manager'))
                     <a href="{{ route('branch.dashboard') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
                     <a href="{{ route('branch.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
+                    <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch Tools</p>
                     @foreach (\App\Services\BranchPermissionMatrixService::MODULES as $module)
                         @if (\App\Services\BranchPermissionMatrixService::userCanAccessModule($user, $module))
@@ -110,6 +119,7 @@
                     <a href="{{ route('manager.leads.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Leads</a>
                     <a href="{{ route('manager.vip-members.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">VIP Members</a>
                     <a href="{{ route('manager.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
+                    <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Partner Tools (Phase 2)</p>
                     @foreach (['Sales Tracking', 'Discount Management', 'Customer Management'] as $item)
                         <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">
@@ -123,6 +133,10 @@
                     <a href="{{ route('vip.dashboard') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Dashboard</a>
                     <a href="{{ route('vip.profile.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Profile</a>
                     <a href="{{ route('vip.modules.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Section Visibility</a>
+
+                    <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Sell Products</p>
+                    <a href="{{ route('vip.marketplace.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">My Store</a>
+                    <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
 
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Business Page</p>
                     <a href="{{ route('vip.banners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Homepage Banner</a>

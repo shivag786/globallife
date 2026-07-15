@@ -15,7 +15,7 @@ class RolesAndPermissionsSeeder extends Seeder
      *
      * @var list<string>
      */
-    public const ROLES = ['super_admin', 'admin', 'sub_admin', 'branch_manager', 'commission_partner', 'vip_member', 'visitor'];
+    public const ROLES = ['super_admin', 'admin', 'sub_admin', 'branch_manager', 'commission_partner', 'vip_member', 'customer', 'visitor'];
 
     /**
      * Run the database seeds.

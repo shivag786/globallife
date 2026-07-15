@@ -80,9 +80,32 @@
                     </div>
                 @endif
 
-                {{-- CTAs — route through the existing enquiry lead pipeline (no payment gateway) --}}
-                <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="#enquire" class="inline-flex items-center justify-center gap-2 bg-brand-700 text-white px-7 py-3.5 rounded-full font-medium hover:bg-brand-800 transition premium-shadow">
+                @if ($product->hasPrice())
+                    @if ($seller ?? null)
+                        <p class="mt-6 text-sm text-slate-500">Sold by <span class="font-medium text-brand-700">{{ $seller->business_name }}</span></p>
+                    @endif
+                    <div class="mt-3 flex flex-wrap gap-3">
+                        <form method="POST" action="{{ route('cart.add') }}">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            @if ($seller ?? null) <input type="hidden" name="seller_id" value="{{ $seller->id }}"> @endif
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-brand-700 text-white px-7 py-3.5 rounded-full font-medium hover:bg-brand-800 transition premium-shadow">
+                                <x-icon name="shopping-bag" class="w-5 h-5" /> Add to Cart
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('cart.add') }}">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="buy_now" value="1">
+                            @if ($seller ?? null) <input type="hidden" name="seller_id" value="{{ $seller->id }}"> @endif
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 border border-gold-500 text-gold-600 px-7 py-3.5 rounded-full font-medium hover:bg-gold-500/10 transition">Buy Now</button>
+                        </form>
+                    </div>
+                @endif
+
+                {{-- Secondary CTAs — enquiry lead pipeline + WhatsApp --}}
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <a href="#enquire" class="inline-flex items-center justify-center gap-2 {{ $product->hasPrice() ? 'border border-brand-600 text-brand-700 hover:bg-brand-50' : 'bg-brand-700 text-white hover:bg-brand-800 premium-shadow' }} px-7 py-3.5 rounded-full font-medium transition">
                         <x-icon name="chat-bubble" class="w-5 h-5" /> {{ $ctaLabel }}
                     </a>
                     @if ($whatsapp)
@@ -91,6 +114,7 @@
                             <x-icon name="chat-bubble" class="w-5 h-5" /> Order on WhatsApp
                         </a>
                     @endif
+                    <x-product-benefits :product="$product" class="px-7 py-3.5" />
                 </div>
 
                 {{-- Trust strip --}}

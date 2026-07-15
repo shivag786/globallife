@@ -1,5 +1,13 @@
 @php
     $navSections = [];
+
+    // Catalog products this VIP has enabled for sale (with active benefits eager-loaded).
+    $storeProducts = $microsite->visibleCatalogProducts();
+    $storeProducts->load(['benefits' => fn ($q) => $q->where('status', 'active')->orderBy('display_order')]);
+    if ($storeProducts->isNotEmpty()) {
+        $navSections['shop'] = 'Shop';
+    }
+
     if ($microsite->isModuleVisible('about') && ($microsite->description || $microsite->short_description)) {
         $navSections['about'] = 'About';
     }
@@ -33,6 +41,8 @@
     @if ($microsite->isModuleVisible('about'))
         @include('partials.microsite.about')
     @endif
+
+    @include('partials.microsite.shop')
 
     @if ($microsite->isModuleVisible('services'))
         @include('partials.microsite.services')

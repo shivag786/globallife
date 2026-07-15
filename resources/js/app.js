@@ -28,6 +28,60 @@ if (document.getElementById('flash-data') || document.querySelector('[data-confi
     import('./notify/init').then(({ initNotify }) => initNotify());
 }
 
+// Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
+// [data-modal-close] element or a click on the backdrop itself closes it.
+function closeModal(modal) {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-modal-open]');
+    if (opener) {
+        const modal = document.querySelector(opener.getAttribute('data-modal-open'));
+        if (modal) {
+            // Re-parent to <body> so a transformed ancestor (e.g. a .reveal card)
+            // can't become the containing block for this position:fixed overlay.
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        return;
+    }
+
+    const closer = event.target.closest('[data-modal-close]');
+    if (closer) {
+        closeModal(closer.closest('[data-modal]'));
+        return;
+    }
+
+    // Click on the backdrop container itself (not its children) closes it.
+    if (event.target.matches('[data-modal]')) {
+        closeModal(event.target);
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('[data-modal]:not(.hidden)').forEach(closeModal);
+    }
+});
+
+// Flash toast: auto-dismisses after a few seconds, or on close-button click.
+document.querySelectorAll('[data-flash]').forEach((flash) => {
+    const dismiss = () => {
+        flash.style.opacity = '0';
+        setTimeout(() => flash.remove(), 300);
+    };
+    flash.querySelector('[data-flash-close]')?.addEventListener('click', dismiss);
+    setTimeout(dismiss, 4000);
+});
+
 const revealObserver = new IntersectionObserver(
     (entries) => {
         entries.forEach((entry) => {

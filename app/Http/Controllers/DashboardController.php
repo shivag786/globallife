@@ -19,6 +19,7 @@ class DashboardController extends Controller
             $user->hasRole('branch_manager') => redirect()->route('branch.dashboard'),
             $user->hasRole('commission_partner') => redirect()->route('manager.dashboard'),
             $user->hasRole('vip_member') => redirect()->route('vip.dashboard'),
+            $user->hasRole('customer') => redirect()->route('account.orders.index'),
             default => redirect()->route('home'),
         };
     }

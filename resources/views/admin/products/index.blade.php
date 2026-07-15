@@ -33,6 +33,7 @@
                         <td class="px-4 py-3 text-right space-x-3">
                             <a href="{{ route('products.show', $product) }}" class="text-slate-500 hover:underline" target="_blank">View</a>
                             @can('products.edit')
+                                <a href="{{ route('admin.products.benefits.index', $product) }}" class="text-brand-600 hover:underline">Benefits</a>
                                 <a href="{{ route('admin.products.edit', $product) }}" class="text-indigo-600 hover:underline">Edit</a>
                             @endcan
                             @can('products.delete')

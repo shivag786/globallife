@@ -160,6 +160,32 @@
                 <a href="<?php echo e(route('contact')); ?>" class="hover:text-brand-600">Contact</a>
             </nav>
             <div class="flex items-center gap-3 sm:gap-4 text-sm">
+                <?php $cartCount = app(\App\Services\CartService::class)->count(); ?>
+                <a href="<?php echo e(route('cart.index')); ?>" class="relative text-slate-600 hover:text-brand-700" aria-label="Cart">
+                    <?php if (isset($component)) { $__componentOriginalce262628e3a8d44dc38fd1f3965181bc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon','data' => ['name' => 'shopping-bag','class' => 'w-6 h-6']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'shopping-bag','class' => 'w-6 h-6']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $attributes = $__attributesOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__attributesOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc)): ?>
+<?php $component = $__componentOriginalce262628e3a8d44dc38fd1f3965181bc; ?>
+<?php unset($__componentOriginalce262628e3a8d44dc38fd1f3965181bc); ?>
+<?php endif; ?>
+                    <?php if($cartCount > 0): ?>
+                        <span class="absolute -top-1.5 -right-1.5 bg-brand-700 text-white text-[0.6rem] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center"><?php echo e($cartCount > 9 ? '9+' : $cartCount); ?></span>
+                    <?php endif; ?>
+                </a>
                 <?php if(auth()->guard()->check()): ?>
                     <a href="<?php echo e(route('dashboard')); ?>" class="hidden sm:inline font-medium text-brand-700 hover:text-brand-800">Dashboard</a>
                 <?php else: ?>
@@ -209,6 +235,27 @@
             </nav>
         </div>
     </header>
+
+    <?php if (isset($component)) { $__componentOriginal5168fdb0c14fd91c6598264bc4be63f2 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5168fdb0c14fd91c6598264bc4be63f2 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.flash','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('flash'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5168fdb0c14fd91c6598264bc4be63f2)): ?>
+<?php $attributes = $__attributesOriginal5168fdb0c14fd91c6598264bc4be63f2; ?>
+<?php unset($__attributesOriginal5168fdb0c14fd91c6598264bc4be63f2); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5168fdb0c14fd91c6598264bc4be63f2)): ?>
+<?php $component = $__componentOriginal5168fdb0c14fd91c6598264bc4be63f2; ?>
+<?php unset($__componentOriginal5168fdb0c14fd91c6598264bc4be63f2); ?>
+<?php endif; ?>
 
     <main>
         <?php echo e($slot); ?>

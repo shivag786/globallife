@@ -75,6 +75,13 @@
             </nav>
 
             <div class="flex items-center gap-3">
+                @php $cartCount = app(\App\Services\CartService::class)->count(); @endphp
+                <a href="{{ route('cart.index') }}" class="relative text-slate-600 hover:text-brand-700" aria-label="Cart">
+                    <x-icon name="shopping-bag" class="w-6 h-6" />
+                    @if ($cartCount > 0)
+                        <span class="absolute -top-1.5 -right-1.5 bg-brand-700 text-white text-[0.6rem] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{{ $cartCount > 9 ? '9+' : $cartCount }}</span>
+                    @endif
+                </a>
                 @if ($microsite->phone_number)
                     <a href="{{ route('microsite.click', [$microsite, 'call']) }}"
                        class="hidden sm:inline-flex msite-btn msite-btn-primary !h-10 !px-5 !text-sm">
@@ -95,6 +102,8 @@
             </nav>
         </div>
     </header>
+
+    <x-flash />
 
     <main id="top">
         {{ $slot }}

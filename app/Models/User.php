@@ -109,6 +109,32 @@ class User extends Authenticatable
         return $this->hasOne(VipMicrosite::class);
     }
 
+    /**
+     * @return HasOne<Wallet, $this>
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * @return HasMany<Order, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class)->latest();
+    }
+
+    /**
+     * Product-sale commission earned by this user (as a beneficiary of the split).
+     *
+     * @return HasMany<CommissionEarning, $this>
+     */
+    public function commissionEarnings(): HasMany
+    {
+        return $this->hasMany(CommissionEarning::class, 'beneficiary_id');
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';

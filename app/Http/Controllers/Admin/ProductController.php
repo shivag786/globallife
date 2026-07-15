@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Services\PermissionMatrixService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ProductController extends Controller
@@ -34,11 +36,7 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($request->hasFile('main_image')) {
-            $data['main_image'] = $request->file('main_image')->store('uploads', 'public');
-        }
+        $data = $this->withCatalogData($request, $request->validated(), []);
 
         $this->products->create($data);
 
@@ -54,11 +52,7 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($request->hasFile('main_image')) {
-            $data['main_image'] = $request->file('main_image')->store('uploads', 'public');
-        }
+        $data = $this->withCatalogData($request, $request->validated(), $product->gallery ?? []);
 
         $this->products->update($product, $data);
 
@@ -72,6 +66,37 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('status', 'Product deleted.');
+    }
+
+    /**
+     * Applies main image, gallery images, and legacy category-name sync to the
+     * validated payload before persisting.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  list<string>  $existingGallery
+     * @return array<string, mixed>
+     */
+    private function withCatalogData(Request $request, array $data, array $existingGallery): array
+    {
+        if ($request->hasFile('main_image')) {
+            $data['main_image'] = $request->file('main_image')->store('uploads', 'public');
+        }
+
+        $gallery = $request->boolean('remove_gallery') ? [] : $existingGallery;
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                $gallery[] = $file->store('uploads', 'public');
+            }
+        }
+        $data['gallery'] = $gallery;
+
+        // Keep the legacy `category` string in sync with the selected category so the
+        // existing storefront (which reads $product->category) keeps working unchanged.
+        if (! empty($data['category_id'])) {
+            $data['category'] = Category::find($data['category_id'])?->name;
+        }
+
+        return $data;
     }
 
     private function ensureModuleAccess(): void
