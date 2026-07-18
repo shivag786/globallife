@@ -1,7 +1,9 @@
-<x-layouts.public title="Checkout">
+<x-layouts.shop title="Checkout">
     @php
         $money = fn ($n) => '₹'.number_format((float) $n, 2);
         $field = 'mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500';
+        $storefront = app(\App\Services\StorefrontContext::class)->current();
+        $continueUrl = app(\App\Services\StorefrontContext::class)->continueUrl($storefront);
     @endphp
 
     <div class="max-w-5xl mx-auto px-6 py-16">
@@ -97,8 +99,11 @@
                     <div class="flex justify-between text-base font-bold text-brand-900 border-t border-slate-100 pt-3"><dt>Total</dt><dd>{{ $money($totals['total']) }}</dd></div>
                 </dl>
                 <button type="submit" class="mt-6 w-full bg-brand-700 text-white py-3 rounded-full font-medium hover:bg-brand-800 transition">Place Order</button>
-                <a href="{{ route('cart.index') }}" class="mt-3 block text-center text-sm text-slate-500 hover:text-brand-700">← Back to cart</a>
+                <div class="mt-3 flex items-center justify-between text-sm">
+                    <a href="{{ route('cart.index') }}" class="text-slate-500 hover:text-brand-700">← Back to cart</a>
+                    <a href="{{ $continueUrl }}" class="text-slate-500 hover:text-brand-700">{{ $storefront ? 'Continue shopping' : 'Continue shopping' }} →</a>
+                </div>
             </div>
         </form>
     </div>
-</x-layouts.public>
+</x-layouts.shop>

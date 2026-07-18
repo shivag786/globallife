@@ -27,6 +27,9 @@ if (document.querySelector('[data-apex-for]')) {
 if (document.getElementById('flash-data') || document.querySelector('[data-confirm]')) {
     import('./notify/init').then(({ initNotify }) => initNotify());
 }
+if (document.querySelector('[data-cart-ajax]')) {
+    import('./cart').then(({ initCart }) => initCart());
+}
 
 // Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
 // [data-modal-close] element or a click on the backdrop itself closes it.
@@ -316,7 +319,9 @@ document.querySelectorAll('[data-copy-link]').forEach((btn) => {
 document.addEventListener('submit', (event) => {
     const form = event.target;
 
-    if (!(form instanceof HTMLFormElement) || form.dataset.noLoader) return;
+    // AJAX-handled forms (cart add / quantity / remove) never navigate away, so the
+    // spinner would never be restored — leave their in-flight state to their own handler.
+    if (!(form instanceof HTMLFormElement) || form.dataset.noLoader || form.hasAttribute('data-cart-ajax')) return;
 
     const submitter = event.submitter || form.querySelector('button[type="submit"], input[type="submit"]');
 

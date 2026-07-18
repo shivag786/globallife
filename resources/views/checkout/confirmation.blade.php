@@ -1,4 +1,4 @@
-<x-layouts.public title="Order Confirmed">
+<x-layouts.shop title="Order Confirmed" :storefront="$storefront">
     @php $money = fn ($n) => '₹'.number_format((float) $n, 2); @endphp
 
     <div class="max-w-2xl mx-auto px-6 py-16">
@@ -45,7 +45,10 @@
             @auth
                 <a href="{{ route('account.orders.index') }}" class="bg-brand-700 text-white px-6 py-2.5 rounded-full hover:bg-brand-800 transition">View my orders</a>
             @endauth
-            <a href="{{ route('products.index') }}" class="border border-brand-600 text-brand-700 px-6 py-2.5 rounded-full hover:bg-brand-50 transition">Continue shopping</a>
+            <a href="{{ $continueUrl }}" class="border border-brand-600 text-brand-700 px-6 py-2.5 rounded-full hover:bg-brand-50 transition inline-flex items-center gap-2">
+                <x-icon name="shopping-bag" class="w-4 h-4" />
+                {{ $storefront ? 'Continue shopping at '.\Illuminate\Support\Str::limit($storefront->business_name, 24) : 'Continue shopping' }}
+            </a>
         </div>
     </div>
-</x-layouts.public>
+</x-layouts.shop>

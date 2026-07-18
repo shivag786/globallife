@@ -28,7 +28,7 @@
 
         <div class="grid md:grid-cols-2 gap-12 mt-6 items-start">
             {{-- Product image on a clean stage so the full bottle/pack is always visible --}}
-            <div class="reveal relative aspect-square bg-gradient-to-b from-white to-brand-50/60 rounded-2xl overflow-hidden premium-shadow border border-slate-100">
+            <div data-product-media class="reveal relative aspect-square bg-gradient-to-b from-white to-brand-50/60 rounded-2xl overflow-hidden premium-shadow border border-slate-100">
                 @if ($product->main_image)
                     <img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-10">
                 @endif
@@ -85,7 +85,7 @@
                         <p class="mt-6 text-sm text-slate-500">Sold by <span class="font-medium text-brand-700">{{ $seller->business_name }}</span></p>
                     @endif
                     <div class="mt-3 flex flex-wrap gap-3">
-                        <form method="POST" action="{{ route('cart.add') }}">
+                        <form method="POST" action="{{ route('cart.add') }}" data-cart-ajax data-role="add">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             @if ($seller ?? null) <input type="hidden" name="seller_id" value="{{ $seller->id }}"> @endif

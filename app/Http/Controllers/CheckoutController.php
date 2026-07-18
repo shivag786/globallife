@@ -84,16 +84,21 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.confirmation', $order);
     }
 
-    public function confirmation(Order $order): View
+    public function confirmation(Order $order, \App\Services\StorefrontContext $storefront): View
     {
         abort_unless(
             (Auth::check() && Auth::id() === $order->user_id) || session('recent_order_id') === $order->id,
             403,
         );
 
+        $order->load('items');
+        $store = $storefront->forOrder($order);
+
         return view('checkout.confirmation', [
-            'order' => $order->load('items'),
+            'order' => $order,
             'newAccount' => (bool) session('recent_order_new_account'),
+            'storefront' => $store,
+            'continueUrl' => $storefront->continueUrl($store),
         ]);
     }
 }

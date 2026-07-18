@@ -10,7 +10,7 @@
     $cartKey = $cart->keyFor($product->id, $sellerId);
 @endphp
 
-<div class="group bg-white border border-slate-100 rounded-2xl overflow-hidden premium-shadow hover:-translate-y-1 transition flex flex-col h-full">
+<div data-product-card class="group bg-white border border-slate-100 rounded-2xl overflow-hidden premium-shadow hover:-translate-y-1 transition flex flex-col h-full">
     <div class="relative aspect-square bg-gradient-to-b from-white to-brand-50/50 overflow-hidden">
         <a href="{{ $detailUrl }}" aria-label="{{ $product->name }}">
             @if ($product->main_image)
@@ -21,11 +21,9 @@
         @if ($product->discountPercentage())
             <span class="absolute top-3 left-3 text-xs font-bold text-white px-2 py-1 rounded-full bg-green-600 shadow-sm">{{ $product->discountPercentage() }}% OFF</span>
         @endif
-        @if ($inCartQty > 0)
-            <span class="absolute bottom-3 left-3 inline-flex items-center gap-1 text-xs font-semibold text-white px-2 py-1 rounded-full bg-brand-700 shadow-sm">
-                <x-icon name="check-circle" class="w-3.5 h-3.5" /> In cart
-            </span>
-        @endif
+        <span data-cart-added="{{ $cartKey }}" class="absolute bottom-3 left-3 inline-flex items-center gap-1 text-xs font-semibold text-white px-2 py-1 rounded-full bg-brand-700 shadow-sm {{ $inCartQty > 0 ? '' : 'hidden' }}">
+            <x-icon name="check-circle" class="w-3.5 h-3.5" /> In cart
+        </span>
         <form method="POST" action="{{ route('wishlist.add') }}" class="absolute top-3 right-3">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -65,38 +63,37 @@
 
         <div class="mt-auto pt-3 space-y-2">
             @if ($product->hasPrice())
-                <div class="flex gap-2">
-                    @if ($inCartQty > 0)
-                        {{-- Already in cart → quantity stepper --}}
-                        <div class="flex-1 inline-flex items-center justify-between border border-brand-600 rounded-full overflow-hidden">
-                            <form method="POST" action="{{ route('cart.update') }}">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="key" value="{{ $cartKey }}">
-                                <input type="hidden" name="quantity" value="{{ $inCartQty - 1 }}">
-                                <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Decrease">
-                                    <x-icon name="minus" class="w-4 h-4" />
-                                </button>
-                            </form>
-                            <span class="text-sm font-semibold text-brand-700 tabular-nums">{{ $inCartQty }}</span>
-                            <form method="POST" action="{{ route('cart.update') }}">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="key" value="{{ $cartKey }}">
-                                <input type="hidden" name="quantity" value="{{ $inCartQty + 1 }}">
-                                <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Increase">
-                                    <x-icon name="plus" class="w-4 h-4" />
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <form method="POST" action="{{ route('cart.add') }}" class="flex-1">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            @if ($sellerId) <input type="hidden" name="seller_id" value="{{ $sellerId }}"> @endif
-                            <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 bg-brand-700 text-white text-sm py-2 rounded-full hover:bg-brand-800 transition">
-                                <x-icon name="shopping-bag" class="w-4 h-4" /> Add
+                <div class="flex gap-2" data-cart-controls data-key="{{ $cartKey }}">
+                    {{-- Add button (shown when not in cart) --}}
+                    <form method="POST" action="{{ route('cart.add') }}" class="flex-1 {{ $inCartQty > 0 ? 'hidden' : '' }}" data-cart-ajax data-role="add">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        @if ($sellerId) <input type="hidden" name="seller_id" value="{{ $sellerId }}"> @endif
+                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 bg-brand-700 text-white text-sm py-2 rounded-full hover:bg-brand-800 transition">
+                            <x-icon name="shopping-bag" class="w-4 h-4" /> Add
+                        </button>
+                    </form>
+                    {{-- Quantity stepper (shown when in cart) --}}
+                    <div class="flex-1 inline-flex items-center justify-between border border-brand-600 rounded-full overflow-hidden {{ $inCartQty > 0 ? '' : 'hidden' }}" data-role="stepper">
+                        <form method="POST" action="{{ route('cart.update') }}" data-cart-ajax data-role="dec">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="key" value="{{ $cartKey }}">
+                            <input type="hidden" name="quantity" value="{{ $inCartQty - 1 }}">
+                            <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Decrease">
+                                <x-icon name="minus" class="w-4 h-4" />
                             </button>
                         </form>
-                    @endif
+                        <span data-qty class="text-sm font-semibold text-brand-700 tabular-nums">{{ max($inCartQty, 1) }}</span>
+                        <form method="POST" action="{{ route('cart.update') }}" data-cart-ajax data-role="inc">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="key" value="{{ $cartKey }}">
+                            <input type="hidden" name="quantity" value="{{ $inCartQty + 1 }}">
+                            <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Increase">
+                                <x-icon name="plus" class="w-4 h-4" />
+                            </button>
+                        </form>
+                    </div>
+                    {{-- Buy Now (navigates to checkout — intentionally not AJAX) --}}
                     <form method="POST" action="{{ route('cart.add') }}" class="flex-1">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
