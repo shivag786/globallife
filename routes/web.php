@@ -26,9 +26,6 @@ use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
-Route::get('/experience', [PublicController::class, 'experience'])->name('experience');
-Route::get('/third', [PublicController::class, 'third'])->name('third');
-Route::get('/fourth', [PublicController::class, 'fourth'])->name('fourth');
 Route::get('/scooter',function()
 {
     return view('scooter');
@@ -84,12 +81,6 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
         // Permission-gated: Admin has every module permission; Sub Admins only see modules they're granted.
         Route::resource('products', AdminProductController::class)->except(['show']);
-
-        // Per-product benefits management (shown in the customer "Benefits" popup).
-        Route::get('products/{product}/benefits', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'index'])->name('products.benefits.index');
-        Route::post('products/{product}/benefits', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'store'])->name('products.benefits.store');
-        Route::put('products/{product}/benefits/{benefit}', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'update'])->name('products.benefits.update');
-        Route::delete('products/{product}/benefits/{benefit}', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'destroy'])->name('products.benefits.destroy');
         Route::resource('blog', BlogPostController::class)
             ->except(['show'])
             ->parameters(['blog' => 'blogPost']);
@@ -115,19 +106,6 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
         Route::middleware('role:super_admin')->group(function () {
             Route::resource('cities', CityController::class)->except(['show']);
-
-            // Catalog configuration — Super Admin only.
-            Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
-            Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class)->except(['show']);
-
-            // Product-sale commission configuration (separate from VIP joining commission).
-            Route::get('commissions', [\App\Http\Controllers\Admin\CommissionController::class, 'index'])->name('commissions.index');
-            Route::get('commissions/global', [\App\Http\Controllers\Admin\CommissionController::class, 'editGlobal'])->name('commissions.global.edit');
-            Route::put('commissions/global', [\App\Http\Controllers\Admin\CommissionController::class, 'updateGlobal'])->name('commissions.global.update');
-            Route::get('commissions/category/{category}', [\App\Http\Controllers\Admin\CommissionController::class, 'editCategory'])->name('commissions.category.edit');
-            Route::put('commissions/category/{category}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateCategory'])->name('commissions.category.update');
-            Route::get('commissions/product/{product}', [\App\Http\Controllers\Admin\CommissionController::class, 'editProduct'])->name('commissions.product.edit');
-            Route::put('commissions/product/{product}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateProduct'])->name('commissions.product.update');
 
             Route::resource('branch-managers', BranchManagerController::class)
                 ->except(['show', 'destroy'])
@@ -202,10 +180,6 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::resource('banners', \App\Http\Controllers\Vip\BannerController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('services', \App\Http\Controllers\Vip\ServiceController::class)->except(['show']);
         Route::resource('products', \App\Http\Controllers\Vip\ProductController::class)->except(['show']);
-
-        // Sell Super-Admin catalog products on the storefront (visibility/featured/order only).
-        Route::get('marketplace', [\App\Http\Controllers\Vip\MarketplaceController::class, 'index'])->name('marketplace.index');
-        Route::put('marketplace', [\App\Http\Controllers\Vip\MarketplaceController::class, 'update'])->name('marketplace.update');
         Route::resource('gallery', \App\Http\Controllers\Vip\GalleryController::class)->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['gallery' => 'galleryItem']);
         Route::resource('videos', \App\Http\Controllers\Vip\VideoController::class)->only(['index', 'store', 'destroy']);
