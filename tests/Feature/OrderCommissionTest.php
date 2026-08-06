@@ -29,7 +29,6 @@ class OrderCommissionTest extends TestCase
     {
         return [
             'customer_name' => 'John Buyer',
-            'customer_email' => 'john.buyer@example.com',
             'customer_phone' => '9998887776',
             'address' => '12 Test Street',
             'city' => 'Jhansi',
@@ -38,6 +37,11 @@ class OrderCommissionTest extends TestCase
             'payment_method' => $method,
             'payment_outcome' => 'success',
         ];
+    }
+
+    private function customer(): User
+    {
+        return User::factory()->create(['status' => 'active', 'email' => 'john.buyer@example.com']);
     }
 
     public function test_order_records_pending_earnings_then_delivery_approves_and_credits_wallets(): void
@@ -59,14 +63,14 @@ class OrderCommissionTest extends TestCase
         app(CartService::class)->add($product->id, $microsite->id, 2); // 2 × ₹1000 = ₹2000 line
 
         $orders = app(OrderService::class);
-        $order = $orders->placeFromCart($this->checkoutData(), null);
+        $customer = $this->customer();
+        $order = $orders->placeFromCart($this->checkoutData(), $customer);
 
         $this->assertNotNull($order);
 
-        // A customer account was auto-created with the customer role.
-        $customer = User::where('email', 'john.buyer@example.com')->first();
-        $this->assertNotNull($customer);
-        $this->assertTrue($customer->hasRole('customer'));
+        // The order is attributed to the authenticated customer.
+        $this->assertSame($customer->id, $order->user_id);
+        $this->assertSame($customer->email, $order->customer_email);
 
         // Earnings recorded as PENDING on a ₹2000 base — nothing in wallets yet.
         $this->assertSame(3, CommissionEarning::where('order_id', $order->id)->count());
@@ -101,7 +105,7 @@ class OrderCommissionTest extends TestCase
 
         $order = app(OrderService::class)->placeFromCart(
             array_merge($this->checkoutData('online'), ['payment_outcome' => 'fail']),
-            null,
+            $this->customer(),
         );
 
         $this->assertNull($order);

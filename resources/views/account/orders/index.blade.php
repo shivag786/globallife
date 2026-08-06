@@ -12,18 +12,38 @@
     <div class="max-w-4xl mx-auto px-6 py-16">
         <div class="flex items-center justify-between mb-8">
             <h1 class="font-display text-3xl font-bold text-brand-900">My Orders</h1>
-            <a href="{{ route('wishlist.index') }}" class="text-sm text-brand-700 hover:underline">My Wishlist →</a>
+            <div class="flex items-center gap-4 text-sm">
+                <a href="{{ route('account.addresses.index') }}" class="text-brand-700 hover:underline">My Addresses</a>
+                <a href="{{ route('wishlist.index') }}" class="text-brand-700 hover:underline">My Wishlist →</a>
+            </div>
         </div>
 
+        @php $delivery = app(\App\Services\DeliveryService::class); @endphp
         @forelse ($orders as $order)
-            <a href="{{ route('account.orders.show', $order) }}" class="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-100 rounded-2xl p-5 mb-4 hover:border-brand-200 transition">
-                <div>
-                    <p class="font-semibold text-brand-900">{{ $order->order_number }}</p>
-                    <p class="text-sm text-slate-500">{{ $order->placed_at?->format('d M Y') }} · {{ $order->items_count }} {{ Str::plural('item', $order->items_count) }}</p>
+            <a href="{{ route('account.orders.show', $order) }}" class="block bg-white border border-slate-100 rounded-2xl p-5 mb-4 hover:border-brand-200 transition">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <p class="font-semibold text-brand-900">{{ $order->order_number }}</p>
+                        <p class="text-sm text-slate-500">
+                            <x-ist :value="$order->placed_at" format="d M Y" :suffix="''" /> · {{ $order->items_count }} {{ Str::plural('item', $order->items_count) }}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
+                        <span class="font-bold text-brand-900">{{ $money($order->total) }}</span>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="px-2.5 py-1 rounded-full text-xs font-medium capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
-                    <span class="font-bold text-brand-900">{{ $money($order->total) }}</span>
+                <div class="mt-3 pt-3 border-t border-slate-50 flex items-center gap-2 text-sm">
+                    @if ($order->isDelivered())
+                        <x-icon name="check-circle" class="w-4 h-4 text-green-600" />
+                        <span class="text-green-700">Delivered on <x-ist :value="$order->delivered_at" format="d M Y" :suffix="''" /></span>
+                    @elseif ($order->isCancelled())
+                        <x-icon name="x-mark" class="w-4 h-4 text-red-500" />
+                        <span class="text-red-600 capitalize">{{ $order->status }}</span>
+                    @else
+                        <x-icon name="truck" class="w-4 h-4 text-brand-600" />
+                        <span class="text-slate-600">Arriving by <span class="font-medium text-brand-800">{{ optional($delivery->expectedFor($order))->timezone('Asia/Kolkata')->format('D, d M') }}</span></span>
+                    @endif
                 </div>
             </a>
         @empty

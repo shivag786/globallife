@@ -4,23 +4,22 @@
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Your Commission</p>
-            <p class="text-2xl font-bold text-brand-700">{{ $manager->commission_percentage }}%</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">VIP Members</p>
-            <p class="text-2xl font-bold text-slate-800" data-countup="{{ $stats['vip_members'] }}">0</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Activations</p>
-            <p class="text-2xl font-bold text-slate-800" data-countup="{{ $stats['activations'] }}">0</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Total Earned</p>
-            <p class="text-2xl font-bold text-slate-800">₹{{ number_format($stats['earned'], 2) }}</p>
-        </div>
+        <x-stat-tile label="Your Commission" :value="$manager->commission_percentage" suffix="%"
+            icon="tag" color="brand" hint="Your share of each activation" />
+        <x-stat-tile label="VIP Members" :value="$stats['vip_members']" icon="users" color="indigo"
+            :href="route('manager.vip-members.index')" cta="Manage members" />
+        <x-stat-tile label="Activations" :value="$stats['activations']" icon="sparkles" color="violet"
+            :href="route('manager.revenue.index')" cta="View revenue" />
+        <x-stat-tile label="Total Earned" :value="$stats['earned']" money icon="rupee" color="emerald"
+            :href="route('manager.revenue.index')" cta="See breakdown" />
     </div>
+
+    <x-revenue-flow
+        :vip="$revenue['vip']" :product="$revenue['product']" :total="$revenue['total']"
+        :product-pending="$revenue['product_pending']"
+        :vip-href="route('manager.revenue.index')" :product-href="route('wallet.index')"
+        vip-hint="Your share of VIP-plan activations"
+        product-hint="Commission on product sales" />
 
     <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 mb-6">
         <h2 class="font-semibold text-slate-800 mb-1">Your Earnings</h2>

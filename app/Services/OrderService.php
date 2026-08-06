@@ -10,31 +10,26 @@ use App\Models\User;
 use App\Models\VipMicrosite;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 
 class OrderService
 {
-    /** Plain password generated for a brand-new customer account (for the welcome email). */
-    public ?string $generatedPassword = null;
-
-    public bool $newAccount = false;
-
     public function __construct(
         private readonly CartService $cart,
         private readonly PaymentSimulator $payment,
         private readonly ProductCommissionService $commission,
+        private readonly DeliveryService $delivery,
     ) {
     }
 
     /**
-     * Place an order from the current cart. Returns null when payment fails
-     * (nothing is persisted) so the caller can send the customer back to retry.
+     * Place an order from the current cart for an authenticated customer. Returns
+     * null when payment fails (nothing is persisted) so the caller can send the
+     * customer back to retry.
      *
-     * @param  array<string, mixed>  $data  validated checkout data
+     * @param  array<string, mixed>  $data  validated checkout data (address snapshot + payment)
      */
-    public function placeFromCart(array $data, ?User $authUser): ?Order
+    public function placeFromCart(array $data, User $customer): ?Order
     {
         $items = $this->cart->items();
         if ($items->isEmpty()) {
@@ -50,14 +45,12 @@ class OrderService
 
         $totals = $this->cart->totals();
 
-        $order = DB::transaction(function () use ($items, $totals, $data, $authUser, $method) {
-            $customer = $this->resolveCustomer($data, $authUser);
-
+        $order = DB::transaction(function () use ($items, $totals, $data, $customer, $method) {
             $order = Order::create([
                 'order_number' => $this->generateOrderNumber(),
-                'user_id' => $customer?->id,
+                'user_id' => $customer->id,
                 'customer_name' => $data['customer_name'],
-                'customer_email' => $data['customer_email'],
+                'customer_email' => $customer->email,
                 'customer_phone' => $data['customer_phone'],
                 'address' => $data['address'],
                 'city' => $data['city'],
@@ -71,6 +64,9 @@ class OrderService
                 'shipping' => $totals['shipping'],
                 'total' => $totals['total'],
                 'placed_at' => now(),
+                // Estimated delivery: order date + the global delivery window.
+                // Admin can override this per order later.
+                'expected_delivery_date' => now()->addDays($this->delivery->days())->toDateString(),
             ]);
 
             foreach ($items as $item) {
@@ -93,40 +89,6 @@ class OrderService
         $this->cart->clear();
 
         return $order->load('items');
-    }
-
-    /**
-     * Resolve the customer: the logged-in user, an existing account by email, or a
-     * freshly created customer account (whose plain password is captured for the email).
-     */
-    private function resolveCustomer(array $data, ?User $authUser): ?User
-    {
-        if ($authUser) {
-            return $authUser;
-        }
-
-        $existing = User::where('email', $data['customer_email'])->first();
-        if ($existing) {
-            return $existing;
-        }
-
-        $password = Str::password(10, letters: true, numbers: true, symbols: false);
-        $this->generatedPassword = $password;
-        $this->newAccount = true;
-
-        $user = User::create([
-            'name' => $data['customer_name'],
-            'email' => $data['customer_email'],
-            'password' => Hash::make($password),
-            'mobile' => $data['customer_phone'],
-            'status' => 'active',
-        ]);
-        $user->forceFill(['email_verified_at' => now()])->save();
-
-        Role::findOrCreate('customer', 'web');
-        $user->assignRole('customer');
-
-        return $user;
     }
 
     /**
@@ -175,13 +137,24 @@ class OrderService
             return;
         }
 
-        $order->update(['status' => $status]);
+        // Stamp the milestone the first time the order reaches it, so the tracking
+        // timeline shows the real date/time of each step.
+        $stamp = match ($status) {
+            'processing' => $order->processing_at ? [] : ['processing_at' => now()],
+            'dispatched' => $order->dispatched_at ? [] : ['dispatched_at' => now()],
+            default => [],
+        };
+
+        $order->update(['status' => $status] + $stamp);
     }
 
     public function markDelivered(Order $order): void
     {
         DB::transaction(function () use ($order) {
-            $order->update(['status' => 'delivered']);
+            $order->update([
+                'status' => 'delivered',
+                'delivered_at' => $order->delivered_at ?? now(),
+            ]);
 
             if ($order->commission_credited) {
                 return;

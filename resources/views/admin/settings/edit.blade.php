@@ -175,6 +175,23 @@
                 </div>
             </div>
 
+            {{-- Delivery --}}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h2 class="h6 mb-0 fw-semibold">Delivery</h2>
+                    <p class="small text-muted mb-0">The global delivery promise shown on every product page ("Delivery by …") and used as the default estimated delivery date on new orders.</p>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <x-forms.input name="delivery_days" type="number" label="Delivery Window (days)"
+                                           :value="$settings['delivery_days'] ?? \App\Services\DeliveryService::DEFAULT_DAYS"
+                                           placeholder="5" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
                     Save Settings

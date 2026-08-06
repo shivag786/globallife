@@ -1,15 +1,15 @@
 @php
     $microsite = $user->vipMicrosite;
     $tiles = [
-        ['label' => 'Total Visitors', 'value' => $stats['total_visitors'], 'icon' => 'eye'],
-        ["label" => "Today's Visitors", 'value' => $stats['today_visitors'], 'icon' => 'sparkles'],
-        ['label' => 'Total Leads', 'value' => $stats['total_leads'], 'icon' => 'inbox'],
-        ['label' => 'WhatsApp Clicks', 'value' => $stats['whatsapp_clicks'], 'icon' => 'chat-bubble'],
-        ['label' => 'Call Clicks', 'value' => $stats['call_clicks'], 'icon' => 'phone'],
-        ['label' => 'Direction Clicks', 'value' => $stats['direction_clicks'], 'icon' => 'map-pin'],
-        ['label' => 'Website Clicks', 'value' => $stats['website_clicks'], 'icon' => 'share'],
-        ['label' => 'Booking Requests', 'value' => $stats['booking_requests'], 'icon' => 'calendar'],
-        ['label' => 'Reviews', 'value' => $stats['review_count'], 'icon' => 'star'],
+        ['label' => 'Total Visitors', 'value' => $stats['total_visitors'], 'icon' => 'eye', 'color' => 'sky'],
+        ["label" => "Today's Visitors", 'value' => $stats['today_visitors'], 'icon' => 'sparkles', 'color' => 'indigo'],
+        ['label' => 'Total Leads', 'value' => $stats['total_leads'], 'icon' => 'inbox', 'color' => 'emerald', 'href' => route('vip.leads.index'), 'cta' => 'View leads'],
+        ['label' => 'WhatsApp Clicks', 'value' => $stats['whatsapp_clicks'], 'icon' => 'chat-bubble', 'color' => 'teal'],
+        ['label' => 'Call Clicks', 'value' => $stats['call_clicks'], 'icon' => 'phone', 'color' => 'violet'],
+        ['label' => 'Direction Clicks', 'value' => $stats['direction_clicks'], 'icon' => 'map-pin', 'color' => 'amber'],
+        ['label' => 'Website Clicks', 'value' => $stats['website_clicks'], 'icon' => 'share', 'color' => 'cyan'],
+        ['label' => 'Booking Requests', 'value' => $stats['booking_requests'], 'icon' => 'calendar', 'color' => 'rose'],
+        ['label' => 'Reviews', 'value' => $stats['review_count'], 'icon' => 'star', 'color' => 'brand', 'href' => route('vip.reviews.index'), 'cta' => 'Moderate'],
     ];
 @endphp
 <x-layouts.app title="VIP Dashboard" heading="VIP Dashboard">
@@ -31,13 +31,8 @@
     @if ($microsite)
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
             @foreach ($tiles as $tile)
-                <div class="bg-white rounded-2xl p-5 border border-slate-100 premium-shadow">
-                    <div class="w-9 h-9 rounded-full bg-brand-700/10 flex items-center justify-center mb-3">
-                        <x-icon name="{{ $tile['icon'] }}" class="w-5 h-5 text-brand-700" />
-                    </div>
-                    <p class="text-2xl font-bold text-brand-900" data-countup="{{ $tile['value'] }}">0</p>
-                    <p class="text-xs uppercase tracking-wide text-slate-400 mt-1">{{ $tile['label'] }}</p>
-                </div>
+                <x-stat-tile :label="$tile['label']" :value="$tile['value']" :icon="$tile['icon']"
+                    :color="$tile['color']" :href="$tile['href'] ?? null" :cta="$tile['cta'] ?? null" />
             @endforeach
 
             <div class="bg-gradient-to-br from-brand-900 to-brand-950 rounded-2xl p-5 text-white premium-shadow">

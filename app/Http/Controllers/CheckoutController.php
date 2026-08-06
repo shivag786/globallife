@@ -3,14 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OrderPlacedMail;
+use App\Models\Address;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\CartService;
 use App\Services\OrderService;
+use App\Services\StorefrontContext;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class CheckoutController extends Controller
 {
@@ -24,11 +31,72 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
+        $user = Auth::user();
+
         return view('checkout.index', [
             'items' => $this->cart->items(),
             'totals' => $this->cart->totals(),
-            'prefill' => Auth::user(),
+            'user' => $user,
+            'addresses' => $user ? $user->addresses : collect(),
         ]);
+    }
+
+    /**
+     * New customer: create an account with their chosen password and sign them in.
+     */
+    public function register(Request $request): RedirectResponse|JsonResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'mobile' => ['required', 'string', 'max:30'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.unique' => 'You already have an account with this email. Please use “I have an account” to sign in.',
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'mobile' => $data['mobile'],
+            'password' => Hash::make($data['password']),
+            'status' => 'active',
+        ]);
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        Role::findOrCreate('customer', 'web');
+        $user->assignRole('customer');
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return $this->identified($request, 'Account created — you’re signed in.');
+    }
+
+    /**
+     * Returning customer: authenticate with their existing credentials.
+     */
+    public function login(Request $request): RedirectResponse|JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
+        }
+
+        if ($user->status !== 'active') {
+            throw ValidationException::withMessages(['email' => 'This account is not active. Please contact support.']);
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return $this->identified($request, 'Signed in.');
     }
 
     public function store(Request $request, OrderService $orders): RedirectResponse
@@ -37,63 +105,83 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
+        $user = Auth::user();
+        if (! $user) {
+            return redirect()->route('checkout.index')->with('error', 'Please sign in or create an account to place your order.');
+        }
+
         $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:150'],
-            'customer_email' => ['required', 'email', 'max:255'],
-            'customer_phone' => ['required', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:500'],
-            'city' => ['required', 'string', 'max:120'],
-            'state' => ['required', 'string', 'max:120'],
-            'pincode' => ['required', 'string', 'max:12'],
+            'address_id' => ['required', 'integer'],
             'delivery_notes' => ['nullable', 'string', 'max:1000'],
             'payment_choice' => ['required', 'in:online_success,online_fail,cod'],
         ]);
+
+        $address = Address::where('id', $validated['address_id'])->where('user_id', $user->id)->first();
+        if (! $address) {
+            return back()->with('error', 'Please choose a valid delivery address.');
+        }
 
         [$method, $outcome] = match ($validated['payment_choice']) {
             'online_success' => ['online', 'success'],
             'online_fail' => ['online', 'fail'],
             default => ['cod', 'success'],
         };
-        $validated['payment_method'] = $method;
-        $validated['payment_outcome'] = $outcome;
 
-        $order = $orders->placeFromCart($validated, Auth::user());
+        $order = $orders->placeFromCart([
+            'customer_name' => $address->name,
+            'customer_phone' => $address->phone,
+            'address' => $address->address,
+            'city' => $address->city,
+            'state' => $address->state,
+            'pincode' => $address->pincode,
+            'delivery_notes' => $validated['delivery_notes'] ?? null,
+            'payment_method' => $method,
+            'payment_outcome' => $outcome,
+        ], $user);
 
         if (! $order) {
-            return back()->withInput()->with('error', 'Payment failed — please try again or choose another payment method.');
+            return back()->with('error', 'Payment failed — please try again or choose another payment method.');
         }
 
-        // Welcome/order email (with login credentials for new accounts). Never let a
-        // mail-transport error break a successful order.
         try {
-            Mail::to($order->customer_email)->send(new OrderPlacedMail($order, $orders->newAccount ? $orders->generatedPassword : null));
+            Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
         } catch (\Throwable $e) {
             report($e);
         }
 
-        // Log a brand-new customer straight into their account.
-        if ($orders->newAccount && $order->user_id && ! Auth::check()) {
-            Auth::loginUsingId($order->user_id);
-        }
-
         $request->session()->put('recent_order_id', $order->id);
-        if ($orders->newAccount) {
-            $request->session()->flash('recent_order_new_account', true);
-        }
 
         return redirect()->route('checkout.confirmation', $order);
     }
 
-    public function confirmation(Order $order): View
+    public function confirmation(Order $order, StorefrontContext $storefront): View
     {
         abort_unless(
             (Auth::check() && Auth::id() === $order->user_id) || session('recent_order_id') === $order->id,
             403,
         );
 
+        $order->load('items');
+        $store = $storefront->forOrder($order);
+
         return view('checkout.confirmation', [
-            'order' => $order->load('items'),
-            'newAccount' => (bool) session('recent_order_new_account'),
+            'order' => $order,
+            'newAccount' => false,
+            'storefront' => $store,
+            'continueUrl' => $storefront->continueUrl($store),
         ]);
+    }
+
+    /**
+     * Response after a successful register/login: JSON for the AJAX identify step
+     * (the page reloads into its authenticated state), or a redirect back to checkout.
+     */
+    private function identified(Request $request, string $message): RedirectResponse|JsonResponse
+    {
+        if ($request->wantsJson()) {
+            return response()->json(['ok' => true, 'message' => $message]);
+        }
+
+        return redirect()->route('checkout.index')->with('status', $message);
     }
 }

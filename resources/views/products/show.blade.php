@@ -28,7 +28,7 @@
 
         <div class="grid md:grid-cols-2 gap-12 mt-6 items-start">
             {{-- Product image on a clean stage so the full bottle/pack is always visible --}}
-            <div class="reveal relative aspect-square bg-gradient-to-b from-white to-brand-50/60 rounded-2xl overflow-hidden premium-shadow border border-slate-100">
+            <div data-product-media class="reveal relative aspect-square bg-gradient-to-b from-white to-brand-50/60 rounded-2xl overflow-hidden premium-shadow border border-slate-100">
                 @if ($product->main_image)
                     <img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-10">
                 @endif
@@ -72,6 +72,16 @@
                     </div>
                 @endif
 
+                @if ($product->hasPrice())
+                    @php $deliveryPromise = app(\App\Services\DeliveryService::class)->promiseDate(); @endphp
+                    <div class="mt-5 inline-flex items-center gap-2.5 bg-brand-50 border border-brand-100 rounded-xl px-4 py-2.5">
+                        <x-icon name="truck" class="w-5 h-5 text-brand-700 flex-shrink-0" />
+                        <span class="text-sm text-slate-600">Order today, delivery by
+                            <span class="font-semibold text-brand-900">{{ $deliveryPromise->format('D, d M Y') }}</span>
+                        </span>
+                    </div>
+                @endif
+
                 @if ($product->tags)
                     <div class="flex flex-wrap gap-2 mt-6">
                         @foreach ($product->tags as $tag)
@@ -85,7 +95,7 @@
                         <p class="mt-6 text-sm text-slate-500">Sold by <span class="font-medium text-brand-700">{{ $seller->business_name }}</span></p>
                     @endif
                     <div class="mt-3 flex flex-wrap gap-3">
-                        <form method="POST" action="{{ route('cart.add') }}">
+                        <form method="POST" action="{{ route('cart.add') }}" data-cart-ajax data-role="add">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             @if ($seller ?? null) <input type="hidden" name="seller_id" value="{{ $seller->id }}"> @endif

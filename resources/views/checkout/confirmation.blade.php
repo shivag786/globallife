@@ -1,4 +1,4 @@
-<x-layouts.public title="Order Confirmed">
+<x-layouts.shop title="Order Confirmed" :storefront="$storefront">
     @php $money = fn ($n) => '₹'.number_format((float) $n, 2); @endphp
 
     <div class="max-w-2xl mx-auto px-6 py-16">
@@ -8,6 +8,13 @@
             </div>
             <h1 class="font-display text-3xl font-bold text-brand-900 mt-5">Thank you for your order!</h1>
             <p class="text-slate-500 mt-2">Order <span class="font-semibold text-brand-800">{{ $order->order_number }}</span> is confirmed.</p>
+            @php $arrivingBy = app(\App\Services\DeliveryService::class)->expectedFor($order); @endphp
+            @if ($arrivingBy)
+                <div class="mt-4 inline-flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-2">
+                    <x-icon name="truck" class="w-5 h-5 text-brand-700" />
+                    <span class="text-sm text-slate-700">Arriving by <span class="font-semibold text-brand-900">{{ $arrivingBy->timezone('Asia/Kolkata')->format('D, d M Y') }}</span></span>
+                </div>
+            @endif
         </div>
 
         @if ($newAccount)
@@ -45,7 +52,10 @@
             @auth
                 <a href="{{ route('account.orders.index') }}" class="bg-brand-700 text-white px-6 py-2.5 rounded-full hover:bg-brand-800 transition">View my orders</a>
             @endauth
-            <a href="{{ route('products.index') }}" class="border border-brand-600 text-brand-700 px-6 py-2.5 rounded-full hover:bg-brand-50 transition">Continue shopping</a>
+            <a href="{{ $continueUrl }}" class="border border-brand-600 text-brand-700 px-6 py-2.5 rounded-full hover:bg-brand-50 transition inline-flex items-center gap-2">
+                <x-icon name="shopping-bag" class="w-4 h-4" />
+                {{ $storefront ? 'Continue shopping at '.\Illuminate\Support\Str::limit($storefront->business_name, 24) : 'Continue shopping' }}
+            </a>
         </div>
     </div>
-</x-layouts.public>
+</x-layouts.shop>
