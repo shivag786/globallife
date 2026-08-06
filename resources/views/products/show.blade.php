@@ -72,6 +72,16 @@
                     </div>
                 @endif
 
+                @if ($product->hasPrice())
+                    @php $deliveryPromise = app(\App\Services\DeliveryService::class)->promiseDate(); @endphp
+                    <div class="mt-5 inline-flex items-center gap-2.5 bg-brand-50 border border-brand-100 rounded-xl px-4 py-2.5">
+                        <x-icon name="truck" class="w-5 h-5 text-brand-700 flex-shrink-0" />
+                        <span class="text-sm text-slate-600">Order today, delivery by
+                            <span class="font-semibold text-brand-900">{{ $deliveryPromise->format('D, d M Y') }}</span>
+                        </span>
+                    </div>
+                @endif
+
                 @if ($product->tags)
                     <div class="flex flex-wrap gap-2 mt-6">
                         @foreach ($product->tags as $tag)

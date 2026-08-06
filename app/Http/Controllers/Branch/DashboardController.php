@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Branch;
 
 use App\Http\Controllers\Controller;
+use App\Models\CommissionEarning;
 use App\Models\CommissionTransaction;
 use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
@@ -21,12 +22,24 @@ class DashboardController extends Controller
             ->with('commissionPartner')
             ->get();
 
+        // Two income streams: VIP-plan activations and product-sale commission.
+        $vipRevenue = (float) (clone $base)->sum('branch_manager_amount');
+        $product = CommissionEarning::where('beneficiary_id', $manager->id);
+        $productRevenue = (float) (clone $product)->where('status', 'approved')->sum('amount');
+        $productPending = (float) (clone $product)->where('status', 'pending')->sum('amount');
+
         return view('dashboards.branch-manager', [
             'manager' => $manager,
             'partnerCount' => $manager->commissionPartners()->count(),
             'stats' => [
-                'earned' => (float) (clone $base)->sum('branch_manager_amount'),
+                'earned' => round($vipRevenue + $productRevenue, 2),
                 'activations' => (clone $base)->count(),
+            ],
+            'revenue' => [
+                'vip' => round($vipRevenue, 2),
+                'product' => round($productRevenue, 2),
+                'product_pending' => round($productPending, 2),
+                'total' => round($vipRevenue + $productRevenue, 2),
             ],
             'revenueChart' => ChartData::monthly(clone $base, 'activated_at', 'SUM(branch_manager_amount)'),
             'partnerChart' => [

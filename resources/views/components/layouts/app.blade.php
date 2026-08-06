@@ -91,7 +91,10 @@
                         <a href="{{ route('admin.leads.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Leads</a>
                     @endif
                     @if ($user->hasAnyRole(['super_admin', 'admin']))
-                        <a href="{{ route('admin.orders.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Orders</a>
+                        <a href="{{ route('admin.orders.index') }}" data-order-nav class="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-800">
+                            <span>Orders</span>
+                            <span data-order-badge class="hidden ml-2 text-xs font-semibold bg-red-500 text-white rounded-full px-2 py-0.5 tabular-nums"></span>
+                        </a>
                     @endif
                 @endif
 
@@ -203,5 +206,9 @@
             </main>
         </div>
     </div>
+
+    @if ($user->hasAnyRole(['super_admin', 'admin']))
+        @include('partials.admin-order-alert')
+    @endif
 </body>
 </html>

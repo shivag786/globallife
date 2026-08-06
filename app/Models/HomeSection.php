@@ -27,6 +27,8 @@ class HomeSection extends Model
         'about' => 'About Us',
         'features' => 'Features / Why Choose Us',
         'products_showcase' => 'Product Showcase (live, pulls featured products)',
+        'category_products' => 'Shop by Category (live, category image tiles linking to each category page)',
+        'products_by_category' => 'Products by Category (live, product cards grouped by category — direct add to cart)',
         'stats' => 'Stats Counters',
         'blog_showcase' => 'Blog Showcase (live, pulls latest posts)',
         'testimonials_showcase' => 'Testimonials (live, pulls active testimonials)',

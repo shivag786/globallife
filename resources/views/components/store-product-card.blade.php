@@ -21,9 +21,6 @@
         @if ($product->discountPercentage())
             <span class="absolute top-3 left-3 text-xs font-bold text-white px-2 py-1 rounded-full bg-green-600 shadow-sm">{{ $product->discountPercentage() }}% OFF</span>
         @endif
-        <span data-cart-added="{{ $cartKey }}" class="absolute bottom-3 left-3 inline-flex items-center gap-1 text-xs font-semibold text-white px-2 py-1 rounded-full bg-brand-700 shadow-sm {{ $inCartQty > 0 ? '' : 'hidden' }}">
-            <x-icon name="check-circle" class="w-3.5 h-3.5" /> In cart
-        </span>
         <form method="POST" action="{{ route('wishlist.add') }}" class="absolute top-3 right-3">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">

@@ -6,8 +6,8 @@
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            @forelse ($products as $index => $product)
-                <x-product-card :product="$product" :index="$index" />
+            @forelse ($products as $product)
+                <x-store-product-card :product="$product" />
             @empty
                 <p class="col-span-full text-center text-slate-400 py-16">No products published yet.</p>
             @endforelse

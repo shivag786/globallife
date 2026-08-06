@@ -4,20 +4,72 @@
         <p class="text-sm text-slate-400">Role: {{ $user->getRoleNames()->implode(', ') }}</p>
     </div>
 
+    @if ($overview)
+        @php
+            $money = fn ($n) => '₹'.number_format((float) $n);
+            $ordersUrl = route('admin.orders.index');
+            $pendingUrl = route('admin.orders.index', ['status' => 'pending']);
+            $deliveredUrl = route('admin.orders.index', ['status' => 'delivered']);
+            $revenueUrl = $isSuperAdmin ? route('admin.revenue.index') : $ordersUrl;
+        @endphp
+
+        <div class="mb-3 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
+                <x-icon name="sparkles" class="w-4 h-4" />
+            </span>
+            <h2 class="font-semibold text-slate-800">Sales &amp; Revenue</h2>
+            <span class="text-xs text-slate-400">— your business at a glance</span>
+        </div>
+
+        {{-- Action KPIs: each box links to its related page; colour signals the action/data. --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+            <x-stat-tile label="Orders Today" :value="$overview['orders_today']" icon="shopping-bag"
+                color="indigo" :href="$ordersUrl" cta="View orders"
+                :hint="$money($overview['revenue_today']).' placed today'" />
+
+            <x-stat-tile label="Pending Orders" :value="$overview['pending_orders']" icon="truck"
+                color="amber" :href="$pendingUrl" cta="Process orders"
+                :hint="$overview['pending_orders'] > 0 ? 'Awaiting your action' : 'All caught up'" />
+
+            <x-stat-tile label="Company Commission" :value="$overview['company_commission']" money icon="rupee"
+                color="emerald" :href="$revenueUrl" cta="See revenue" hint="Your realised earnings" />
+
+            <x-stat-tile label="Commission Pipeline" :value="$overview['pending_commission']" money icon="sparkles"
+                color="violet" :href="$pendingUrl" cta="View pending" hint="Unlocks as orders deliver" />
+        </div>
+
+        {{-- Revenue flow: the two streams that make up company income, side by side. --}}
+        <x-revenue-flow
+            :vip="$overview['vip']['revenue']" :product="$overview['products']['revenue']"
+            :total="$overview['company_commission']"
+            :vip-href="$revenueUrl" :product-href="$deliveredUrl"
+            vip-label="Revenue from VIP Plans"
+            total-label="Total Company Revenue"
+            subheading="the two streams that make up company income"
+            :vip-hint="'Company share of '.$overview['vip']['count'].' plan'.($overview['vip']['count'] === 1 ? '' : 's').' sold'"
+            :product-hint="'Company margin on '.$overview['products']['count'].' delivered order'.($overview['products']['count'] === 1 ? '' : 's')" />
+    @endif
+
     @if ($stats)
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            @foreach ([
-                ['Cities', $stats['cities']],
-                ['Branch Managers', $stats['branch_managers']],
-                ['Commission Partners', $stats['commission_partners']],
-                ['Active VIP Plans', $stats['vip_plans']],
-                ['VIP Members', $stats['vip_members']],
-            ] as [$label, $value])
-                <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-                    <p class="text-xs uppercase tracking-wide text-slate-400">{{ $label }}</p>
-                    <p class="text-2xl font-bold text-slate-800" data-countup="{{ $value }}">0</p>
-                </div>
-            @endforeach
+        <div class="mb-3 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <x-icon name="users" class="w-4 h-4" />
+            </span>
+            <h2 class="font-semibold text-slate-800">Network</h2>
+            <span class="text-xs text-slate-400">— your team &amp; catalogue</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            {{-- These management pages are Super Admin-only, so only link them for a Super Admin. --}}
+            <x-stat-tile label="Cities" :value="$stats['cities']" icon="map-pin" color="sky"
+                :href="$isSuperAdmin ? route('admin.cities.index') : null" cta="Manage cities" />
+            <x-stat-tile label="Branch Managers" :value="$stats['branch_managers']" icon="users" color="indigo"
+                :href="$isSuperAdmin ? route('admin.branch-managers.index') : null" cta="Manage" />
+            <x-stat-tile label="Commission Partners" :value="$stats['commission_partners']" icon="users" color="violet"
+                :href="$isSuperAdmin ? route('admin.commission-partners.index') : null" cta="View" />
+            <x-stat-tile label="Active VIP Plans" :value="$stats['vip_plans']" icon="sparkles" color="amber"
+                :href="$isSuperAdmin ? route('admin.vip-plans.index') : null" cta="Manage plans" />
+            <x-stat-tile label="VIP Members" :value="$stats['vip_members']" icon="star" color="teal"
+                :href="$isSuperAdmin ? route('admin.vip-members.index') : null" cta="View members" />
         </div>
     @endif
 

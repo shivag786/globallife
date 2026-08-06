@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\VipMicrosite;
 use App\Repositories\ProductRepository;
@@ -13,6 +14,19 @@ class ProductController extends Controller
     public function index(ProductRepository $products): View
     {
         return view('products.index', ['products' => $products->publishedPaginated()]);
+    }
+
+    /**
+     * All active products within a single category — direct add-to-cart, no seller.
+     */
+    public function category(Category $category, ProductRepository $products): View
+    {
+        abort_unless($category->status === 'active', 404);
+
+        return view('products.category', [
+            'category' => $category,
+            'products' => $products->publishedInCategory($category),
+        ]);
     }
 
     public function show(Product $product, ProductRepository $products, Request $request): View

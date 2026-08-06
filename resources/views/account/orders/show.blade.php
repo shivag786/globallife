@@ -12,12 +12,17 @@
     <div class="max-w-3xl mx-auto px-6 py-16">
         <a href="{{ route('account.orders.index') }}" class="text-sm text-brand-700 hover:underline">← All orders</a>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mt-4 mb-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-4 mb-6">
             <div>
                 <h1 class="font-display text-2xl font-bold text-brand-900">{{ $order->order_number }}</h1>
-                <p class="text-sm text-slate-500">Placed {{ $order->placed_at?->format('d M Y, g:i A') }}</p>
+                <p class="text-sm text-slate-500">Placed <x-ist :value="$order->placed_at" /></p>
             </div>
             <span class="px-3 py-1 rounded-full text-sm font-medium capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
+        </div>
+
+        {{-- Delivery tracking --}}
+        <div class="mb-6">
+            <x-order-tracker :order="$order" />
         </div>
 
         <div class="bg-white border border-slate-100 rounded-2xl divide-y divide-slate-100">

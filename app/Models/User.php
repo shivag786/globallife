@@ -126,6 +126,21 @@ class User extends Authenticatable
     }
 
     /**
+     * Saved delivery addresses (address book), default first.
+     *
+     * @return HasMany<Address, $this>
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class)->orderByDesc('is_default')->latest();
+    }
+
+    public function defaultAddress(): ?Address
+    {
+        return $this->addresses->firstWhere('is_default', true) ?? $this->addresses->first();
+    }
+
+    /**
      * Product-sale commission earned by this user (as a beneficiary of the split).
      *
      * @return HasMany<CommissionEarning, $this>

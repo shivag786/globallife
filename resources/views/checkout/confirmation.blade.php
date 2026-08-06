@@ -8,6 +8,13 @@
             </div>
             <h1 class="font-display text-3xl font-bold text-brand-900 mt-5">Thank you for your order!</h1>
             <p class="text-slate-500 mt-2">Order <span class="font-semibold text-brand-800">{{ $order->order_number }}</span> is confirmed.</p>
+            @php $arrivingBy = app(\App\Services\DeliveryService::class)->expectedFor($order); @endphp
+            @if ($arrivingBy)
+                <div class="mt-4 inline-flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-2">
+                    <x-icon name="truck" class="w-5 h-5 text-brand-700" />
+                    <span class="text-sm text-slate-700">Arriving by <span class="font-semibold text-brand-900">{{ $arrivingBy->timezone('Asia/Kolkata')->format('D, d M Y') }}</span></span>
+                </div>
+            @endif
         </div>
 
         @if ($newAccount)

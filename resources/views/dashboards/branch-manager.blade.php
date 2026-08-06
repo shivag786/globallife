@@ -4,23 +4,22 @@
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Commission Cap</p>
-            <p class="text-2xl font-bold text-brand-700">{{ $manager->commission_percentage }}%</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Commission Partners</p>
-            <p class="text-2xl font-bold text-slate-800" data-countup="{{ $partnerCount }}">0</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Activations</p>
-            <p class="text-2xl font-bold text-slate-800" data-countup="{{ $stats['activations'] }}">0</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 transition hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-xs uppercase tracking-wide text-slate-400">Total Earned</p>
-            <p class="text-2xl font-bold text-slate-800">₹{{ number_format($stats['earned'], 2) }}</p>
-        </div>
+        <x-stat-tile label="Commission Cap" :value="$manager->commission_percentage" suffix="%"
+            icon="tag" color="brand" hint="Your maximum share" />
+        <x-stat-tile label="Commission Partners" :value="$partnerCount" icon="users" color="indigo"
+            :href="route('branch.commission-partners.index')" cta="Manage partners" />
+        <x-stat-tile label="Activations" :value="$stats['activations']" icon="sparkles" color="violet"
+            :href="route('branch.revenue.index')" cta="View revenue" />
+        <x-stat-tile label="Total Earned" :value="$stats['earned']" money icon="rupee" color="emerald"
+            :href="route('branch.revenue.index')" cta="See breakdown" />
     </div>
+
+    <x-revenue-flow
+        :vip="$revenue['vip']" :product="$revenue['product']" :total="$revenue['total']"
+        :product-pending="$revenue['product_pending']"
+        :vip-href="route('branch.revenue.index')" :product-href="route('wallet.index')"
+        vip-hint="Your share of VIP-plan activations"
+        product-hint="Commission on product sales" />
 
     <div class="grid lg:grid-cols-2 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100">

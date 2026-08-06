@@ -54,6 +54,9 @@ class UpdateSettingsRequest extends FormRequest
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_whatsapp' => ['nullable', 'string', 'max:30'],
             'contact_address' => ['nullable', 'string', 'max:255'],
+
+            // Delivery
+            'delivery_days' => ['nullable', 'integer', 'min:0', 'max:60'],
         ];
     }
 }

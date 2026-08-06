@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'address', 'city', 'state', 'pincode', 'delivery_notes',
     'payment_method', 'payment_status', 'status',
     'subtotal', 'shipping', 'total', 'commission_credited', 'placed_at',
+    'expected_delivery_date', 'processing_at', 'dispatched_at', 'delivered_at',
 ])]
 class Order extends Model
 {
@@ -23,6 +24,14 @@ class Order extends Model
      */
     public const STATUS_FLOW = ['pending', 'confirmed', 'processing', 'dispatched', 'delivered'];
 
+    /**
+     * Rank of each status along the fulfilment path — used to decide which
+     * tracking steps are complete.
+     */
+    public const STATUS_RANK = [
+        'pending' => 0, 'confirmed' => 1, 'processing' => 2, 'dispatched' => 3, 'delivered' => 4,
+    ];
+
     protected function casts(): array
     {
         return [
@@ -31,6 +40,10 @@ class Order extends Model
             'total' => 'decimal:2',
             'commission_credited' => 'boolean',
             'placed_at' => 'datetime',
+            'expected_delivery_date' => 'date',
+            'processing_at' => 'datetime',
+            'dispatched_at' => 'datetime',
+            'delivered_at' => 'datetime',
         ];
     }
 
@@ -57,5 +70,18 @@ class Order extends Model
     public function isDelivered(): bool
     {
         return $this->status === 'delivered';
+    }
+
+    public function isCancelled(): bool
+    {
+        return in_array($this->status, ['cancelled', 'refunded'], true);
+    }
+
+    /**
+     * Whether the fulfilment path has reached (or passed) a given status.
+     */
+    public function hasReached(string $status): bool
+    {
+        return (self::STATUS_RANK[$this->status] ?? 0) >= (self::STATUS_RANK[$status] ?? 99);
     }
 }

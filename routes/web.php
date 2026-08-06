@@ -27,12 +27,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/experience', [PublicController::class, 'experience'])->name('experience');
+Route::get('/third', [PublicController::class, 'third'])->name('third');
+Route::get('/fourth', [PublicController::class, 'fourth'])->name('fourth');
 Route::get('/scooter',function()
 {
     return view('scooter');
 });
 Route::get('/vip-plans', [PublicController::class, 'vipPlans'])->name('vip-plans.index');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/category/{category:slug}', [ProductController::class, 'category'])->name('products.category');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // Shopping cart, wishlist & checkout (session-based; open to guests).
@@ -44,6 +47,9 @@ Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index
 Route::post('/wishlist/add', [\App\Http\Controllers\WishlistController::class, 'add'])->name('wishlist.add')->middleware('throttle:60,1');
 Route::delete('/wishlist/remove', [\App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
 Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+// Identify at checkout: register (set your own password) or log in, then continue.
+Route::post('/checkout/register', [\App\Http\Controllers\CheckoutController::class, 'register'])->name('checkout.register')->middleware('throttle:20,1');
+Route::post('/checkout/login', [\App\Http\Controllers\CheckoutController::class, 'login'])->name('checkout.login')->middleware('throttle:20,1');
 Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store')->middleware('throttle:20,1');
 Route::get('/checkout/confirmation/{order}', [\App\Http\Controllers\CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -64,6 +70,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     // Customer account area.
     Route::get('/account/orders', [\App\Http\Controllers\Account\OrderController::class, 'index'])->name('account.orders.index');
     Route::get('/account/orders/{order}', [\App\Http\Controllers\Account\OrderController::class, 'show'])->name('account.orders.show');
+
+    // Saved delivery addresses (address book).
+    Route::get('/account/addresses', [\App\Http\Controllers\Account\AddressController::class, 'index'])->name('account.addresses.index');
+    Route::post('/account/addresses', [\App\Http\Controllers\Account\AddressController::class, 'store'])->name('account.addresses.store')->middleware('throttle:30,1');
+    Route::patch('/account/addresses/{address}/default', [\App\Http\Controllers\Account\AddressController::class, 'setDefault'])->name('account.addresses.default');
+    Route::delete('/account/addresses/{address}', [\App\Http\Controllers\Account\AddressController::class, 'destroy'])->name('account.addresses.destroy');
 
     Route::middleware('role:super_admin|admin|sub_admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -94,8 +106,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
         // Order management — view orders, update status (delivering credits commission).
         Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+        // Lightweight JSON poll for the new-order sound alert (registered before the
+        // {order} route so "poll" isn't treated as an order_number).
+        Route::get('orders/poll', [\App\Http\Controllers\Admin\OrderController::class, 'poll'])->name('orders.poll');
         Route::get('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::patch('orders/{order}/delivery', [\App\Http\Controllers\Admin\OrderController::class, 'updateDelivery'])->name('orders.update-delivery');
 
         Route::middleware('role:super_admin')->group(function () {
             Route::resource('cities', CityController::class)->except(['show']);
@@ -125,6 +141,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
             Route::get('commission-partners', [AdminCommissionPartnerController::class, 'index'])
                 ->name('commission-partners.index');
+
+            Route::get('vip-members', [\App\Http\Controllers\Admin\VipMemberController::class, 'index'])
+                ->name('vip-members.index');
 
             Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 

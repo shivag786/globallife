@@ -23,7 +23,8 @@
                 <tr>
                     <th class="px-4 py-3">Order</th>
                     <th class="px-4 py-3">Customer</th>
-                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Order Date</th>
+                    <th class="px-4 py-3">Delivery</th>
                     <th class="px-4 py-3">Items</th>
                     <th class="px-4 py-3">Payment</th>
                     <th class="px-4 py-3">Status</th>
@@ -36,7 +37,16 @@
                     <tr class="border-t border-slate-100">
                         <td class="px-4 py-3 font-medium">{{ $order->order_number }}</td>
                         <td class="px-4 py-3">{{ $order->customer_name }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-slate-500">{{ $order->placed_at?->format('d M Y') }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-slate-500"><x-ist :value="$order->placed_at" format="d M Y, g:i A" /></td>
+                        <td class="px-4 py-3 whitespace-nowrap text-slate-500">
+                            @if ($order->isDelivered())
+                                <span class="text-green-600">Delivered <x-ist :value="$order->delivered_at" format="d M" :suffix="''" /></span>
+                            @elseif ($order->isCancelled())
+                                <span class="text-slate-400">—</span>
+                            @else
+                                <x-ist :value="app(\App\Services\DeliveryService::class)->expectedFor($order)" format="d M Y" :suffix="''" />
+                            @endif
+                        </td>
                         <td class="px-4 py-3">{{ $order->items_count }}</td>
                         <td class="px-4 py-3">
                             <span class="text-xs {{ $order->payment_status === 'paid' ? 'text-green-600' : ($order->payment_status === 'failed' ? 'text-red-600' : 'text-amber-600') }}">
@@ -48,7 +58,7 @@
                         <td class="px-4 py-3 text-right"><a href="{{ route('admin.orders.show', $order) }}" class="text-indigo-600 hover:underline">View</a></td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">No orders{{ $activeStatus ? ' with this status' : ' yet' }}.</td></tr>
+                    <tr><td colspan="9" class="px-4 py-8 text-center text-slate-400">No orders{{ $activeStatus ? ' with this status' : ' yet' }}.</td></tr>
                 @endforelse
             </tbody>
         </table>

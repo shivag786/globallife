@@ -17,7 +17,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="font-bold text-lg text-slate-800">{{ $order->order_number }}</h2>
-                        <p class="text-sm text-slate-500">{{ $order->placed_at?->format('d M Y, g:i A') }}</p>
+                        <p class="text-sm text-slate-500">Placed <x-ist :value="$order->placed_at" /></p>
                     </div>
                     <span class="px-3 py-1 rounded-full text-sm capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
                 </div>
@@ -68,9 +68,12 @@
                     </table>
                 @endif
             </div>
+
+            {{-- Delivery tracking (mirrors what the customer sees) --}}
+            <x-order-tracker :order="$order" />
         </div>
 
-        {{-- Sidebar: status + customer --}}
+        {{-- Sidebar: status + delivery + customer --}}
         <div class="space-y-6">
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5">
                 <h3 class="font-semibold text-slate-800 mb-3">Update Status</h3>
@@ -84,6 +87,25 @@
                     <button type="submit" class="w-full bg-brand-700 text-white text-sm py-2 rounded-md hover:bg-brand-800">Save Status</button>
                 </form>
                 <p class="text-xs text-slate-400 mt-2">Marking an order <strong>delivered</strong> approves and credits commission to all wallets.</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5">
+                <h3 class="font-semibold text-slate-800 mb-3">Expected Delivery Date</h3>
+                @php $effectiveExpected = app(\App\Services\DeliveryService::class)->expectedFor($order); @endphp
+                <form method="POST" action="{{ route('admin.orders.update-delivery', $order) }}">
+                    @csrf @method('PATCH')
+                    <input type="date" name="expected_delivery_date"
+                           value="{{ old('expected_delivery_date', optional($effectiveExpected)->format('Y-m-d')) }}"
+                           class="block w-full rounded-md border-slate-300 shadow-sm text-sm mb-3">
+                    <button type="submit" class="w-full bg-slate-800 text-white text-sm py-2 rounded-md hover:bg-slate-900">Save Delivery Date</button>
+                </form>
+                <p class="text-xs text-slate-400 mt-2">
+                    @if ($order->expected_delivery_date)
+                        Shown to the customer as the arrival estimate.
+                    @else
+                        Defaulting to order date + delivery window. Set a date to override.
+                    @endif
+                </p>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5 text-sm">

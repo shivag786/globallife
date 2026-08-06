@@ -110,7 +110,10 @@
                         <a href="<?php echo e(route('admin.leads.index')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Leads</a>
                     <?php endif; ?>
                     <?php if($user->hasAnyRole(['super_admin', 'admin'])): ?>
-                        <a href="<?php echo e(route('admin.orders.index')); ?>" class="block px-3 py-2 rounded hover:bg-slate-800">Orders</a>
+                        <a href="<?php echo e(route('admin.orders.index')); ?>" data-order-nav class="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-800">
+                            <span>Orders</span>
+                            <span data-order-badge class="hidden ml-2 text-xs font-semibold bg-red-500 text-white rounded-full px-2 py-0.5 tabular-nums"></span>
+                        </a>
                     <?php endif; ?>
                 <?php endif; ?>
 
@@ -283,6 +286,10 @@
             </main>
         </div>
     </div>
+
+    <?php if($user->hasAnyRole(['super_admin', 'admin'])): ?>
+        <?php echo $__env->make('partials.admin-order-alert', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php endif; ?>
 </body>
 </html>
 <?php /**PATH C:\xampp\htdocs\global_life_new\resources\views/components/layouts/app.blade.php ENDPATH**/ ?>
