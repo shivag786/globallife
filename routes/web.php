@@ -75,7 +75,17 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::delete('/account/addresses/{address}', [\App\Http\Controllers\Account\AddressController::class, 'destroy'])->name('account.addresses.destroy');
 
     Route::middleware('role:super_admin|admin|sub_admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
+        Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class)->except(['show']);
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('commissions', [\App\Http\Controllers\Admin\CommissionController::class, 'index'])->name('commissions.index');
+        Route::get('commissions/global', [\App\Http\Controllers\Admin\CommissionController::class, 'editGlobal'])->name('commissions.global.edit');
+        Route::put('commissions/global', [\App\Http\Controllers\Admin\CommissionController::class, 'updateGlobal'])->name('commissions.global.update');
+        Route::get('commissions/category/{category}', [\App\Http\Controllers\Admin\CommissionController::class, 'editCategory'])->name('commissions.category.edit');
+        Route::put('commissions/category/{category}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateCategory'])->name('commissions.category.update');
+        Route::get('commissions/product/{product}', [\App\Http\Controllers\Admin\CommissionController::class, 'editProduct'])->name('commissions.product.edit');
+        Route::put('commissions/product/{product}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateProduct'])->name('commissions.product.update');
 
         Route::post('uploads/editor-image', [EditorUploadController::class, 'store'])->name('uploads.editor-image');
 
