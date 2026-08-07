@@ -51,6 +51,13 @@
         transform: translateY(0);
     }
 
+    input:not([type='checkbox']):not([type='radio']):not([type='file']),
+    select,
+    textarea {
+        padding-inline: 0.75rem;
+        padding-block: 0.5rem;
+    }
+
     @keyframes fade-in-up {
         from {
             opacity: 0;
