@@ -91,6 +91,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
         // Permission-gated: Admin has every module permission; Sub Admins only see modules they're granted.
         Route::resource('products', AdminProductController::class)->except(['show']);
+        Route::get('products/{product}/benefits', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'index'])->name('products.benefits.index');
+        Route::post('products/{product}/benefits', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'store'])->name('products.benefits.store');
+        Route::put('products/{product}/benefits/{benefit}', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'update'])->name('products.benefits.update');
+        Route::delete('products/{product}/benefits/{benefit}', [\App\Http\Controllers\Admin\ProductBenefitController::class, 'destroy'])->name('products.benefits.destroy');
         Route::resource('blog', BlogPostController::class)
             ->except(['show'])
             ->parameters(['blog' => 'blogPost']);
