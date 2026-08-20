@@ -68,6 +68,7 @@
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Platform</p>
                         <a href="{{ route('admin.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue</a>
                         <a href="{{ route('admin.settings.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Site Settings</a>
+                        <a href="{{ route('admin.settings.payment.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Payment Gateway</a>
                         <a href="{{ route('admin.activity-logs.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Activity Log</a>
                     @endif
 

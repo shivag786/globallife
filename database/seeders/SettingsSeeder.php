@@ -20,6 +20,14 @@ class SettingsSeeder extends Seeder
             'social_instagram' => '',
             'social_youtube' => '',
             'social_linkedin' => '',
+
+            // Payment gateway defaults — Razorpay off until admin adds keys at
+            // /admin/settings/payment; COD keeps checkout working meanwhile.
+            'razorpay_enabled' => '0',
+            'razorpay_mode' => 'test',
+            'razorpay_currency' => 'INR',
+            'cod_enabled' => '1',
+            'payment_test_mode' => '0',
         ];
 
         foreach ($defaults as $key => $value) {

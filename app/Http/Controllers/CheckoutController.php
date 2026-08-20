@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Services\CartService;
 use App\Services\OrderService;
+use App\Services\PaymentGatewayService;
 use App\Services\StorefrontContext;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -21,8 +22,10 @@ use Spatie\Permission\Models\Role;
 
 class CheckoutController extends Controller
 {
-    public function __construct(private readonly CartService $cart)
-    {
+    public function __construct(
+        private readonly CartService $cart,
+        private readonly PaymentGatewayService $gateway,
+    ) {
     }
 
     public function index(): View|RedirectResponse
@@ -38,6 +41,9 @@ class CheckoutController extends Controller
             'totals' => $this->cart->totals(),
             'user' => $user,
             'addresses' => $user ? $user->addresses : collect(),
+            // Which payment methods admin has switched on (see admin > Payment Gateway).
+            'paymentOptions' => $this->gateway->options(),
+            'razorpayEnabled' => $this->gateway->razorpayEnabled(),
         ]);
     }
 
@@ -113,18 +119,25 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'address_id' => ['required', 'integer'],
             'delivery_notes' => ['nullable', 'string', 'max:1000'],
-            'payment_choice' => ['required', 'in:online_success,online_fail,cod'],
+            // Only methods the admin currently offers are accepted.
+            'payment_choice' => ['required', 'in:'.implode(',', $this->gateway->allowedChoices())],
         ]);
+
+        // Razorpay is completed over AJAX (create → gateway → verify). Landing here
+        // means the browser could not run that flow.
+        if ($validated['payment_choice'] === 'razorpay') {
+            return back()->with('error', 'Online payment could not start. Please enable JavaScript or choose another payment method.');
+        }
 
         $address = Address::where('id', $validated['address_id'])->where('user_id', $user->id)->first();
         if (! $address) {
             return back()->with('error', 'Please choose a valid delivery address.');
         }
 
-        [$method, $outcome] = match ($validated['payment_choice']) {
-            'online_success' => ['online', 'success'],
-            'online_fail' => ['online', 'fail'],
-            default => ['cod', 'success'],
+        [$method, $outcome, $gateway] = match ($validated['payment_choice']) {
+            'online_success' => ['online', 'success', 'simulator'],
+            'online_fail' => ['online', 'fail', 'simulator'],
+            default => ['cod', 'success', null],
         };
 
         $order = $orders->placeFromCart([
@@ -137,6 +150,7 @@ class CheckoutController extends Controller
             'delivery_notes' => $validated['delivery_notes'] ?? null,
             'payment_method' => $method,
             'payment_outcome' => $outcome,
+            'payment_gateway' => $gateway,
         ], $user);
 
         if (! $order) {

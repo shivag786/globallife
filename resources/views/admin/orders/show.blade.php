@@ -115,7 +115,18 @@
                 @if ($order->delivery_notes)
                     <p class="text-slate-400 text-xs mt-2">Notes: {{ $order->delivery_notes }}</p>
                 @endif
-                <p class="text-xs text-slate-400 mt-3 capitalize">{{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'Online (test)' }} · {{ $order->payment_status }}</p>
+                @php
+                    $paidVia = match (true) {
+                        $order->payment_method === 'cod' => 'Cash on Delivery',
+                        $order->payment_gateway === 'razorpay' => 'Online · Razorpay',
+                        default => 'Online (test)',
+                    };
+                @endphp
+                <p class="text-xs text-slate-400 mt-3 capitalize">{{ $paidVia }} · {{ $order->payment_status }}</p>
+                @if ($order->razorpay_payment_id)
+                    {{-- Reference for reconciling / refunding in the Razorpay dashboard. --}}
+                    <p class="text-xs text-slate-400 mt-1">Payment ID: <span class="font-mono">{{ $order->razorpay_payment_id }}</span></p>
+                @endif
             </div>
         </div>
     </div>

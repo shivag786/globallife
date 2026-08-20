@@ -126,8 +126,31 @@ Do not conflate these:
   at read time (session can't influence price). Free shipping ≥ ₹999, else ₹49
   flat. Max qty 99.
 - **Wishlist** (`WishlistService`), **Checkout** (`CheckoutController` +
-  `OrderService`), **Payment** simulated (`PaymentSimulator`) — checkout offers
-  `online_success | online_fail | cod`.
+  `OrderService`).
+- **Payment methods are admin-driven** — `PaymentGatewayService` reads the
+  `settings` table and decides which `payment_choice` values checkout may render
+  *and* accept (`options()` / `allowedChoices()`); it never returns an empty list
+  (COD is the fallback). Admin edits them at **`/admin/settings/payment`**
+  (`Admin\PaymentSettingsController`, super_admin only): Razorpay on/off, mode
+  (test/live), Key ID, Key Secret, currency, plus Cash-on-Delivery and the
+  simulated test-payment toggles. The **Key Secret is encrypted at rest**
+  (`Crypt`) — the only setting that is — and is never sent back to the browser
+  (blank field = keep the stored one). A "Test connection" action pings the
+  Razorpay API with the saved keys.
+- **Razorpay checkout** (`RazorpayService` + `RazorpayCheckoutController`) — no
+  SDK, straight REST over `Http` (`api.razorpay.com/v1`). Two AJAX steps:
+  `POST /checkout/razorpay/create` prices the **cart server-side**, opens a
+  Razorpay order for that amount and stashes it in the session (nothing
+  persisted); Razorpay Checkout collects the money in the browser; `POST
+  /checkout/razorpay/verify` re-checks the HMAC-SHA256 of
+  `"<order_id>|<payment_id>"` against the session's order id and only then calls
+  `OrderService::placeFromCart()`. The amount is **never** read from the request.
+  Orders store `payment_gateway` + `razorpay_order_id/payment_id/signature`.
+  Selecting Razorpay without JS is rejected with a message rather than silently
+  posting.
+- **`PaymentSimulator`** still backs the `online_success | online_fail | cod`
+  paths; `OrderService` skips it when `payment_gateway === 'razorpay'` because
+  the money is already captured and verified by then.
 - **Checkout requires an account** (single progressive page). Guests hit an
   **identify step** (`partials/checkout/identify`): *register* — set their own
   password → `customer` account + login (`CheckoutController@register`), or *log
@@ -182,7 +205,8 @@ Do not conflate these:
   - `/admin/*` (`super_admin|admin|sub_admin`) — products, blog, testimonials,
     events, media, leads, orders. **Super-Admin-only** sub-group: cities,
     categories, brands, commissions, branch-managers, commission-partners,
-    vip-members, activity-logs, revenue, vip-plans, home-sections, settings.
+    vip-members, activity-logs, revenue, vip-plans, home-sections, settings,
+    settings/payment (payment gateway).
   - `/manager/*` (`commission_partner`) — dashboard, leads, vip-members, revenue.
   - `/branch/*` (`branch_manager`) — dashboard, commission-partners, revenue.
   - `/vip/*` (`vip_member`) — dashboard, profile, module visibility, banners,
@@ -197,7 +221,8 @@ Do not conflate these:
   `VipPlan`, `Product`, `Lead`, `City`, `Testimonial`, `Event`, `Media`.
 - **Services** (`app/Services`) for business logic: commission, cart, wishlist,
   order, storefront, permission matrices, VIP/branch/partner management,
-  activation, payment, settings.
+  activation, payment (`PaymentGatewayService`, `RazorpayService`,
+  `PaymentSimulator`), settings.
 - **Support** (`app/Support`): `BusinessModules` (microsite module keys/defaults),
   `ChartData`.
 - **Blade views**: `partials/home-sections/*` (CMS blocks), `partials/microsite/*`
@@ -225,7 +250,9 @@ Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → 
 `CommissionSplitTest`, `ProductCommissionTest`, `OrderCommissionTest`,
 `RevenueVisibilityTest`, `RbacBoundariesTest`, `ReviewModerationTest`,
 `CartAjaxTest`, `AdminDashboardOverviewTest`, `AdminVipMembersTest`,
-`PanelDashboardsRenderTest`. Helper: `tests/Support/BuildsCommissionChain`.
+`PanelDashboardsRenderTest`, `CheckoutAuthTest`, `DeliveryTrackingTest`,
+`PaymentGatewaySettingsTest` (Razorpay settings, option gating, signature
+verification). Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 
 ## 11. Current branch / work in progress

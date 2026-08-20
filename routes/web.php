@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -48,6 +49,10 @@ Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index
 Route::post('/checkout/register', [\App\Http\Controllers\CheckoutController::class, 'register'])->name('checkout.register')->middleware('throttle:20,1');
 Route::post('/checkout/login', [\App\Http\Controllers\CheckoutController::class, 'login'])->name('checkout.login')->middleware('throttle:20,1');
 Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store')->middleware('throttle:20,1');
+// Razorpay: create the gateway order, then verify the signed handler payload
+// before the cart is turned into a real order.
+Route::post('/checkout/razorpay/create', [\App\Http\Controllers\RazorpayCheckoutController::class, 'create'])->name('checkout.razorpay.create')->middleware('throttle:20,1');
+Route::post('/checkout/razorpay/verify', [\App\Http\Controllers\RazorpayCheckoutController::class, 'verify'])->name('checkout.razorpay.verify')->middleware('throttle:20,1');
 Route::get('/checkout/confirmation/{order}', [\App\Http\Controllers\CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post}', [BlogController::class, 'show'])->name('blog.show');
@@ -155,6 +160,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
             Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
             Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+            // Payment gateway (Razorpay keys + which methods checkout offers).
+            Route::get('settings/payment', [PaymentSettingsController::class, 'edit'])->name('settings.payment.edit');
+            Route::put('settings/payment', [PaymentSettingsController::class, 'update'])->name('settings.payment.update');
+            Route::post('settings/payment/test', [PaymentSettingsController::class, 'test'])->name('settings.payment.test');
         });
     });
 

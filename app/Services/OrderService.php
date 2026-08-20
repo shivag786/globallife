@@ -38,14 +38,17 @@ class OrderService
 
         $method = $data['payment_method'];
         $outcome = $data['payment_outcome'] ?? 'success';
+        $gateway = $data['payment_gateway'] ?? null;
 
-        if (! $this->payment->charge($method, $outcome)) {
+        // A real gateway has already taken (and verified) the money before we get
+        // here — the simulator only stands in for the test / COD paths.
+        if ($gateway !== 'razorpay' && ! $this->payment->charge($method, $outcome)) {
             return null;
         }
 
         $totals = $this->cart->totals();
 
-        $order = DB::transaction(function () use ($items, $totals, $data, $customer, $method) {
+        $order = DB::transaction(function () use ($items, $totals, $data, $customer, $method, $gateway) {
             $order = Order::create([
                 'order_number' => $this->generateOrderNumber(),
                 'user_id' => $customer->id,
@@ -58,6 +61,10 @@ class OrderService
                 'pincode' => $data['pincode'],
                 'delivery_notes' => $data['delivery_notes'] ?? null,
                 'payment_method' => $method,
+                'payment_gateway' => $gateway,
+                'razorpay_order_id' => $data['razorpay_order_id'] ?? null,
+                'razorpay_payment_id' => $data['razorpay_payment_id'] ?? null,
+                'razorpay_signature' => $data['razorpay_signature'] ?? null,
                 'payment_status' => $method === 'cod' ? 'pending' : 'paid',
                 'status' => 'confirmed',
                 'subtotal' => $totals['subtotal'],

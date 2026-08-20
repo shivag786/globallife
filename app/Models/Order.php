@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'order_number', 'user_id', 'customer_name', 'customer_email', 'customer_phone',
     'address', 'city', 'state', 'pincode', 'delivery_notes',
-    'payment_method', 'payment_status', 'status',
+    'payment_method', 'payment_gateway', 'payment_status', 'status',
+    'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
     'subtotal', 'shipping', 'total', 'commission_credited', 'placed_at',
     'expected_delivery_date', 'processing_at', 'dispatched_at', 'delivered_at',
 ])]
