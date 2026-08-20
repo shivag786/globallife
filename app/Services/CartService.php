@@ -17,7 +17,7 @@ class CartService
 
     public const FREE_SHIPPING_THRESHOLD = 999.0;
 
-    public const FLAT_SHIPPING = 49.0;
+    public const FLAT_SHIPPING = 0.0;
 
     public const MAX_QTY = 99;
 
