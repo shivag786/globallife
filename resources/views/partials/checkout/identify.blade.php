@@ -99,12 +99,25 @@
                 headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token },
                 body: new FormData(form),
             })
-                .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+                // A server error / expired session answers with HTML, not JSON —
+                // fall back to a readable message instead of throwing, which used
+                // to leave the form silently stuck with no feedback.
+                .then(function (r) {
+                    return r.json()
+                        .catch(function () {
+                            return {
+                                message: r.status === 419
+                                    ? 'Your session expired. Please refresh the page and try again.'
+                                    : 'Server error (' + r.status + '). Please try again, or contact us if it keeps happening.',
+                            };
+                        })
+                        .then(function (d) { return { ok: r.ok, data: d }; });
+                })
                 .then(function (res) {
                     if (res.ok) { window.location.reload(); return; }
                     var msgs = res.data && res.data.errors
                         ? Object.values(res.data.errors).flat()
-                        : [res.data.message || 'Something went wrong.'];
+                        : [(res.data && res.data.message) || 'Something went wrong.'];
                     btn.disabled = false;
 
                     // Already-registered email → move them to the login tab, prefilled.
@@ -126,7 +139,12 @@
                     box.innerHTML = msgs.map(function (m) { return '<div>' + m + '</div>'; }).join('');
                     box.classList.remove('hidden');
                 })
-                .catch(function () { btn.disabled = false; });
+                // Network-level failure (offline, DNS, connection reset).
+                .catch(function () {
+                    btn.disabled = false;
+                    box.innerHTML = '<div>Could not reach the server. Check your connection and try again.</div>';
+                    box.classList.remove('hidden');
+                });
         });
     });
 })();
