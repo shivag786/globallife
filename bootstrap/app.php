@@ -20,7 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Always JSON under api/*, plus any request that actually asked for JSON
+        // (fetch/XHR). Without the second clause a ValidationException on an AJAX
+        // POST answered with a 302 to HTML; fetch() follows redirects silently, so
+        // the browser saw "200 OK" and the caller reloaded the page instead of
+        // showing the errors — e.g. checkout register/login failing in silence.
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
     })->create();

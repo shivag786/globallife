@@ -66,6 +66,56 @@ class CheckoutAuthTest extends TestCase
         $this->assertSame('active', $user->status);
     }
 
+    /**
+     * An AJAX register/login must answer validation failures with 422 JSON.
+     * When it redirected instead, fetch() followed the redirect, saw 200 OK and
+     * reloaded the page - the customer got a blank form and no error at all.
+     */
+    public function test_ajax_register_returns_json_validation_errors_not_a_redirect(): void
+    {
+        $this->cartWithItem();
+
+        $response = $this->postJson(route('checkout.register'), [
+            'name' => '', 'email' => 'not-an-email', 'mobile' => '',
+            'password' => 'short', 'password_confirmation' => 'different',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name', 'email', 'mobile', 'password']);
+
+        $this->assertGuest();
+    }
+
+    public function test_ajax_register_with_taken_email_returns_json_error(): void
+    {
+        User::factory()->create(['status' => 'active', 'email' => 'taken@example.com']);
+        $this->cartWithItem();
+
+        $this->postJson(route('checkout.register'), [
+            'name' => 'Someone', 'email' => 'taken@example.com', 'mobile' => '9999999999',
+            'password' => 'secret1234', 'password_confirmation' => 'secret1234',
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('email');
+    }
+
+    public function test_ajax_login_returns_json_error_for_bad_credentials(): void
+    {
+        User::factory()->create([
+            'status' => 'active', 'email' => 'real@example.com',
+            'password' => Hash::make('secret1234'),
+        ]);
+        $this->cartWithItem();
+
+        $this->postJson(route('checkout.login'), [
+            'email' => 'real@example.com', 'password' => 'wrong-password',
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('email');
+
+        $this->assertGuest();
+    }
+
     public function test_register_with_existing_email_is_rejected(): void
     {
         User::factory()->create(['status' => 'active', 'email' => 'taken@example.com']);
