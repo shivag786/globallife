@@ -22,6 +22,8 @@ class PaymentGatewayService
 
     public const KEY_SECRET = 'razorpay_key_secret';
 
+    public const KEY_WEBHOOK_SECRET = 'razorpay_webhook_secret';
+
     public const KEY_CURRENCY = 'razorpay_currency';
 
     public const KEY_COD = 'cod_enabled';
@@ -62,7 +64,12 @@ class PaymentGatewayService
 
     public function razorpayKeySecret(): ?string
     {
-        $stored = $this->settings->get(self::KEY_SECRET);
+        return $this->decryptSetting(self::KEY_SECRET);
+    }
+
+    private function decryptSetting(string $key): ?string
+    {
+        $stored = $this->settings->get($key);
 
         if (! $stored) {
             return null;
@@ -79,6 +86,25 @@ class PaymentGatewayService
     public function setRazorpayKeySecret(?string $secret): void
     {
         $this->settings->set(self::KEY_SECRET, filled($secret) ? Crypt::encryptString($secret) : null);
+    }
+
+    /**
+     * Webhook signing secret — set when creating the webhook in the Razorpay
+     * dashboard. Distinct from the API key secret, and stored encrypted the same way.
+     */
+    public function razorpayWebhookSecret(): ?string
+    {
+        return $this->decryptSetting(self::KEY_WEBHOOK_SECRET);
+    }
+
+    public function setRazorpayWebhookSecret(?string $secret): void
+    {
+        $this->settings->set(self::KEY_WEBHOOK_SECRET, filled($secret) ? Crypt::encryptString($secret) : null);
+    }
+
+    public function webhookConfigured(): bool
+    {
+        return filled($this->razorpayWebhookSecret());
     }
 
     public function currency(): string

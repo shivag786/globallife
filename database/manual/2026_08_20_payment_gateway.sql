@@ -19,7 +19,8 @@ WHERE migration IN (
   '2026_07_31_000001_extend_home_sections_type_enum_v6',
   '2026_08_01_000001_add_delivery_tracking_to_orders_table',
   '2026_08_01_000002_create_addresses_table',
-  '2026_08_20_000001_add_payment_gateway_fields_to_orders_table'
+  '2026_08_20_000001_add_payment_gateway_fields_to_orders_table',
+  '2026_08_22_000001_create_pending_orders_table'
 )
 ORDER BY batch, migration;
 
@@ -44,6 +45,53 @@ ALTER TABLE `orders`
 INSERT INTO `migrations` (`migration`, `batch`)
 SELECT '2026_08_20_000001_add_payment_gateway_fields_to_orders_table',
        COALESCE(MAX(`batch`), 0) + 1
+FROM `migrations`;
+
+
+-- ------------------------------------------------------------
+-- STEP 2b — PENDING ORDERS  (required for Razorpay; run with STEP 2)
+-- ------------------------------------------------------------
+-- A checkout priced and handed to Razorpay but not yet paid. The webhook is
+-- server-to-server and has no session, so the cart cannot be read from it -
+-- everything the order needs is snapshotted in this table instead.
+CREATE TABLE `pending_orders` (
+  `id`                  bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `razorpay_order_id`   varchar(255) NOT NULL,
+  `user_id`             bigint(20) unsigned NOT NULL,
+  `customer_name`       varchar(255) NOT NULL,
+  `customer_phone`      varchar(30)  NOT NULL,
+  `address`             text         NOT NULL,
+  `city`                varchar(120) NOT NULL,
+  `state`               varchar(120) NOT NULL,
+  `pincode`             varchar(12)  NOT NULL,
+  `delivery_notes`      text         DEFAULT NULL,
+  `items`               longtext     NOT NULL CHECK (json_valid(`items`)),
+  `subtotal`            decimal(10,2) NOT NULL,
+  `shipping`            decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total`               decimal(10,2) NOT NULL,
+  `currency`            varchar(3)   NOT NULL DEFAULT 'INR',
+  `status`              enum('pending','completed','failed') NOT NULL DEFAULT 'pending',
+  `failure_reason`      varchar(255) DEFAULT NULL,
+  `order_id`            bigint(20) unsigned DEFAULT NULL,
+  `razorpay_payment_id` varchar(255) DEFAULT NULL,
+  `completed_at`        timestamp NULL DEFAULT NULL,
+  `created_at`          timestamp NULL DEFAULT NULL,
+  `updated_at`          timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pending_orders_razorpay_order_id_unique` (`razorpay_order_id`),
+  KEY `pending_orders_status_created_at_index` (`status`, `created_at`),
+  CONSTRAINT `pending_orders_user_id_foreign`
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pending_orders_order_id_foreign`
+    FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- MySQL 5.7 note: if `json_valid` is rejected, drop the CHECK clause and use
+--   `items` json NOT NULL,
+-- instead. MariaDB and MySQL 8 accept the statement as written.
+
+INSERT INTO `migrations` (`migration`, `batch`)
+SELECT '2026_08_22_000001_create_pending_orders_table', COALESCE(MAX(`batch`), 0) + 1
 FROM `migrations`;
 
 
@@ -134,6 +182,7 @@ FROM `migrations`;
 -- ------------------------------------------------------------
 SHOW COLUMNS FROM `orders` LIKE 'razorpay%';
 SHOW COLUMNS FROM `orders` LIKE 'payment_gateway';
+SHOW TABLES LIKE 'pending_orders';
 -- Expect 3 rows from the first (order_id, payment_id, signature)
 -- and 1 row from the second.
 

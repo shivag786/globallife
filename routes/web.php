@@ -53,6 +53,9 @@ Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'stor
 // before the cart is turned into a real order.
 Route::post('/checkout/razorpay/create', [\App\Http\Controllers\RazorpayCheckoutController::class, 'create'])->name('checkout.razorpay.create')->middleware('throttle:20,1');
 Route::post('/checkout/razorpay/verify', [\App\Http\Controllers\RazorpayCheckoutController::class, 'verify'])->name('checkout.razorpay.verify')->middleware('throttle:20,1');
+// Razorpay server-to-server webhook. No session, no CSRF (exempted in
+// bootstrap/app.php); authenticated by its own HMAC signature instead.
+Route::post('/webhooks/razorpay', \App\Http\Controllers\RazorpayWebhookController::class)->name('webhooks.razorpay');
 Route::get('/checkout/confirmation/{order}', [\App\Http\Controllers\CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post}', [BlogController::class, 'show'])->name('blog.show');

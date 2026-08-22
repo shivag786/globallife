@@ -90,6 +90,60 @@
                     </div>
                 </div>
 
+                {{-- Webhook --}}
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="h6 mb-0 fw-semibold">Razorpay Webhook</h2>
+                            <p class="small text-muted mb-0">Catches payments whose browser never came back.</p>
+                        </div>
+                        @if ($hasWebhookSecret)
+                            <span class="badge bg-success">Configured</span>
+                        @else
+                            <span class="badge bg-warning text-dark">Not set up</span>
+                        @endif
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted">
+                            If a customer pays and then closes the tab (or loses signal) before returning to the site, the browser never
+                            confirms the payment. Razorpay still calls this URL, so the order is created anyway. Without it, that money
+                            is taken with no order to show for it.
+                        </p>
+
+                        <label class="form-label">Webhook URL</label>
+                        <div class="input-group mb-1">
+                            <input type="text" class="form-control font-monospace" id="webhook-url" value="{{ $webhookUrl }}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" data-copy-webhook>Copy</button>
+                        </div>
+                        <div class="form-text mb-4">
+                            Paste this into Razorpay Dashboard &rarr; Settings &rarr; Webhooks &rarr; Add New Webhook, and subscribe to
+                            <code>payment.captured</code> and <code>payment.failed</code>.
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="razorpay_webhook_secret">Webhook Secret</label>
+                                <input type="password" class="form-control @error('razorpay_webhook_secret') is-invalid @enderror"
+                                       id="razorpay_webhook_secret" name="razorpay_webhook_secret"
+                                       placeholder="{{ $hasWebhookSecret ? '•••••••••• (saved)' : 'Paste the secret you set in Razorpay' }}"
+                                       autocomplete="new-password">
+                                @error('razorpay_webhook_secret') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <div class="form-text">
+                                    This is the secret you type in while creating the webhook — <strong>not</strong> the API Key Secret above.
+                                    {{ $hasWebhookSecret ? 'Leave blank to keep the saved one.' : '' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (! $hasWebhookSecret)
+                            <div class="alert alert-warning small mb-0 mt-3">
+                                Until this secret is saved, every webhook delivery is rejected as unsigned — deliveries will show as
+                                failed in the Razorpay dashboard.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
                 {{-- Other methods --}}
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white">
@@ -138,4 +192,15 @@
             <span class="small text-muted ms-2">Calls the Razorpay API with the saved keys. Save first if you just changed them.</span>
         </form>
     </div>
+
+    <script>
+        document.querySelector('[data-copy-webhook]')?.addEventListener('click', function () {
+            var field = document.getElementById('webhook-url');
+            field.select();
+            navigator.clipboard?.writeText(field.value).then(
+                () => { this.textContent = 'Copied'; setTimeout(() => { this.textContent = 'Copy'; }, 1500); },
+                () => { document.execCommand('copy'); },
+            );
+        });
+    </script>
 </x-layouts.app>

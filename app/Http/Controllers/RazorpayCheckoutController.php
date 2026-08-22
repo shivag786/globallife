@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\OrderPlacedMail;
 use App\Models\Address;
+use App\Models\PendingOrder;
 use App\Services\CartService;
-use App\Services\OrderService;
+use App\Services\RazorpayPaymentConfirmer;
 use App\Services\RazorpayService;
 use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -30,7 +29,8 @@ use RuntimeException;
  */
 class RazorpayCheckoutController extends Controller
 {
-    private const SESSION_KEY = 'razorpay_pending';
+    /** Remembers which gateway order this browser session opened. */
+    private const SESSION_KEY = 'razorpay_pending_order_id';
 
     public function __construct(
         private readonly CartService $cart,
@@ -77,12 +77,35 @@ class RazorpayCheckoutController extends Controller
             return $this->fail($e->getMessage());
         }
 
-        $request->session()->put(self::SESSION_KEY, [
+        // Snapshot everything the order needs. The webhook has no session, so this
+        // row - not the cart - is what turns the payment into an order.
+        PendingOrder::create([
             'razorpay_order_id' => $rzpOrder['id'],
-            'address_id' => $address->id,
+            'user_id' => $user->id,
+            'customer_name' => $address->name,
+            'customer_phone' => $address->phone,
+            'address' => $address->address,
+            'city' => $address->city,
+            'state' => $address->state,
+            'pincode' => $address->pincode,
             'delivery_notes' => $validated['delivery_notes'] ?? null,
-            'amount' => $amount,
+            'items' => $this->cart->items()->map(fn (array $item) => [
+                'product_id' => $item['product']->id,
+                'product_name' => $item['product']->name,
+                'product_sku' => $item['product']->sku,
+                'seller_id' => $item['seller_id'],
+                'unit_price' => $item['unit_price'],
+                'quantity' => $item['quantity'],
+                'line_total' => $item['line_total'],
+            ])->all(),
+            'subtotal' => $totals['subtotal'],
+            'shipping' => $totals['shipping'],
+            'total' => $amount,
+            'currency' => $rzpOrder['currency'],
+            'status' => 'pending',
         ]);
+
+        $request->session()->put(self::SESSION_KEY, $rzpOrder['id']);
 
         return response()->json([
             'ok' => true,
@@ -100,7 +123,7 @@ class RazorpayCheckoutController extends Controller
         ]);
     }
 
-    public function verify(Request $request, OrderService $orders): JsonResponse
+    public function verify(Request $request, RazorpayPaymentConfirmer $confirm): JsonResponse
     {
         $user = Auth::user();
         if (! $user) {
@@ -113,9 +136,11 @@ class RazorpayCheckoutController extends Controller
             'razorpay_signature' => ['required', 'string', 'max:255'],
         ]);
 
-        $pending = $request->session()->get(self::SESSION_KEY);
+        $pending = PendingOrder::where('razorpay_order_id', $payload['razorpay_order_id'])
+            ->where('user_id', $user->id)
+            ->first();
 
-        if (! $pending || $pending['razorpay_order_id'] !== $payload['razorpay_order_id']) {
+        if (! $pending) {
             return $this->fail('This payment session has expired. Please try again.');
         }
 
@@ -124,49 +149,20 @@ class RazorpayCheckoutController extends Controller
             $payload['razorpay_payment_id'],
             $payload['razorpay_signature'],
         )) {
-            $request->session()->forget(self::SESSION_KEY);
-
             return $this->fail('We could not verify this payment. If money was deducted it will be refunded automatically.');
         }
 
-        if ($this->cart->isEmpty()) {
-            $request->session()->forget(self::SESSION_KEY);
-
-            return $this->fail('Your cart is empty.');
-        }
-
-        $address = Address::where('id', $pending['address_id'])->where('user_id', $user->id)->first();
-        if (! $address) {
-            return $this->fail('Please choose a valid delivery address.');
-        }
-
-        $order = $orders->placeFromCart([
-            'customer_name' => $address->name,
-            'customer_phone' => $address->phone,
-            'address' => $address->address,
-            'city' => $address->city,
-            'state' => $address->state,
-            'pincode' => $address->pincode,
-            'delivery_notes' => $pending['delivery_notes'] ?? null,
-            'payment_method' => 'online',
-            'payment_gateway' => 'razorpay',
-            'razorpay_order_id' => $payload['razorpay_order_id'],
-            'razorpay_payment_id' => $payload['razorpay_payment_id'],
-            'razorpay_signature' => $payload['razorpay_signature'],
-        ], $user);
+        // The webhook may have confirmed this already; confirm() is idempotent and
+        // hands back the order either way.
+        $order = $confirm->confirm($pending, $payload['razorpay_payment_id'], $payload['razorpay_signature']);
 
         if (! $order) {
             return $this->fail('We could not record your order. Please contact support with payment id '.$payload['razorpay_payment_id'].'.');
         }
 
+        $this->cart->clear();
         $request->session()->forget(self::SESSION_KEY);
         $request->session()->put('recent_order_id', $order->id);
-
-        try {
-            Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
-        } catch (\Throwable $e) {
-            report($e);
-        }
 
         return response()->json([
             'ok' => true,

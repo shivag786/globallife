@@ -23,6 +23,7 @@ class UpdatePaymentSettingsRequest extends FormRequest
             'payment_test_mode' => $this->boolean('payment_test_mode') ? '1' : '0',
             'razorpay_key_id' => trim((string) $this->input('razorpay_key_id')),
             'razorpay_key_secret' => trim((string) $this->input('razorpay_key_secret')),
+            'razorpay_webhook_secret' => trim((string) $this->input('razorpay_webhook_secret')),
         ]);
     }
 
@@ -37,6 +38,8 @@ class UpdatePaymentSettingsRequest extends FormRequest
             'razorpay_key_id' => ['nullable', 'string', 'max:100'],
             // Blank means "keep the stored secret" — see the controller.
             'razorpay_key_secret' => ['nullable', 'string', 'max:255'],
+            // Blank means "keep the stored webhook secret".
+            'razorpay_webhook_secret' => ['nullable', 'string', 'max:255'],
             'razorpay_currency' => ['required', 'string', 'size:3'],
             'cod_enabled' => ['required', 'in:0,1'],
             'payment_test_mode' => ['required', 'in:0,1'],

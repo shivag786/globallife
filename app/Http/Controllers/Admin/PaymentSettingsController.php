@@ -26,6 +26,8 @@ class PaymentSettingsController extends Controller
         return view('admin.settings.payment', [
             'gateway' => $this->gateway,
             'hasSecret' => filled($this->gateway->razorpayKeySecret()),
+            'hasWebhookSecret' => $this->gateway->webhookConfigured(),
+            'webhookUrl' => route('webhooks.razorpay'),
         ]);
     }
 
@@ -42,6 +44,10 @@ class PaymentSettingsController extends Controller
 
         if (filled($data['razorpay_key_secret'] ?? null)) {
             $this->gateway->setRazorpayKeySecret($data['razorpay_key_secret']);
+        }
+
+        if (filled($data['razorpay_webhook_secret'] ?? null)) {
+            $this->gateway->setRazorpayWebhookSecret($data['razorpay_webhook_secret']);
         }
 
         return redirect()->route('admin.settings.payment.edit')

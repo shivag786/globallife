@@ -91,6 +91,24 @@ class RazorpayService
     }
 
     /**
+     * Verify a webhook delivery: HMAC-SHA256 of the RAW request body keyed with the
+     * webhook secret must equal the X-Razorpay-Signature header.
+     *
+     * Note this uses the webhook secret, which is a different value from the API
+     * key secret used by verifySignature().
+     */
+    public function verifyWebhookSignature(string $rawBody, string $signature): bool
+    {
+        $secret = $this->gateway->razorpayWebhookSecret();
+
+        if (! $secret || $signature === '') {
+            return false;
+        }
+
+        return hash_equals(hash_hmac('sha256', $rawBody, $secret), $signature);
+    }
+
+    /**
      * Fetch a payment from Razorpay. Returns null when the call fails so callers
      * can fall back to signature verification alone.
      *

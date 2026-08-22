@@ -140,14 +140,35 @@ Do not conflate these:
 - **Razorpay checkout** (`RazorpayService` + `RazorpayCheckoutController`) — no
   SDK, straight REST over `Http` (`api.razorpay.com/v1`). Two AJAX steps:
   `POST /checkout/razorpay/create` prices the **cart server-side**, opens a
-  Razorpay order for that amount and stashes it in the session (nothing
-  persisted); Razorpay Checkout collects the money in the browser; `POST
-  /checkout/razorpay/verify` re-checks the HMAC-SHA256 of
-  `"<order_id>|<payment_id>"` against the session's order id and only then calls
-  `OrderService::placeFromCart()`. The amount is **never** read from the request.
-  Orders store `payment_gateway` + `razorpay_order_id/payment_id/signature`.
-  Selecting Razorpay without JS is rejected with a message rather than silently
-  posting.
+  Razorpay order for that amount and writes a **`pending_orders` snapshot**
+  (address + priced line items); Razorpay Checkout collects the money in the
+  browser; `POST /checkout/razorpay/verify` re-checks the HMAC-SHA256 of
+  `"<order_id>|<payment_id>"` and hands off to `RazorpayPaymentConfirmer`. The
+  amount is **never** read from the request. Orders store `payment_gateway` +
+  `razorpay_order_id/payment_id/signature`. Selecting Razorpay without JS is
+  rejected with a message rather than silently posting.
+- **Why `pending_orders` and not the session:** the webhook is server-to-server
+  and has no session, so the cart would be invisible to it. Everything the order
+  needs is snapshotted at create time. On confirmation the **stored** name / sku
+  / price win — the customer already paid them, so a product edited, deactivated
+  or deleted in the meantime must not change or drop a paid line
+  (`OrderService::rehydrateSnapshot()`); the live models are loaded only to price
+  commission, which is skipped if the product is gone.
+- **Razorpay webhook** (`RazorpayWebhookController`, `POST /webhooks/razorpay`) —
+  the safety net for a payment whose browser never returned (tab closed, signal
+  lost). CSRF-exempt via `validateCsrfTokens(except: ['webhooks/*'])` in
+  `bootstrap/app.php`; authenticated instead by HMAC-SHA256 of the **raw body**
+  against the **webhook secret** (a different value from the API key secret,
+  `razorpay_webhook_secret`, also encrypted at rest). Handles
+  `payment.captured` / `order.paid` and `payment.failed`; anything else — and any
+  unknown order — is **acknowledged with 2xx** so Razorpay stops retrying and
+  does not disable the endpoint.
+- **`RazorpayPaymentConfirmer`** is the single confirmation path shared by the
+  browser and the webhook. It locks the `pending_orders` row `FOR UPDATE`, so the
+  two racing callers cannot both pass the status check: the first creates the
+  order, the second gets the same one back. Mail is sent **outside** the
+  transaction so a slow SMTP server never holds the lock and a bounced email
+  never rolls back a paid order.
 - **`PaymentSimulator`** still backs the `online_success | online_fail | cod`
   paths; `OrderService` skips it when `payment_gateway === 'razorpay'` because
   the money is already captured and verified by then.
@@ -251,6 +272,8 @@ Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → 
 `RevenueVisibilityTest`, `RbacBoundariesTest`, `ReviewModerationTest`,
 `CartAjaxTest`, `AdminDashboardOverviewTest`, `AdminVipMembersTest`,
 `PanelDashboardsRenderTest`, `CheckoutAuthTest`, `DeliveryTrackingTest`,
+`RazorpayWebhookTest` (signature rejection, snapshot->order, redelivery
+idempotency, webhook/browser race, failed payments),
 `PaymentGatewaySettingsTest` (Razorpay settings, option gating, signature
 verification). Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
