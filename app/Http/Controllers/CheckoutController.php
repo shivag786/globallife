@@ -25,8 +25,7 @@ class CheckoutController extends Controller
     public function __construct(
         private readonly CartService $cart,
         private readonly PaymentGatewayService $gateway,
-    ) {
-    }
+    ) {}
 
     public function index(): View|RedirectResponse
     {

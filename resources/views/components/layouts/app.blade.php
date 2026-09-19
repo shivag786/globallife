@@ -61,6 +61,7 @@
                         <a href="{{ route('admin.cities.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Cities</a>
                         <a href="{{ route('admin.branch-managers.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Branch Managers</a>
                         <a href="{{ route('admin.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
+                        <a href="{{ route('admin.partner-payouts.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Partner Payouts</a>
 
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">VIP Membership</p>
                         <a href="{{ route('admin.vip-plans.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">VIP Plans</a>
@@ -124,13 +125,13 @@
                     <a href="{{ route('manager.vip-members.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">VIP Members</a>
                     <a href="{{ route('manager.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                     <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
-                    <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Partner Tools (Phase 2)</p>
-                    @foreach (['Sales Tracking', 'Discount Management', 'Customer Management'] as $item)
-                        <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">
-                            {{ $item }}
-                            <span class="text-xs bg-slate-800 px-2 py-0.5 rounded">soon</span>
-                        </span>
-                    @endforeach
+                    <!--<p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Partner Tools (Phase 2)</p>-->
+                    <!--@foreach (['Sales Tracking', 'Discount Management', 'Customer Management'] as $item)-->
+                    <!--    <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">-->
+                    <!--        {{ $item }}-->
+                    <!--        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded">soon</span>-->
+                    <!--    </span>-->
+                    <!--@endforeach-->
                 @endif
 
                 @if ($user->hasRole('vip_member'))

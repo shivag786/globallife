@@ -73,13 +73,6 @@
                 <div class="bg-white border border-slate-100 rounded-2xl p-6 premium-shadow lg:sticky lg:top-24">
                     <h2 class="font-semibold text-brand-900 mb-4">Order Summary</h2>
 
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <input type="text" placeholder="Coupon code" disabled
-                               class="flex-1 rounded-md border-slate-200 bg-slate-50 text-sm text-slate-400 cursor-not-allowed">
-                        <button type="button" disabled class="text-sm text-slate-400 border border-slate-200 px-3 py-2 rounded-md cursor-not-allowed">Apply</button>
-                    </div>
-                    <p class="text-xs text-slate-400 mb-4">Coupons are coming soon.</p>
-
                     <dl class="space-y-2.5 text-sm border-t border-slate-100 pt-4">
                         <div class="flex justify-between"><dt class="text-slate-500">Subtotal</dt><dd class="font-medium" data-summary-subtotal>{{ $money($totals['subtotal']) }}</dd></div>
                         <div class="flex justify-between">

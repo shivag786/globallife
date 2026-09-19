@@ -64,8 +64,9 @@
             <a href="#top" class="flex items-center gap-2.5 min-w-0">
                 @if ($microsite->logo_path)
                     <img src="{{ asset('storage/'.$microsite->logo_path) }}" alt="{{ $microsite->business_name }}" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
-                @endif
+                @else 
                 <span class="font-heading font-bold text-brand-950 truncate">{{ $microsite->business_name }}</span>
+                @endif
             </a>
 
             <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">

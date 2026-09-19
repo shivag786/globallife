@@ -9,9 +9,22 @@
                 @foreach ($microsite->videos as $video)
                     @php
                         $youtubeId = \App\Models\BusinessVideo::extractYoutubeId($video->youtube_url);
+
+                        // Fallback: watch?v= / youtu.be / embed / shorts / live / v
+                        if (! $youtubeId && preg_match(
+                            '~(?:youtu\.be/|youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/|v/))([A-Za-z0-9_-]{11})~',
+                            (string) $video->youtube_url,
+                            $ytMatch
+                        )) {
+                            $youtubeId = $ytMatch[1];
+                        }
                     @endphp
+
+                    {{-- ID nahi mila to skip karo, warna click par kuch nahi hoga --}}
+                    @continue(! $youtubeId)
+
                     <button type="button" data-msite-video="{{ $youtubeId }}"
-                            class="relative block rounded-xl overflow-hidden msite-card-img group reveal">
+                            class="relative block rounded-xl overflow-hidden msite-card-img group reveal cursor-pointer">
                         <img src="{{ $video->thumbnail_url }}" loading="lazy" class="w-full h-44 object-cover">
                         <div class="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/35 transition">
                             <div class="w-14 h-14 rounded-full bg-white/95 flex items-center justify-center group-hover:scale-110 transition">
@@ -32,7 +45,54 @@
             <x-icon name="x-mark" class="w-8 h-8" />
         </button>
         <div class="w-full max-w-3xl aspect-video">
-            <iframe data-msite-video-frame src="" class="w-full h-full rounded-lg" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <iframe data-msite-video-frame src="" class="w-full h-full rounded-lg"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen></iframe>
         </div>
     </div>
+
+    {{-- Video modal behaviour (initMicrosite pe depend nahi karta) --}}
+    <script>
+        (function () {
+            if (window.__msiteVideoBound) return;
+            window.__msiteVideoBound = true;
+
+            var modal = document.getElementById('msite-video-modal');
+            if (!modal) return;
+            var frame = modal.querySelector('[data-msite-video-frame]');
+
+            function openModal(id) {
+                frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0&playsinline=1';
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                frame.src = '';
+                document.body.style.overflow = '';
+            }
+
+            // Event delegation: DOM/reveal animations ke baad bhi kaam karega
+            document.addEventListener('click', function (e) {
+                var trigger = e.target.closest('[data-msite-video]');
+                if (trigger) {
+                    var id = trigger.getAttribute('data-msite-video');
+                    if (id) openModal(id);
+                    return;
+                }
+
+                if (e.target.closest('[data-msite-video-close]') || e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+            });
+        })();
+    </script>
 @endif

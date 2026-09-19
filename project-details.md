@@ -95,6 +95,7 @@ dashboard (admin/branch/manager/vip) or, for customers, to `account.orders`.
 - `CommissionRule` — product-sale commission config; scope = `product|category|global`, `role`, `type` (percent|fixed), `value`, active flag.
 - `Order` / `OrderItem` — `STATUS_FLOW = pending→confirmed→processing→dispatched→delivered`; route key = `order_number`; `commission_credited` flag.
 - `Wallet` — per-user balance; `CommissionEarning` — one row per beneficiary per order item (pending → approved on delivery).
+- `CommissionPayout` — a super-admin settlement of one beneficiary's earnings for one calendar month (`period` = `YYYY-MM`), splitting `product_amount` / `vip_amount` and recording `wallet_debited`.
 
 ## 5. Two SEPARATE commission systems
 
@@ -118,6 +119,20 @@ Do not conflate these:
    - At order time earnings are **pending**; on `markDelivered()` they flip to
      **approved** and credit each `Wallet` exactly once (guarded by
      `commission_credited`).
+
+**Paying a partner out** (`PartnerPayoutService`, super-admin only) is the one
+place that *reads* both systems — it still never merges them. Per Commission
+Partner per month:
+
+- month bucket = `CommissionEarning.created_at` (order date) and
+  `CommissionTransaction.activated_at`, so each row belongs to exactly one month;
+- `payable = (approved product earnings + VIP partner amounts in the month)
+  − (already paid out for that month)`; pending earnings are excluded;
+- `markPaid()` writes a `CommissionPayout` and decrements the wallet by the
+  **product share only** (the VIP ledger never credited the wallet), never below
+  zero, under a `lockForUpdate()` on the wallet row;
+- a month can be settled more than once — a late delivery approves more earnings
+  inside an already-paid month and the delta becomes payable again.
 
 ## 6. E-commerce flow
 
@@ -226,7 +241,8 @@ Do not conflate these:
   - `/admin/*` (`super_admin|admin|sub_admin`) — products, blog, testimonials,
     events, media, leads, orders. **Super-Admin-only** sub-group: cities,
     categories, brands, commissions, branch-managers, commission-partners,
-    vip-members, activity-logs, revenue, vip-plans, home-sections, settings,
+    partner-payouts (monthly settlement + mark paid), vip-members, activity-logs,
+    revenue, vip-plans, home-sections, settings,
     settings/payment (payment gateway).
   - `/manager/*` (`commission_partner`) — dashboard, leads, vip-members, revenue.
   - `/branch/*` (`branch_manager`) — dashboard, commission-partners, revenue.
@@ -275,7 +291,9 @@ Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → 
 `RazorpayWebhookTest` (signature rejection, snapshot->order, redelivery
 idempotency, webhook/browser race, failed payments),
 `PaymentGatewaySettingsTest` (Razorpay settings, option gating, signature
-verification). Helper: `tests/Support/BuildsCommissionChain`.
+verification), `PartnerPayoutTest` (monthly product+VIP report, mark paid clears
+withdrawable but not pending, re-settling a month, month isolation, RBAC).
+Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 
 ## 11. Current branch / work in progress

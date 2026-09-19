@@ -47,10 +47,6 @@
             <div class="msite-card p-6 md:p-8 max-w-lg mx-auto reveal">
                 <h3 class="font-heading font-bold text-brand-950 mb-4 text-lg">Leave a Review</h3>
 
-                @if (session('status'))
-                    <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3">{{ session('status') }}</div>
-                @endif
-
                 <form method="POST" action="{{ route('microsite.reviews.store', [$microsite->city->slug, $microsite->business_slug, $microsite->user_id.'-'.$microsite->secure_token.'-'.$microsite->user->created_by]) }}" class="space-y-3">
                     @csrf
                     <input type="text" name="customer_name" placeholder="Your Name" required
@@ -68,4 +64,33 @@
             </div>
         </div>
     </section>
+
+    {{-- SweetAlert popup for review status --}}
+    @if (session('status'))
+        <script>
+            (function () {
+                var message = @json(session('status'));
+
+                function showAlert() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thank You!',
+                        text: message,
+                        confirmButtonText: 'OK',
+                        timer: 4000,
+                        timerProgressBar: true
+                    });
+                }
+
+                if (window.Swal) {
+                    showAlert();
+                } else {
+                    var s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+                    s.onload = showAlert;
+                    document.head.appendChild(s);
+                }
+            })();
+        </script>
+    @endif
 @endif

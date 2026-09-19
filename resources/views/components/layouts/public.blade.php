@@ -7,6 +7,19 @@
     $ogTitleValue = $title ?? $settings['og_title'] ?? $siteName;
     $ogDescriptionValue = $metaDescription ?? $settings['og_description'] ?? $pageDescription;
     $ogImageValue = $ogImage ?? (! empty($settings['og_image']) ? asset('storage/'.$settings['og_image']) : null);
+
+    // Logged-in user info for header avatar menu
+    $authUser = auth()->user();
+    $userInitials = 'U';
+    if ($authUser) {
+        $userInitials = \Illuminate\Support\Str::of($authUser->name ?? '')
+            ->trim()
+            ->explode(' ')
+            ->filter()
+            ->take(2)
+            ->map(fn ($w) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($w, 0, 1)))
+            ->implode('') ?: 'U';
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -119,11 +132,48 @@
             </nav>
             <div class="flex items-center gap-3 sm:gap-4 text-sm">
                 @include('partials.cart-icon')
+
                 @auth
-                    <a href="{{ route('dashboard') }}" class="hidden sm:inline font-medium text-brand-700 hover:text-brand-800">Dashboard</a>
+                    {{-- Logged-in user menu: avatar + name + dashboard + logout --}}
+                    <div class="relative" data-user-menu>
+                        <button type="button" data-user-menu-toggle aria-haspopup="true" aria-expanded="false"
+                                class="flex items-center gap-2 rounded-full pl-1 pr-1 sm:pr-3 hover:bg-white/70 transition focus:outline-none focus:ring-2 focus:ring-brand-300">
+                            <span class="w-9 h-9 cursor-pointer rounded-full bg-brand-700 text-white flex items-center justify-center text-xs font-semibold select-none">
+                                {{ $userInitials }}
+                            </span>
+                            <span class="hidden sm:block font-medium text-slate-700 max-w-[120px] truncate">{{ $authUser->name }}</span>
+                            <svg class="w-4 h-4 text-slate-400 hidden sm:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div data-user-menu-panel
+                             class="hidden absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-slate-100">
+                                <p class="font-semibold text-slate-800 truncate">{{ $authUser->name }}</p>
+                                @if (! empty($authUser->email))
+                                    <p class="text-xs text-slate-500 truncate">{{ $authUser->email }}</p>
+                                @endif
+                            </div>
+
+                            <a href="{{ route('dashboard') }}"
+                               class="block px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition">
+                                Dashboard
+                            </a>
+
+                            <form method="POST" action="{{ route('logout', [], false) }}" class="border-t border-slate-100">
+                                @csrf
+                                <button type="submit"
+                                        class="w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 transition">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 @else
                     <a href="{{ route('login') }}" class="hidden sm:inline font-medium text-brand-700 hover:text-brand-800">Login</a>
                 @endauth
+
                 <a href="{{ route('vip-plans.index') }}" class="hidden sm:inline-block bg-brand-700 text-white px-4 py-2 rounded-full hover:bg-brand-800 transition">
                     Become a VIP
                 </a>
@@ -143,6 +193,10 @@
                 <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="hover:text-brand-600">Dashboard</a>
+                    <form method="POST" action="{{ route('logout', [], false) }}">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:underline">Logout</button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}" class="hover:text-brand-600">Login</a>
                 @endauth
@@ -271,5 +325,35 @@
     @endif
 
     <x-chatbot />
+
+    {{-- User menu dropdown behaviour --}}
+    @auth
+        <script>
+            (function () {
+                var menu = document.querySelector('[data-user-menu]');
+                if (!menu) return;
+                var toggle = menu.querySelector('[data-user-menu-toggle]');
+                var panel = menu.querySelector('[data-user-menu-panel]');
+
+                function setOpen(open) {
+                    panel.classList.toggle('hidden', !open);
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+
+                toggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    setOpen(panel.classList.contains('hidden'));
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!menu.contains(e.target)) setOpen(false);
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') setOpen(false);
+                });
+            })();
+        </script>
+    @endauth
 </body>
 </html>
