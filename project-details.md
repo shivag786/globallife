@@ -95,6 +95,7 @@ dashboard (admin/branch/manager/vip) or, for customers, to `account.orders`.
 - `CommissionRule` — product-sale commission config; scope = `product|category|global`, `role`, `type` (percent|fixed), `value`, active flag.
 - `Order` / `OrderItem` — `STATUS_FLOW = pending→confirmed→processing→dispatched→delivered`; route key = `order_number`; `commission_credited` flag.
 - `Wallet` — per-user balance; `CommissionEarning` — one row per beneficiary per order item (pending → approved on delivery).
+- `VipRenewal` — audit trail of a Commission Partner's approve/reject decision on an expired plan.
 - `CommissionPayout` — a super-admin settlement of one beneficiary's earnings for one calendar month (`period` = `YYYY-MM`), splitting `product_amount` / `vip_amount` and recording `wallet_debited`.
 
 ## 5. Two SEPARATE commission systems
@@ -133,6 +134,28 @@ Partner per month:
   zero, under a `lockForUpdate()` on the wallet row;
 - a month can be settled more than once — a late delivery approves more earnings
   inside an already-paid month and the delta becomes payable again.
+
+## 5b. VIP plan validity & renewal
+
+- `vip_plans.validity_months` (default 12) is the length of one paid cycle.
+- `VipActivationService::activate()` stamps `vip_microsites.plan_expires_at =
+  now() + validity_months`. **A microsite that was never activated has a NULL
+  expiry and is NOT expired** — it behaves exactly as before.
+- Expired = `plan_expires_at` is set and in the past (`hasExpiredPlan()`).
+- **Public effect of expiry**: `MicrositeController` serves
+  `microsite.maintenance` with **HTTP 503** instead of the profile, records no
+  `page_view`, and blocks review submission; `MicrositeClickController` stops
+  redirecting/recording contact clicks. The VIP member's own dashboard shows a
+  banner explaining why.
+- **Renewal** (`VipRenewalService`, Commission Partner only, own members only):
+  Approve/Reject buttons appear on `/manager/vip-members` **only when the plan
+  has expired**. Approve restarts the cycle from *today* (`now() +
+  validity_months`) and the page goes live again; Reject only logs the refusal
+  and the page stays on the maintenance notice. Both write a `VipRenewal` row.
+  Renewing a plan that has not expired is refused.
+- Payment is offline, confirmed by the partner — same as first activation.
+  **Renewal records NO commission**; `CommissionTransaction` remains
+  one-per-microsite and joining-only.
 
 ## 6. E-commerce flow
 
@@ -292,7 +315,9 @@ Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → 
 idempotency, webhook/browser race, failed payments),
 `PaymentGatewaySettingsTest` (Razorpay settings, option gating, signature
 verification), `PartnerPayoutTest` (monthly product+VIP report, mark paid clears
-withdrawable but not pending, re-settling a month, month isolation, RBAC).
+withdrawable but not pending, re-settling a month, month isolation, RBAC),
+`VipPlanRenewalTest` (activation starts the cycle, expired microsite serves the
+503 maintenance page, approve/reject, not-yet-expired refusal, ownership).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 
@@ -312,8 +337,30 @@ composer setup      # install, key gen, migrate, npm install + build
 composer dev        # serve + queue + pail logs + vite (concurrently)
 composer test       # config:clear + artisan test
 php artisan migrate --seed
+php artisan storage:link   # REQUIRED once per environment - see below
 npm run build       # build-bootstrap + vite build
 ```
+
+### Uploads & the storage link (read before debugging a missing image)
+
+Every upload goes through `->store('uploads', 'public')`, i.e. onto disk at
+`storage/app/public/uploads/...`, and the DB stores the returned relative path
+(`uploads/xxxx.webp`). All 70-odd views render it as
+`asset('storage/'.$path)` -> `/storage/uploads/xxxx.webp`.
+
+That URL only resolves if **`public/storage` is a symlink to
+`storage/app/public`**. `public/storage` is gitignored and must therefore be
+recreated **once on every environment**:
+
+```bash
+php artisan storage:link
+```
+
+`storage/app/public/uploads/*` IS committed, so the repo carries the seed
+images; the link is what exposes them. Never commit `public/storage` itself —
+a real folder there is a point-in-time copy, so anything uploaded afterwards
+silently 404s while older images keep working (that exact bug was fixed on
+2026-09-21).
 
 ---
 
