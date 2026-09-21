@@ -2,7 +2,8 @@
     @php
         $money = fn ($n) => '₹'.number_format((float) $n, 0);
         $current = $microsite->vipPlan;
-        $lapsedDays = abs($microsite->daysUntilExpiry() ?? 0);
+        $daysLeft = $microsite->daysUntilExpiry() ?? 0;
+        $expired = $microsite->hasExpiredPlan();
     @endphp
 
     {{-- Who and why, with the lapse stated plainly up top. --}}
@@ -18,13 +19,27 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-2 bg-red-500/15 border border-red-400/30 rounded-xl px-4 py-3">
-                <x-icon name="x-mark" class="w-5 h-5 text-red-300 flex-shrink-0" />
+            {{-- Two states: still live but due, or already lapsed and offline. --}}
+            <div class="flex items-center gap-2 rounded-xl px-4 py-3 border
+                        {{ $expired ? 'bg-red-500/15 border-red-400/30' : 'bg-gold-500/15 border-gold-400/30' }}">
+                <x-icon name="{{ $expired ? 'x-mark' : 'calendar' }}"
+                        class="w-5 h-5 flex-shrink-0 {{ $expired ? 'text-red-300' : 'text-gold-400' }}" />
                 <div>
-                    <p class="text-sm font-semibold text-red-200">Expired {{ $microsite->plan_expires_at->format('d M Y') }}</p>
-                    <p class="text-xs text-red-300/80">
-                        {{ $lapsedDays }} day{{ $lapsedDays === 1 ? '' : 's' }} ago &middot; page showing maintenance notice
-                    </p>
+                    @if ($expired)
+                        <p class="text-sm font-semibold text-red-200">
+                            Expired {{ $microsite->plan_expires_at->format('d M Y') }}
+                        </p>
+                        <p class="text-xs text-red-300/80">
+                            {{ abs($daysLeft) }} day{{ abs($daysLeft) === 1 ? '' : 's' }} ago &middot; page showing maintenance notice
+                        </p>
+                    @else
+                        <p class="text-sm font-semibold text-gold-400">
+                            Expires {{ $microsite->plan_expires_at->format('d M Y') }}
+                        </p>
+                        <p class="text-xs text-brand-200">
+                            in {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} &middot; page still live
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -56,9 +71,15 @@
         <div>
             <h3 class="font-display text-xl font-bold text-brand-900">Choose the package they paid for</h3>
             <p class="text-sm text-slate-500 mt-1 max-w-2xl">
-                Payment is collected offline &mdash; approving records it and brings their page straight back.
+                Payment is collected offline &mdash; approving simply records it.
                 The package sets how long the page stays live and the total products and services they may
                 have; anything already added counts towards it.
+                @if (! $expired)
+                    Renewing now adds the new term on top of the {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }}
+                    still remaining, so nothing is lost by renewing early.
+                @else
+                    The new term runs from today.
+                @endif
             </p>
         </div>
         <a href="{{ route('manager.vip-members.index') }}" class="text-sm text-brand-700 hover:underline whitespace-nowrap">
@@ -68,87 +89,28 @@
 
     {{-- Each card is its own form, so the confirmation dialog can name the exact
          package, price, validity and caps being approved. --}}
-    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10 items-start">
+    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10 items-stretch">
         @foreach ($packages as $package)
-            @php
-                $popular = $package->isMostPopular();
-                $productsFit = $productQuota['used'] <= $package->productLimit();
-                $servicesFit = $serviceQuota['used'] <= $package->serviceLimit();
-                $fits = $productsFit && $servicesFit;
-                $isCurrent = $current && $current->id === $package->id;
-            @endphp
-
-            <div class="relative bg-white rounded-2xl flex flex-col premium-shadow transition hover:-translate-y-1
-                        {{ $popular ? 'border-2 border-gold-500' : 'border border-slate-200' }}">
-                @if ($popular)
-                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-500 text-brand-950 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full whitespace-nowrap shadow">
-                        Most Popular
-                    </span>
-                @endif
-
-                {{-- Name + price --}}
-                <div class="px-6 pt-7 pb-5 text-center border-b border-slate-100">
-                    <h4 class="font-display text-lg font-bold text-brand-900 uppercase tracking-wide">{{ $package->name }}</h4>
-                    @if ($isCurrent)
-                        <p class="text-[11px] text-slate-400 mt-0.5">their previous package</p>
-                    @endif
-                    <p class="mt-3">
-                        <span class="font-display text-4xl font-extrabold text-brand-800">{{ $money($package->renewal_price) }}</span>
-                    </p>
-                    <p class="inline-flex items-center gap-1.5 mt-2 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        <x-icon name="calendar" class="w-3.5 h-3.5" />
-                        {{ $package->validityLabel() }} validity
-                    </p>
-                </div>
-
-                {{-- What it buys --}}
-                <div class="px-6 py-5 flex-1 space-y-3 text-sm">
-                    <div class="flex items-center gap-2.5">
-                        <x-icon name="{{ $productsFit ? 'check-circle' : 'x-mark' }}"
-                                class="w-4 h-4 flex-shrink-0 {{ $productsFit ? 'text-brand-500' : 'text-red-500' }}" />
-                        <span class="text-slate-600">
-                            <span class="font-bold text-brand-900">{{ $package->productLimit() }}</span> product catalogue
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-2.5">
-                        <x-icon name="{{ $servicesFit ? 'check-circle' : 'x-mark' }}"
-                                class="w-4 h-4 flex-shrink-0 {{ $servicesFit ? 'text-brand-500' : 'text-red-500' }}" />
-                        <span class="text-slate-600">
-                            <span class="font-bold text-brand-900">{{ $package->serviceLimit() }}</span> services
-                        </span>
-                    </div>
-
-                    @if ($fits)
-                        <p class="text-xs text-slate-400 pt-1 border-t border-slate-100 mt-3">
-                            Room for {{ $package->productLimit() - $productQuota['used'] }} more products and
-                            {{ $package->serviceLimit() - $serviceQuota['used'] }} more services.
-                        </p>
-                    @else
-                        <p class="text-xs text-red-600 pt-2 border-t border-red-100 mt-3 flex items-start gap-1.5">
-                            <x-icon name="x-mark" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                            <span>Below what they already use. They keep everything, but can add no more.</span>
-                        </p>
-                    @endif
-                </div>
-
-                <div class="px-6 pb-6">
-                    <form method="POST" action="{{ route('manager.vip-members.renewal.approve', $member) }}"
-                          data-confirm="Confirm {{ $money($package->renewal_price) }} received for the {{ $package->name }} package? {{ $member->name }}'s page goes live for {{ $package->validityLabel() }} with {{ $package->productLimit() }} products and {{ $package->serviceLimit() }} services allowed."
-                          data-confirm-title="Approve {{ $package->name }} renewal"
-                          data-confirm-button="Yes, approve">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="vip_plan_id" value="{{ $package->id }}">
-                        <button type="submit"
-                                class="w-full py-3 rounded-full font-semibold text-sm transition
-                                       {{ $popular
-                                            ? 'bg-gold-500 text-brand-950 hover:bg-gold-400'
-                                            : 'bg-brand-700 text-white hover:bg-brand-800' }}">
-                            Approve &amp; Renew
-                        </button>
-                    </form>
-                </div>
-            </div>
+            <x-package-card :package="$package"
+                            :products-used="$productQuota['used']"
+                            :services-used="$serviceQuota['used']"
+                            :current-label="$current && $current->id === $package->id ? 'their previous package' : null">
+                <form method="POST" action="{{ route('manager.vip-members.renewal.approve', $member) }}"
+                      data-confirm="Confirm {{ $money($package->renewal_price) }} received for the {{ $package->name }} package? {{ $member->name }}'s page is live until {{ $microsite->plan_expires_at->isFuture() ? $microsite->plan_expires_at->copy()->addMonths($package->validityMonths())->format('d M Y') : now()->addMonths($package->validityMonths())->format('d M Y') }}, with {{ $package->productLimit() }} products and {{ $package->serviceLimit() }} services allowed."
+                      data-confirm-title="Approve {{ $package->name }} renewal"
+                      data-confirm-button="Yes, approve">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="vip_plan_id" value="{{ $package->id }}">
+                    <button type="submit"
+                            class="w-full py-3 rounded-full font-semibold text-sm transition
+                                   {{ $package->isMostPopular()
+                                        ? 'bg-gold-500 text-brand-950 hover:bg-gold-400'
+                                        : 'bg-brand-700 text-white hover:bg-brand-800' }}">
+                        Approve &amp; Renew
+                    </button>
+                </form>
+            </x-package-card>
         @endforeach
     </div>
 

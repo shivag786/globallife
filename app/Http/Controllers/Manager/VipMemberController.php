@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\StoreVipMemberRequest;
 use App\Http\Requests\Manager\UpdateVipMemberRequest;
 use App\Models\User;
+use App\Models\VipMicrosite;
 use App\Models\VipPlan;
 use App\Repositories\VipPlanRepository;
 use App\Services\VipActivationService;
@@ -97,7 +98,8 @@ class VipMemberController extends Controller
 
     /**
      * The renewal screen: the packages on offer, what the member currently uses,
-     * and Approve / Reject. Reachable only once the plan has actually expired.
+     * and Approve / Reject. Open from 30 days before expiry onwards, so a page
+     * never has to go dark while payment is being collected.
      */
     public function renewal(User $vipMember, VipPlanRepository $plans): View|RedirectResponse
     {
@@ -105,9 +107,11 @@ class VipMemberController extends Controller
 
         $microsite = $vipMember->vipMicrosite;
 
-        if (! $microsite?->hasExpiredPlan()) {
-            return redirect()->route('manager.vip-members.index')
-                ->with('error', 'That member has nothing to renew — their plan has not expired.');
+        if (! $microsite?->isRenewalDue()) {
+            return redirect()->route('manager.vip-members.index')->with('error', sprintf(
+                'That member is not due for renewal yet — renewals open %d days before expiry.',
+                VipMicrosite::RENEWAL_WINDOW_DAYS,
+            ));
         }
 
         return view('manager.vip-members.renewal', [

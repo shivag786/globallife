@@ -302,6 +302,49 @@ class VipPackageRenewalTest extends TestCase
             ->assertSessionHas('error');
     }
 
+    public function test_the_add_member_form_offers_the_same_four_package_cards(): void
+    {
+        $partner = $this->makeCommissionPartner($this->makeBranchManager(30), 25);
+
+        $response = $this->actingAs($partner)->get('/manager/vip-members/create');
+
+        $response->assertOk();
+        // The same cards as the renewal screen, not a bare dropdown.
+        $response->assertDontSee('Select a plan', false);
+        foreach (['Growth', 'Professional', 'Growth Plus', 'Premium'] as $name) {
+            $response->assertSee($name, false);
+        }
+        $response->assertSee('product catalogue', false);
+        $response->assertSee('validity', false);
+        $response->assertSee('4,999', false);
+
+        // One radio per package, so the choice still posts as vip_plan_id.
+        $this->assertSame(4, substr_count($response->getContent(), 'name="vip_plan_id"'));
+    }
+
+    public function test_creating_a_member_puts_them_on_the_chosen_package(): void
+    {
+        $partner = $this->makeCommissionPartner($this->makeBranchManager(30), 25);
+        $city = $this->makeCity();
+        $partner->cities()->attach($city->id);
+        $premium = $this->package('premium');
+
+        $this->actingAs($partner)->post('/manager/vip-members', [
+            'name' => 'New Member',
+            'email' => 'new.member@example.com',
+            'password' => 'secret-password-123',
+            'vip_plan_id' => $premium->id,
+            'business_name' => 'New Member Biz',
+            'city_id' => $city->id,
+        ])->assertRedirect(route('manager.vip-members.index'));
+
+        $microsite = User::where('email', 'new.member@example.com')->sole()->vipMicrosite;
+
+        $this->assertSame($premium->id, $microsite->vip_plan_id);
+        $this->assertSame(100, $microsite->contentQuota('products')['limit']);
+        $this->assertSame(100, $microsite->contentQuota('services')['limit']);
+    }
+
     public function test_another_partner_cannot_open_or_approve_someone_elses_renewal(): void
     {
         [, $member, $microsite] = $this->expiredMember();

@@ -38,6 +38,27 @@
         box-shadow: 0 20px 50px -20px rgb(15 41 28 / 0.25);
     }
 
+    /* Package picker (x-package-card, selectable mode). Tailwind's peer-checked:
+       variant only reaches direct siblings of the input, and the card's action
+       area is nested inside the frame — so the checked state is wired here. */
+    .pkg-radio:checked ~ .pkg-frame {
+        border-color: var(--color-brand-600);
+        box-shadow: 0 0 0 3px var(--color-brand-200), 0 20px 50px -20px rgb(15 41 28 / 0.25);
+    }
+
+    .pkg-radio:checked ~ .pkg-frame .pkg-select {
+        display: none;
+    }
+
+    .pkg-radio:checked ~ .pkg-frame .pkg-selected {
+        display: block;
+    }
+
+    .pkg-radio:focus-visible ~ .pkg-frame {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+    }
+
     /* Scroll-reveal: progressive enhancement — content is visible by default, and only
        hidden-then-revealed once JS confirms it can observe + animate it (js-ready on <html>). */
     .js-ready .reveal {

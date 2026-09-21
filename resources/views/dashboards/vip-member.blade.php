@@ -13,6 +13,21 @@
     ];
 @endphp
 <x-layouts.app title="VIP Dashboard" heading="VIP Dashboard">
+    {{-- Warn before the page goes dark, so they can pay their partner in time. --}}
+    @if ($microsite?->isExpiringSoon())
+        @php $daysLeft = $microsite->daysUntilExpiry(); @endphp
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
+            <p class="font-semibold text-amber-800">
+                Your plan expires on {{ $microsite->plan_expires_at->format('d M Y') }}
+                &mdash; {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} left
+            </p>
+            <p class="text-sm text-amber-700 mt-1">
+                Contact your Commission Partner to renew. Renewing now adds the new term on top of the days
+                you have left, so nothing is wasted &mdash; and your page never goes offline.
+            </p>
+        </div>
+    @endif
+
     {{-- Without this the member has no way to know their public page went dark. --}}
     @if ($microsite?->hasExpiredPlan())
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">

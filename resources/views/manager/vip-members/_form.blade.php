@@ -1,7 +1,7 @@
 @csrf
 @isset($member) @method('PUT') @endisset
 
-<div class="bootstrap-scope max-w-3xl">
+<div class="bootstrap-scope max-w-6xl">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
@@ -20,15 +20,28 @@
                             <x-forms.input name="password" type="password" label="Password" required />
                         </div>
                     @endunless
-                    <div class="col-md-6">
-                        <x-forms.input name="vip_plan_id" label="VIP Plan" as="select" :value="$member->vipMicrosite->vip_plan_id ?? ''" required>
-                            <option value="">Select a plan&hellip;</option>
-                            @foreach ($plans as $plan)
-                                <option value="{{ $plan->id }}" @selected(old('vip_plan_id', $member->vipMicrosite->vip_plan_id ?? '') == $plan->id)>{{ $plan->name }}</option>
-                            @endforeach
-                        </x-forms.input>
-                    </div>
                 </div>
+            </div>
+        </div>
+
+        {{-- The same packages, and the same cards, the partner sees when renewing. --}}
+        <div>
+            <h2 class="font-display text-lg font-bold text-brand-900">Package</h2>
+            <p class="text-sm text-slate-500 mt-1 mb-4">
+                Choose the package this member has paid for. It sets how long their page stays live and how
+                many products and services they may list.
+            </p>
+
+            @error('vip_plan_id')
+                <p class="text-sm text-red-600 mb-3">{{ $message }}</p>
+            @enderror
+
+            @php $selectedPlan = old('vip_plan_id', $member->vipMicrosite->vip_plan_id ?? null); @endphp
+            <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
+                @foreach ($plans as $plan)
+                    <x-package-card :package="$plan" selectable
+                                    :checked="(int) $selectedPlan === $plan->id" />
+                @endforeach
             </div>
         </div>
 

@@ -183,6 +183,14 @@ class VipMicrosite extends Model
     }
 
     /**
+     * How long before expiry a renewal may be taken. Wide enough that a partner
+     * collecting payment in person has a comfortable run-up, short enough that
+     * the offer is not permanently on screen — a month covers a full billing
+     * conversation even on the 3-month Growth package.
+     */
+    public const RENEWAL_WINDOW_DAYS = 30;
+
+    /**
      * A plan is expired once its paid cycle has run out. A microsite that was
      * never activated has no expiry date and is therefore NOT expired — it is
      * simply awaiting its first activation, and keeps behaving as it always has.
@@ -190,6 +198,26 @@ class VipMicrosite extends Model
     public function hasExpiredPlan(): bool
     {
         return $this->plan_expires_at !== null && $this->plan_expires_at->isPast();
+    }
+
+    /**
+     * Whether a renewal can be taken now: inside the last month of the cycle, or
+     * any time after it lapsed. Deliberately wider than `hasExpiredPlan()` — the
+     * public page only goes down at true expiry, but the partner can collect and
+     * record payment before that, so nobody's page ever has to go dark.
+     */
+    public function isRenewalDue(): bool
+    {
+        return $this->plan_expires_at !== null
+            && now()->greaterThanOrEqualTo($this->plan_expires_at->copy()->subDays(self::RENEWAL_WINDOW_DAYS));
+    }
+
+    /**
+     * Due for renewal but still live — the amber "expiring soon" state.
+     */
+    public function isExpiringSoon(): bool
+    {
+        return $this->isRenewalDue() && ! $this->hasExpiredPlan();
     }
 
     /**

@@ -48,8 +48,11 @@ class VipRenewalService
                 throw new RuntimeException('This VIP Member has not been activated yet — activate the plan first.');
             }
 
-            if (! $microsite->hasExpiredPlan()) {
-                throw new RuntimeException('This plan has not expired yet, so there is nothing to renew.');
+            if (! $microsite->isRenewalDue()) {
+                throw new RuntimeException(sprintf(
+                    'This plan is not due for renewal yet — it can be renewed from %d days before it expires.',
+                    VipMicrosite::RENEWAL_WINDOW_DAYS,
+                ));
             }
 
             if ($decision === 'approved' && ! $plan) {
@@ -64,11 +67,15 @@ class VipRenewalService
             $newExpiry = null;
 
             if ($decision === 'approved') {
-                // Start the new cycle from today, not from the lapsed date, so a
-                // member who renews three months late gets a full paid cycle. The
-                // chosen package also becomes their plan, which is what moves
+                // Measure the new cycle from whichever is later: today, or the
+                // expiry they have not reached yet. Renewing late therefore buys a
+                // full cycle from today rather than back-dating it, and renewing
+                // early stacks on the days still owed instead of forfeiting them.
+                $base = $previous && $previous->isFuture() ? $previous->copy() : now();
+                $newExpiry = $base->addMonths($plan->validityMonths());
+
+                // The chosen package also becomes their plan, which is what moves
                 // their product and service caps.
-                $newExpiry = now()->addMonths($plan->validityMonths());
                 $microsite->update([
                     'vip_plan_id' => $plan->id,
                     'plan_expires_at' => $newExpiry,

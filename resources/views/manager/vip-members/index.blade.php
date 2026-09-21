@@ -54,15 +54,25 @@
                             @php $site = $member->vipMicrosite; @endphp
                             @if (! $site?->isActivated())
                                 <span class="text-xs text-slate-400">Not activated</span>
-                            @elseif ($site->hasExpiredPlan())
-                                <p class="text-xs font-semibold text-red-600 mb-1.5">
-                                    Expired {{ $site->plan_expires_at->format('d M Y') }}
-                                </p>
-                                {{-- Approve/Reject live on the renewal screen, where the
-                                     partner picks which package was paid for. --}}
+                            @elseif ($site->isRenewalDue())
+                                @php $daysLeft = $site->daysUntilExpiry(); @endphp
+                                @if ($site->hasExpiredPlan())
+                                    <p class="text-xs font-semibold text-red-600 mb-1.5">
+                                        Expired {{ $site->plan_expires_at->format('d M Y') }}
+                                    </p>
+                                @else
+                                    <p class="text-xs font-semibold text-amber-600 mb-1.5">
+                                        Expires {{ $site->plan_expires_at->format('d M Y') }}
+                                        &middot; {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} left
+                                    </p>
+                                @endif
+                                {{-- Renewals open 30 days out, so a page need never go
+                                     dark while payment is being collected. Approve/Reject
+                                     live on the renewal screen, where the partner picks
+                                     which package was paid for. --}}
                                 <a href="{{ route('manager.vip-members.renewal', $member) }}"
                                    class="inline-block bg-gold-500 text-brand-950 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gold-400">
-                                    Renew &mdash; choose package
+                                    {{ $site->hasExpiredPlan() ? 'Renew — choose package' : 'Renew early' }}
                                 </a>
                                 @if ($last = $site->renewals->first())
                                     <p class="text-xs text-slate-400 mt-1.5">
@@ -70,13 +80,9 @@
                                     </p>
                                 @endif
                             @else
-                                @php $daysLeft = $site->daysUntilExpiry(); @endphp
-                                <span class="px-2 py-0.5 rounded text-xs {{ $daysLeft !== null && $daysLeft <= 30 ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700' }}">
+                                <span class="px-2 py-0.5 rounded text-xs bg-green-50 text-green-700">
                                     Valid till {{ $site->plan_expires_at?->format('d M Y') ?? '—' }}
                                 </span>
-                                @if ($daysLeft !== null && $daysLeft <= 30)
-                                    <p class="text-xs text-amber-600 mt-0.5">{{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} left</p>
-                                @endif
                             @endif
                         </td>
                         <td class="px-4 py-3 text-right space-x-3">
