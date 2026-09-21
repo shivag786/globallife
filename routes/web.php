@@ -39,6 +39,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\RazorpayCheckoutController;
 use App\Http\Controllers\RazorpayWebhookController;
+use App\Http\Controllers\StorageFileController;
 use App\Http\Controllers\Vip\BannerController;
 use App\Http\Controllers\Vip\FaqController;
 use App\Http\Controllers\Vip\GalleryController;
@@ -266,6 +267,14 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::resource('videos', VideoController::class)->only(['index', 'store', 'destroy']);
     });
 });
+
+// Fallback for /storage/{path} uploads. Apache normally serves these directly
+// through the public/storage symlink and never reaches Laravel; this catches the
+// case where that symlink is missing (a deploy's clean checkout can delete it).
+// Must stay ABOVE the microsite catch-all below.
+Route::get('/storage/{path}', StorageFileController::class)
+    ->where('path', '.*')
+    ->name('storage.file');
 
 // Click-through redirects that log a business_profile_events row before sending
 // the visitor on to the real target (tel:, wa.me, maps, external website, booking).

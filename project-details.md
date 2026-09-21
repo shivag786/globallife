@@ -362,30 +362,38 @@ a real folder there is a point-in-time copy, so anything uploaded afterwards
 silently 404s while older images keep working (that exact bug was fixed on
 2026-09-21).
 
-#### ⚠ Production uploads are not durable yet (open issue, 2026-09-21)
+#### Production uploads must live OUTSIDE the deploy directory
 
-Production deploys via **Hostinger's auto-deploy from git**, which does a clean
-checkout of the deploy directory. Consequences, confirmed against the live site:
+Production deploys via **Hostinger auto-deploy from git**, which does a shallow
+clean checkout (`git log` on the server shows a `grafted` HEAD). Anything the
+repo does not contain is destroyed on every deploy. This was confirmed with a
+probe file: it was gone after one deploy. Three category images had already been
+lost this way, leaving `categories.image` pointing at files that no longer
+existed.
 
-- The 19 force-tracked files in `storage/app/public/uploads` survive a deploy
-  because git restores them. **Anything uploaded through the admin afterwards is
-  untracked and gets wiped on the next deploy.** Three category images were lost
-  exactly this way — their `categories.image` paths still pointed at files that
-  no longer existed on disk.
-- So **do NOT `git rm --cached storage/app/public/uploads`** to "clean up" the
-  repo, however wrong tracking uploads looks. Right now that tracking is the
-  only reason any image survives a deploy; untracking would delete the lot.
+Two settings make uploads survive:
 
-The real fix, not yet implemented, is to stop keeping uploads inside the
-git-managed directory:
+1. **`FILESYSTEM_PUBLIC_ROOT`** (`.env`) overrides the `public` disk root and the
+   `storage:link` target together. Leave it blank locally (defaults to
+   `storage_path('app/public')`); in production set it to an absolute path
+   outside the deploy directory, e.g. `/home/<user>/app-uploads`.
+2. **The `storage.file` route** (`StorageFileController`) serves
+   `/storage/{path}` from the `public` disk whenever the `public/storage` symlink
+   is missing — and a clean checkout deletes that symlink too, since it is
+   gitignored. Apache serves the symlink directly when it exists, so the route
+   only runs as a fallback. It sends long-lived cache headers plus `nosniff` and
+   a sandbox CSP, because uploads are user-supplied.
 
-1. make the `public` disk root env-driven (`storage_path('app/public')` stays the
-   local default) and point production at a path outside the deploy directory;
-2. serve `/storage/...` through a route instead of the `public/storage` symlink,
-   since a clean checkout can delete that symlink too.
+Note the `local` (private) disk has **`'serve' => false`** on purpose: with it
+on, the framework registered its own `/storage/{path}` route that shadowed
+`storage.file` and sent `Cache-Control: no-store`. That framework route was
+signed-URL gated so private files were never exposed, and nothing in the app
+reads that disk.
 
-Until that lands, treat every production upload as something a deploy can
-destroy.
+The 19 upload files still force-tracked under `storage/app/public/uploads` are a
+leftover from before this fix. Do not untrack them until production is confirmed
+to be reading `FILESYSTEM_PUBLIC_ROOT`, because while uploads still live in the
+deploy directory that tracking is the only thing restoring them after a deploy.
 
 ---
 

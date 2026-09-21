@@ -30,17 +30,24 @@ return [
 
     'disks' => [
 
+        // `serve` is off deliberately. It registered a framework route at
+        // /storage/{path} (signed-URL gated, so private files were never exposed)
+        // which shadowed the `storage.file` fallback that serves real uploads and
+        // sent Cache-Control: no-store. Nothing in the app reads this disk.
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
 
+        // Public uploads. The root is env-driven so production can put them
+        // OUTSIDE the git deploy directory — Hostinger's auto-deploy does a clean
+        // checkout, which destroys anything the repo does not contain.
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            'root' => env('FILESYSTEM_PUBLIC_ROOT') ?: storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
@@ -74,7 +81,10 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        // Kept in step with the `public` disk root above, so `storage:link` points
+        // at wherever uploads actually live. The link is only a fast path: when it
+        // is missing, `/storage/...` still resolves via the `storage.file` route.
+        public_path('storage') => env('FILESYSTEM_PUBLIC_ROOT') ?: storage_path('app/public'),
     ],
 
 ];
