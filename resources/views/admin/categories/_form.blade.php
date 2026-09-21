@@ -1,6 +1,8 @@
 @csrf
 @isset($category) @method('PUT') @endisset
 
+<x-form-errors />
+
 <div class="space-y-4 max-w-lg">
     <div>
         <label for="name" class="block text-sm font-medium text-slate-700">Category Name</label>
@@ -14,6 +16,7 @@
             <img src="{{ asset('storage/'.$category->image) }}" alt="" class="h-16 mt-1 mb-2 rounded">
         @endif
         <input id="image" type="file" name="image" accept="image/*" class="mt-1 block w-full text-sm text-slate-600">
+        <p class="mt-1 text-xs text-slate-500">JPG, PNG or WEBP &middot; max 2 MB. Shown on the category page and the homepage category grid.</p>
     </div>
 
     <div>
