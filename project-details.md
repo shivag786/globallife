@@ -157,6 +157,33 @@ Partner per month:
   **Renewal records NO commission**; `CommissionTransaction` remains
   one-per-microsite and joining-only.
 
+**The four packages** (seeded by migration `2026_09_21_000003` and
+`VipPlanSeeder`; the legacy Silver/Gold/Platinum/Diamond rows are set
+`inactive`, never deleted, because live microsites still reference them):
+
+| Package | Price | Validity | Products | Services |
+|---------|-------|----------|----------|----------|
+| Growth | ₹4,999 | 3 months | 15 | 6 |
+| Professional | ₹14,999 | 6 months | 35 | 15 |
+| Growth Plus | ₹24,999 | 1 year | 50 | 30 |
+| Premium | ₹41,999 | 1 year | 100 | 100 |
+
+`vip_plans.product_limit` / `service_limit` cap the VIP's OWN content —
+`business_products` (`/vip/products`) and `business_services`
+(`/vip/services`). The marketplace (`catalogProducts`) is not capped.
+
+The cap is on the **total row count**, so items created under a bigger package
+still count afterwards: 15 products on Growth (15) means no 16th, while
+Professional (35) leaves 20 free slots. Read it via
+`VipMicrosite::contentQuota('products'|'services')`, which returns
+`used/limit/remaining/can_add/over`. Enforcement is in the `quotaBlock()` guard
+on `Vip\ProductController` and `Vip\ServiceController` — on both `create()` and
+`store()`, so a direct POST cannot slip past it. **A downgrade never deletes or
+hides anything**: the member keeps what they have and simply cannot add more.
+
+Approving a renewal switches `vip_microsites.vip_plan_id` to the chosen package,
+which is what moves the member's caps, and sets the new expiry from *today*.
+
 ## 6. E-commerce flow
 
 - **Cart** (`CartService`) — session-backed, guest-friendly. Stores only
@@ -317,7 +344,10 @@ idempotency, webhook/browser race, failed payments),
 verification), `PartnerPayoutTest` (monthly product+VIP report, mark paid clears
 withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPlanRenewalTest` (activation starts the cycle, expired microsite serves the
-503 maintenance page, approve/reject, not-yet-expired refusal, ownership).
+503 maintenance page, approve/reject, not-yet-expired refusal, ownership),
+`VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
+package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
+keeps existing rows, retired package refused).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 

@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\StoreVipMemberRequest;
 use App\Http\Requests\Manager\UpdateVipMemberRequest;
 use App\Models\User;
+use App\Models\VipPlan;
 use App\Repositories\VipPlanRepository;
 use App\Services\VipActivationService;
 use App\Services\VipMemberService;
 use App\Services\VipRenewalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use RuntimeException;
 
 class VipMemberController extends Controller
@@ -93,24 +96,60 @@ class VipMemberController extends Controller
     }
 
     /**
-     * Renewal decisions on an EXPIRED plan. Approving restarts the paid cycle and
-     * brings the public microsite back; rejecting records the refusal and leaves
-     * it on the maintenance page.
+     * The renewal screen: the packages on offer, what the member currently uses,
+     * and Approve / Reject. Reachable only once the plan has actually expired.
      */
-    public function approveRenewal(User $vipMember): RedirectResponse
-    {
-        return $this->decideRenewal($vipMember, 'approve');
-    }
-
-    public function rejectRenewal(User $vipMember): RedirectResponse
-    {
-        return $this->decideRenewal($vipMember, 'reject');
-    }
-
-    private function decideRenewal(User $vipMember, string $decision): RedirectResponse
+    public function renewal(User $vipMember, VipPlanRepository $plans): View|RedirectResponse
     {
         abort_unless($vipMember->created_by === Auth::id(), 403);
 
+        $microsite = $vipMember->vipMicrosite;
+
+        if (! $microsite?->hasExpiredPlan()) {
+            return redirect()->route('manager.vip-members.index')
+                ->with('error', 'That member has nothing to renew — their plan has not expired.');
+        }
+
+        return view('manager.vip-members.renewal', [
+            'member' => $vipMember,
+            'microsite' => $microsite->load('vipPlan'),
+            'packages' => $plans->activeOrdered(),
+            'productQuota' => $microsite->contentQuota('products'),
+            'serviceQuota' => $microsite->contentQuota('services'),
+            'history' => $microsite->renewals()->with('vipPlan', 'decider')->latest('decided_at')->get(),
+        ]);
+    }
+
+    /**
+     * Approving renews onto the chosen package: it sets the new validity window
+     * and the member's product/service caps, and brings the microsite back.
+     */
+    public function approveRenewal(Request $request, User $vipMember): RedirectResponse
+    {
+        abort_unless($vipMember->created_by === Auth::id(), 403);
+
+        $data = $request->validate([
+            'vip_plan_id' => ['required', 'integer', Rule::exists('vip_plans', 'id')->where('status', 'active')],
+            'note' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        return $this->decideRenewal(
+            $vipMember,
+            'approve',
+            VipPlan::findOrFail($data['vip_plan_id']),
+            $data['note'] ?? null,
+        );
+    }
+
+    public function rejectRenewal(Request $request, User $vipMember): RedirectResponse
+    {
+        abort_unless($vipMember->created_by === Auth::id(), 403);
+
+        return $this->decideRenewal($vipMember, 'reject', null, $request->input('note'));
+    }
+
+    private function decideRenewal(User $vipMember, string $decision, ?VipPlan $plan, ?string $note): RedirectResponse
+    {
         $microsite = $vipMember->vipMicrosite;
 
         if (! $microsite) {
@@ -119,14 +158,24 @@ class VipMemberController extends Controller
 
         try {
             $renewal = $decision === 'approve'
-                ? $this->renewals->approve($microsite, Auth::user())
-                : $this->renewals->reject($microsite, Auth::user());
+                ? $this->renewals->approve($microsite, Auth::user(), $plan, $note)
+                : $this->renewals->reject($microsite, Auth::user(), $note);
         } catch (RuntimeException $e) {
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('status', $renewal->isApproved()
-            ? "Renewal approved — {$vipMember->name}'s page is live again until {$renewal->new_expires_at->format('d M Y')}."
-            : "Renewal rejected — {$vipMember->name}'s page stays on the maintenance notice.");
+        if (! $renewal->isApproved()) {
+            return redirect()->route('manager.vip-members.index')
+                ->with('status', "Renewal rejected — {$vipMember->name}'s page stays on the maintenance notice.");
+        }
+
+        return redirect()->route('manager.vip-members.index')->with('status', sprintf(
+            'Renewal approved on %s — %s is live until %s, with %d products and %d services allowed.',
+            $plan->name,
+            $vipMember->name,
+            $renewal->new_expires_at->format('d M Y'),
+            $plan->productLimit(),
+            $plan->serviceLimit(),
+        ));
     }
 }

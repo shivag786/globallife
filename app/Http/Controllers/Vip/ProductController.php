@@ -17,16 +17,27 @@ class ProductController extends Controller
     {
         $products = Auth::user()->vipMicrosite->products()->get();
 
-        return view('vip.products.index', ['products' => $products]);
+        return view('vip.products.index', [
+            'products' => $products,
+            'quota' => Auth::user()->vipMicrosite->contentQuota('products'),
+        ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
-        return view('vip.products.create');
+        if ($blocked = $this->quotaBlock()) {
+            return $blocked;
+        }
+
+        return view('vip.products.create', ['quota' => Auth::user()->vipMicrosite->contentQuota('products')]);
     }
 
     public function store(StoreProductRequest $request): RedirectResponse
     {
+        if ($blocked = $this->quotaBlock()) {
+            return $blocked;
+        }
+
         $data = $this->prepareData($request);
         $data['vip_microsite_id'] = Auth::user()->vipMicrosite->id;
 
@@ -56,6 +67,27 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('vip.products.index')->with('status', 'Product deleted.');
+    }
+
+    /**
+     * Refuses a new product once the member's package cap is reached. Their existing
+     * rows stay fully editable — only adding is blocked until they renew onto a
+     * bigger package.
+     */
+    private function quotaBlock(): ?RedirectResponse
+    {
+        $quota = Auth::user()->vipMicrosite->contentQuota('products');
+
+        if ($quota['can_add']) {
+            return null;
+        }
+
+        return redirect()->route('vip.products.index')->with('error', sprintf(
+            'Your plan allows %d product%s and you already have %d. Ask your Commission Partner to renew you onto a larger package to add more.',
+            $quota['limit'],
+            $quota['limit'] === 1 ? '' : 's',
+            $quota['used'],
+        ));
     }
 
     /**

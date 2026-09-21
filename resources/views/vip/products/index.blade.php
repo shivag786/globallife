@@ -1,8 +1,31 @@
 <x-layouts.app title="Products" heading="Products">
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('vip.products.create') }}" class="bg-brand-700 text-white text-sm px-4 py-2 rounded-md hover:bg-brand-800">
-            + Add Product
-        </a>
+    {{-- Plan quota. The cap is on the total, so items added under a bigger
+         package still count after a downgrade. --}}
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="text-sm">
+            <span class="text-slate-500">Plan usage:</span>
+            <span class="font-semibold {{ $quota['can_add'] ? 'text-slate-800' : 'text-red-600' }}">
+                {{ $quota['used'] }} / {{ $quota['limit'] }} products
+            </span>
+            @if ($quota['over'])
+                <span class="ml-2 text-xs text-red-600">over your plan limit &mdash; nothing removed, but you cannot add more</span>
+            @elseif (! $quota['can_add'])
+                <span class="ml-2 text-xs text-red-600">limit reached</span>
+            @else
+                <span class="ml-2 text-xs text-slate-400">{{ $quota['remaining'] }} left</span>
+            @endif
+        </div>
+
+        @if ($quota['can_add'])
+            <a href="{{ route('vip.products.create') }}" class="bg-brand-700 text-white text-sm px-4 py-2 rounded-md hover:bg-brand-800">
+                + Add Product
+            </a>
+        @else
+            <span class="bg-slate-100 text-slate-400 text-sm px-4 py-2 rounded-md cursor-not-allowed"
+                  title="Ask your Commission Partner to renew you onto a larger package.">
+                + Add Product
+            </span>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">

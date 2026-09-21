@@ -205,6 +205,33 @@ class VipMicrosite extends Model
     }
 
     /**
+     * Content quota for one of the plan-capped content types.
+     *
+     * The cap applies to the TOTAL number of rows, so items created under a
+     * bigger package still count after a downgrade. Nothing is ever hidden or
+     * deleted when a member ends up over the cap — they simply cannot add more
+     * until they renew onto a larger package.
+     *
+     * @param  'products'|'services'  $type
+     * @return array{used: int, limit: int, remaining: int, can_add: bool, over: bool}
+     */
+    public function contentQuota(string $type): array
+    {
+        $plan = $this->vipPlan;
+
+        $used = $type === 'products' ? $this->products()->count() : $this->services()->count();
+        $limit = $type === 'products' ? (int) ($plan?->productLimit() ?? 0) : (int) ($plan?->serviceLimit() ?? 0);
+
+        return [
+            'used' => $used,
+            'limit' => $limit,
+            'remaining' => max(0, $limit - $used),
+            'can_add' => $used < $limit,
+            'over' => $used > $limit,
+        ];
+    }
+
+    /**
      * Whether the given module/floating-button key is turned on. Unknown/missing
      * keys default to visible so existing profiles aren't silently hidden when a
      * new module is introduced.

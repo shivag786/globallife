@@ -85,28 +85,29 @@ class VipPlanRenewalTest extends TestCase
         $this->assertSame(1, $microsite->events()->where('event_type', 'page_view')->count());
     }
 
-    public function test_partner_sees_approve_and_reject_only_once_the_plan_expires(): void
+    public function test_partner_sees_the_renewal_action_only_once_the_plan_expires(): void
     {
         $this->seedRoles();
 
         $partner = $this->makeCommissionPartner($this->makeBranchManager(30), 25);
-        [, $microsite] = $this->makeVipMember($partner, $this->makePlan(1000), $this->makeCity());
+        [$member, $microsite] = $this->makeVipMember($partner, $this->makePlan(1000), $this->makeCity());
         app(VipActivationService::class)->activate($microsite, $partner);
 
-        // Still inside the paid cycle — no renewal buttons.
+        $renewalUrl = "/manager/vip-members/{$member->id}/renewal";
+
+        // Still inside the paid cycle — no way through to the packages.
         $this->actingAs($partner)->get('/manager/vip-members')
             ->assertOk()
             ->assertSee('Valid till')
-            ->assertDontSee('renewal/approve', false)
-            ->assertDontSee('renewal/reject', false);
+            ->assertDontSee($renewalUrl, false);
 
         $microsite->refresh()->update(['plan_expires_at' => now()->subDay()]);
 
+        // Expired: the row offers the renewal screen, where Approve/Reject live.
         $this->actingAs($partner)->get('/manager/vip-members')
             ->assertOk()
             ->assertSee('Expired')
-            ->assertSee('renewal/approve', false)
-            ->assertSee('renewal/reject', false);
+            ->assertSee($renewalUrl, false);
     }
 
     public function test_approving_a_renewal_restarts_the_cycle_and_brings_the_page_back(): void
@@ -117,7 +118,9 @@ class VipPlanRenewalTest extends TestCase
         $this->get($microsite->publicPath())->assertStatus(503);
 
         $this->actingAs($partner)
-            ->patch("/manager/vip-members/{$member->id}/renewal/approve")
+            ->patch("/manager/vip-members/{$member->id}/renewal/approve", [
+                'vip_plan_id' => $microsite->vip_plan_id,
+            ])
             ->assertRedirect()
             ->assertSessionHas('status');
 
@@ -164,7 +167,9 @@ class VipPlanRenewalTest extends TestCase
         $expiry = $microsite->refresh()->plan_expires_at;
 
         $this->actingAs($partner)
-            ->patch("/manager/vip-members/{$member->id}/renewal/approve")
+            ->patch("/manager/vip-members/{$member->id}/renewal/approve", [
+                'vip_plan_id' => $microsite->vip_plan_id,
+            ])
             ->assertRedirect()
             ->assertSessionHas('error');
 

@@ -19,6 +19,23 @@
         @endforeach
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+        <div>
+            <label for="product_limit" class="block text-sm font-medium text-slate-700">Product Catalogue Limit</label>
+            <input id="product_limit" type="number" step="1" min="0" max="10000" name="product_limit"
+                   value="{{ old('product_limit', $plan->product_limit ?? 0) }}" required
+                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <p class="mt-1 text-xs text-slate-500">Total products a member on this package may have.</p>
+        </div>
+        <div>
+            <label for="service_limit" class="block text-sm font-medium text-slate-700">Services Limit</label>
+            <input id="service_limit" type="number" step="1" min="0" max="10000" name="service_limit"
+                   value="{{ old('service_limit', $plan->service_limit ?? 0) }}" required
+                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <p class="mt-1 text-xs text-slate-500">Total services a member on this package may have.</p>
+        </div>
+    </div>
+
     <div class="max-w-xs">
         <label for="validity_months" class="block text-sm font-medium text-slate-700">Validity (months)</label>
         <input id="validity_months" type="number" step="1" min="1" max="120" name="validity_months"

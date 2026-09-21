@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\VipMicrosite;
+use App\Models\VipPlan;
 use App\Models\VipRenewal;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -22,9 +23,13 @@ use RuntimeException;
  */
 class VipRenewalService
 {
-    public function approve(VipMicrosite $microsite, User $actor, ?string $note = null): VipRenewal
+    /**
+     * Approve a renewal onto a chosen package. The package decides the new
+     * validity window and the member's product/service caps from here on.
+     */
+    public function approve(VipMicrosite $microsite, User $actor, VipPlan $plan, ?string $note = null): VipRenewal
     {
-        return $this->decide($microsite, $actor, 'approved', $note);
+        return $this->decide($microsite, $actor, 'approved', $note, $plan);
     }
 
     public function reject(VipMicrosite $microsite, User $actor, ?string $note = null): VipRenewal
@@ -32,9 +37,9 @@ class VipRenewalService
         return $this->decide($microsite, $actor, 'rejected', $note);
     }
 
-    private function decide(VipMicrosite $microsite, User $actor, string $decision, ?string $note): VipRenewal
+    private function decide(VipMicrosite $microsite, User $actor, string $decision, ?string $note, ?VipPlan $plan = null): VipRenewal
     {
-        return DB::transaction(function () use ($microsite, $actor, $decision, $note) {
+        return DB::transaction(function () use ($microsite, $actor, $decision, $note, $plan) {
             /** @var VipMicrosite $microsite */
             $microsite = VipMicrosite::whereKey($microsite->id)->lockForUpdate()->firstOrFail();
             $microsite->load('vipPlan');
@@ -47,21 +52,34 @@ class VipRenewalService
                 throw new RuntimeException('This plan has not expired yet, so there is nothing to renew.');
             }
 
+            if ($decision === 'approved' && ! $plan) {
+                throw new RuntimeException('Choose a renewal package before approving.');
+            }
+
+            if ($plan && $plan->status !== 'active') {
+                throw new RuntimeException('That package is no longer available.');
+            }
+
             $previous = $microsite->plan_expires_at;
             $newExpiry = null;
 
             if ($decision === 'approved') {
                 // Start the new cycle from today, not from the lapsed date, so a
-                // member who renews three months late gets a full paid cycle.
-                $newExpiry = now()->addMonths($microsite->vipPlan->validityMonths());
-                $microsite->update(['plan_expires_at' => $newExpiry]);
+                // member who renews three months late gets a full paid cycle. The
+                // chosen package also becomes their plan, which is what moves
+                // their product and service caps.
+                $newExpiry = now()->addMonths($plan->validityMonths());
+                $microsite->update([
+                    'vip_plan_id' => $plan->id,
+                    'plan_expires_at' => $newExpiry,
+                ]);
             }
 
             return VipRenewal::create([
                 'vip_microsite_id' => $microsite->id,
-                'vip_plan_id' => $microsite->vip_plan_id,
+                'vip_plan_id' => $plan?->id ?? $microsite->vip_plan_id,
                 'decision' => $decision,
-                'amount' => $decision === 'approved' ? (float) ($microsite->vipPlan->renewal_price ?? 0) : 0,
+                'amount' => $decision === 'approved' ? (float) ($plan->renewal_price ?? 0) : 0,
                 'previous_expires_at' => $previous,
                 'new_expires_at' => $newExpiry,
                 'note' => $note,

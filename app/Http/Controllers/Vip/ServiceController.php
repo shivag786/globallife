@@ -17,16 +17,27 @@ class ServiceController extends Controller
     {
         $services = Auth::user()->vipMicrosite->services()->get();
 
-        return view('vip.services.index', ['services' => $services]);
+        return view('vip.services.index', [
+            'services' => $services,
+            'quota' => Auth::user()->vipMicrosite->contentQuota('services'),
+        ]);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
-        return view('vip.services.create');
+        if ($blocked = $this->quotaBlock()) {
+            return $blocked;
+        }
+
+        return view('vip.services.create', ['quota' => Auth::user()->vipMicrosite->contentQuota('services')]);
     }
 
     public function store(StoreServiceRequest $request): RedirectResponse
     {
+        if ($blocked = $this->quotaBlock()) {
+            return $blocked;
+        }
+
         $data = $this->prepareData($request);
         $data['vip_microsite_id'] = Auth::user()->vipMicrosite->id;
 
@@ -56,6 +67,27 @@ class ServiceController extends Controller
         $service->delete();
 
         return redirect()->route('vip.services.index')->with('status', 'Service deleted.');
+    }
+
+    /**
+     * Refuses a new service once the member's package cap is reached. Their existing
+     * rows stay fully editable — only adding is blocked until they renew onto a
+     * bigger package.
+     */
+    private function quotaBlock(): ?RedirectResponse
+    {
+        $quota = Auth::user()->vipMicrosite->contentQuota('services');
+
+        if ($quota['can_add']) {
+            return null;
+        }
+
+        return redirect()->route('vip.services.index')->with('error', sprintf(
+            'Your plan allows %d service%s and you already have %d. Ask your Commission Partner to renew you onto a larger package to add more.',
+            $quota['limit'],
+            $quota['limit'] === 1 ? '' : 's',
+            $quota['used'],
+        ));
     }
 
     /**

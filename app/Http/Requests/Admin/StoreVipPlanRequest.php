@@ -24,6 +24,8 @@ class StoreVipPlanRequest extends FormRequest
             'joining_price' => ['required', 'numeric', 'min:0'],
             'renewal_price' => ['required', 'numeric', 'min:0'],
             'validity_months' => ['required', 'integer', 'min:1', 'max:120'],
+            'product_limit' => ['required', 'integer', 'min:0', 'max:10000'],
+            'service_limit' => ['required', 'integer', 'min:0', 'max:10000'],
             'features' => ['nullable', 'string'],
             'highlight_features' => ['nullable', 'string'],
             'status' => ['required', 'in:active,inactive'],

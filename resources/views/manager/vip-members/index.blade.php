@@ -58,26 +58,12 @@
                                 <p class="text-xs font-semibold text-red-600 mb-1.5">
                                     Expired {{ $site->plan_expires_at->format('d M Y') }}
                                 </p>
-                                <div class="flex items-center gap-2">
-                                    <form action="{{ route('manager.vip-members.renewal.approve', $member) }}" method="POST"
-                                          data-confirm="Confirm the renewal payment has been received? This brings their page back online."
-                                          data-confirm-title="Approve Renewal" data-confirm-button="Yes, approve">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-green-700">
-                                            Approve
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('manager.vip-members.renewal.reject', $member) }}" method="POST"
-                                          data-confirm="Reject this renewal? Their page stays on the maintenance notice." data-confirm-danger
-                                          data-confirm-title="Reject Renewal" data-confirm-button="Yes, reject">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="bg-white border border-red-200 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-red-50">
-                                            Reject
-                                        </button>
-                                    </form>
-                                </div>
+                                {{-- Approve/Reject live on the renewal screen, where the
+                                     partner picks which package was paid for. --}}
+                                <a href="{{ route('manager.vip-members.renewal', $member) }}"
+                                   class="inline-block bg-gold-500 text-brand-950 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gold-400">
+                                    Renew &mdash; choose package
+                                </a>
                                 @if ($last = $site->renewals->first())
                                     <p class="text-xs text-slate-400 mt-1.5">
                                         Last decision: {{ $last->decision }} on {{ $last->decided_at->format('d M Y') }}
