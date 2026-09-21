@@ -127,7 +127,6 @@
                 <a href="{{ route('products.index') }}" class="hover:text-brand-600">Products</a>
                 <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
                 <a href="{{ route('events.index') }}" class="hover:text-brand-600">Events</a>
-                <a href="{{ route('vip-plans.index') }}" class="hover:text-brand-600">VIP Plans</a>
                 <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
             </nav>
             <div class="flex items-center gap-3 sm:gap-4 text-sm">
@@ -174,9 +173,6 @@
                     <a href="{{ route('login') }}" class="hidden sm:inline font-medium text-brand-700 hover:text-brand-800">Login</a>
                 @endauth
 
-                <a href="{{ route('vip-plans.index') }}" class="hidden sm:inline-block bg-brand-700 text-white px-4 py-2 rounded-full hover:bg-brand-800 transition">
-                    Become a VIP
-                </a>
                 <button type="button" class="md:hidden text-slate-600" data-mobile-nav-open aria-label="Open menu">
                     <x-icon name="bars" class="w-6 h-6" />
                 </button>
@@ -189,7 +185,6 @@
                 <a href="{{ route('products.index') }}" class="hover:text-brand-600">Products</a>
                 <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
                 <a href="{{ route('events.index') }}" class="hover:text-brand-600">Events</a>
-                <a href="{{ route('vip-plans.index') }}" class="hover:text-brand-600">VIP Plans</a>
                 <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="hover:text-brand-600">Dashboard</a>
@@ -266,7 +261,6 @@
                 <p class="text-sm font-semibold text-white mb-3 uppercase tracking-wide">Explore</p>
                 <ul class="space-y-2 text-sm text-brand-200">
                     <li><a href="{{ route('products.index') }}" class="hover:text-white">All Products</a></li>
-                    <li><a href="{{ route('vip-plans.index') }}" class="hover:text-white">VIP Plans</a></li>
                     <li><a href="{{ url('/') }}#testimonials" class="hover:text-white">Testimonials</a></li>
                 </ul>
             </div>

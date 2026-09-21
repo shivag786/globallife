@@ -1,7 +1,6 @@
 @php
     $services = app(\App\Repositories\ProductRepository::class)->featured(6)
         ->map(fn ($product) => ['label' => $product->name, 'url' => route('products.show', $product)])
-        ->push(['label' => 'VIP Membership', 'url' => route('vip-plans.index')])
         ->push(['label' => 'Something else', 'url' => null]);
 @endphp
 

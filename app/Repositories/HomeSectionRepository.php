@@ -16,11 +16,24 @@ class HomeSectionRepository
     }
 
     /**
+     * Home sections rendered on the public homepage.
+     *
+     * `vip_plans` is withheld: VIP plans and the "Become a VIP" call to action are
+     * hidden from the public site, so the section must not render even if a row
+     * for it is still active. The admin list (`allOrdered`) still shows it, so the
+     * section keeps its content and ordering for whenever it is brought back.
+     */
+    public const PUBLICLY_HIDDEN_TYPES = ['vip_plans'];
+
+    /**
      * @return Collection<int, HomeSection>
      */
     public function activeOrdered(): Collection
     {
-        return HomeSection::where('status', 'active')->orderBy('display_order')->get();
+        return HomeSection::where('status', 'active')
+            ->whereNotIn('type', self::PUBLICLY_HIDDEN_TYPES)
+            ->orderBy('display_order')
+            ->get();
     }
 
     /**

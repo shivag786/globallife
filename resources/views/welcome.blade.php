@@ -7,9 +7,6 @@
             <p class="text-slate-500 mb-8">
                 An MLM business ecosystem with city managers, VIP memberships, microsites, and analytics.
             </p>
-            <a href="{{ route('vip-plans.index') }}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700">
-                Explore VIP Plans
-            </a>
         </div>
     @endforelse
 </x-layouts.public>
