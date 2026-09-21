@@ -362,6 +362,31 @@ a real folder there is a point-in-time copy, so anything uploaded afterwards
 silently 404s while older images keep working (that exact bug was fixed on
 2026-09-21).
 
+#### ⚠ Production uploads are not durable yet (open issue, 2026-09-21)
+
+Production deploys via **Hostinger's auto-deploy from git**, which does a clean
+checkout of the deploy directory. Consequences, confirmed against the live site:
+
+- The 19 force-tracked files in `storage/app/public/uploads` survive a deploy
+  because git restores them. **Anything uploaded through the admin afterwards is
+  untracked and gets wiped on the next deploy.** Three category images were lost
+  exactly this way — their `categories.image` paths still pointed at files that
+  no longer existed on disk.
+- So **do NOT `git rm --cached storage/app/public/uploads`** to "clean up" the
+  repo, however wrong tracking uploads looks. Right now that tracking is the
+  only reason any image survives a deploy; untracking would delete the lot.
+
+The real fix, not yet implemented, is to stop keeping uploads inside the
+git-managed directory:
+
+1. make the `public` disk root env-driven (`storage_path('app/public')` stays the
+   local default) and point production at a path outside the deploy directory;
+2. serve `/storage/...` through a route instead of the `public/storage` symlink,
+   since a clean checkout can delete that symlink too.
+
+Until that lands, treat every production upload as something a deploy can
+destroy.
+
 ---
 
 ## Suggested additional docs (optional)
