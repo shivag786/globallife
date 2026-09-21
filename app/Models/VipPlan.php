@@ -9,7 +9,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
-    'name', 'slug', 'monthly_price', 'yearly_price', 'joining_price', 'renewal_price',
+    'name', 'slug', 'monthly_price', 'yearly_price', 'joining_price', 'renewal_price', 'validity_months',
     'features', 'highlight_features', 'status', 'upgrade_priority', 'display_order',
     'microsite_limit', 'landing_page_limit', 'blog_limit', 'analytics_limit_days', 'storage_limit_mb',
 ])]
@@ -28,5 +28,14 @@ class VipPlan extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logOnlyDirty()->dontSubmitEmptyLogs();
+    }
+
+    /**
+     * Length of one paid cycle. Guards against a 0/null slipping in, which would
+     * make every renewal expire the instant it was approved.
+     */
+    public function validityMonths(): int
+    {
+        return max(1, (int) ($this->validity_months ?: 12));
     }
 }

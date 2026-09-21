@@ -19,6 +19,17 @@
         @endforeach
     </div>
 
+    <div class="max-w-xs">
+        <label for="validity_months" class="block text-sm font-medium text-slate-700">Validity (months)</label>
+        <input id="validity_months" type="number" step="1" min="1" max="120" name="validity_months"
+               value="{{ old('validity_months', $plan->validity_months ?? 12) }}" required
+               class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <p class="mt-1 text-xs text-slate-500">
+            How long one paid cycle lasts. When it runs out the member's page shows the maintenance
+            notice until their Commission Partner approves a renewal.
+        </p>
+    </div>
+
     <div>
         <label for="features" class="block text-sm font-medium text-slate-700">Features (one per line)</label>
         <textarea id="features" name="features" rows="4"

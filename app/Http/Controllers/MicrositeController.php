@@ -7,12 +7,19 @@ use App\Models\VipMicrosite;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class MicrositeController extends Controller
 {
-    public function show(Request $request, string $citySlug, string $businessSlug, string $secureId): View
+    public function show(Request $request, string $citySlug, string $businessSlug, string $secureId): View|Response
     {
         $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
+
+        // Plan lapsed: serve the maintenance notice instead of the profile, and
+        // don't count it as a page view.
+        if ($microsite->hasExpiredPlan()) {
+            return $this->maintenance($microsite);
+        }
 
         $microsite->load([
             'banners' => fn ($q) => $q->where('is_visible', true),
@@ -34,6 +41,10 @@ class MicrositeController extends Controller
     {
         $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
 
+        if ($microsite->hasExpiredPlan()) {
+            return back()->with('error', 'This profile is temporarily unavailable.');
+        }
+
         $microsite->reviews()->create([
             'customer_name' => $request->input('customer_name'),
             'rating' => $request->input('rating'),
@@ -43,6 +54,18 @@ class MicrositeController extends Controller
         ]);
 
         return back()->with('status', 'Thanks for your review! It will appear once approved.');
+    }
+
+    /**
+     * The "we're under maintenance" stand-in for a microsite whose plan has run
+     * out. 503 keeps search engines from treating the outage as permanent, and
+     * the page deliberately says nothing about billing.
+     */
+    private function maintenance(VipMicrosite $microsite): Response
+    {
+        return response()->view('microsite.maintenance', [
+            'microsite' => $microsite,
+        ], 503);
     }
 
     private function resolve(string $citySlug, string $businessSlug, string $secureId): VipMicrosite

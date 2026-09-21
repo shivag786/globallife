@@ -64,7 +64,12 @@ class VipActivationService
                 'activated_at' => now(),
             ]);
 
-            $microsite->update(['activated_at' => now()]);
+            // Start the plan's paid cycle. When it runs out the microsite serves
+            // the maintenance page until the partner approves a renewal.
+            $microsite->update([
+                'activated_at' => now(),
+                'plan_expires_at' => now()->addMonths($microsite->vipPlan->validityMonths()),
+            ]);
 
             return $transaction;
         });

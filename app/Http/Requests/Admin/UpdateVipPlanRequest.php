@@ -23,6 +23,7 @@ class UpdateVipPlanRequest extends FormRequest
             'yearly_price' => ['required', 'numeric', 'min:0'],
             'joining_price' => ['required', 'numeric', 'min:0'],
             'renewal_price' => ['required', 'numeric', 'min:0'],
+            'validity_months' => ['required', 'integer', 'min:1', 'max:120'],
             'features' => ['nullable', 'string'],
             'highlight_features' => ['nullable', 'string'],
             'status' => ['required', 'in:active,inactive'],

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\BusinessModules;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
     'user_id', 'city_id', 'vip_plan_id', 'business_name', 'business_slug',
-    'description', 'secure_token', 'status', 'activated_at',
+    'description', 'secure_token', 'status', 'activated_at', 'plan_expires_at',
     'business_category', 'business_sub_category', 'owner_name', 'short_description',
     'establishment_year', 'gst_no', 'pan_no', 'cin_no', 'logo_path', 'cover_banner_path',
     'business_email', 'phone_number', 'alternate_number', 'whatsapp_number', 'website_url',
@@ -34,6 +35,7 @@ class VipMicrosite extends Model
             'holidays' => 'array',
             'module_visibility' => 'array',
             'activated_at' => 'datetime',
+            'plan_expires_at' => 'datetime',
         ];
     }
 
@@ -106,9 +108,9 @@ class VipMicrosite extends Model
     /**
      * Enabled, in-stock catalog products for the public storefront, featured first.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Product>
+     * @return Collection<int, Product>
      */
-    public function visibleCatalogProducts(): \Illuminate\Database\Eloquent\Collection
+    public function visibleCatalogProducts(): Collection
     {
         return $this->catalogProducts()
             ->wherePivot('is_visible', true)
@@ -167,9 +169,39 @@ class VipMicrosite extends Model
         return $this->hasOne(CommissionTransaction::class);
     }
 
+    /**
+     * @return HasMany<VipRenewal, $this>
+     */
+    public function renewals(): HasMany
+    {
+        return $this->hasMany(VipRenewal::class);
+    }
+
     public function isActivated(): bool
     {
         return $this->activated_at !== null;
+    }
+
+    /**
+     * A plan is expired once its paid cycle has run out. A microsite that was
+     * never activated has no expiry date and is therefore NOT expired — it is
+     * simply awaiting its first activation, and keeps behaving as it always has.
+     */
+    public function hasExpiredPlan(): bool
+    {
+        return $this->plan_expires_at !== null && $this->plan_expires_at->isPast();
+    }
+
+    /**
+     * Days until the plan runs out; negative once it already has.
+     */
+    public function daysUntilExpiry(): ?int
+    {
+        if ($this->plan_expires_at === null) {
+            return null;
+        }
+
+        return (int) now()->startOfDay()->diffInDays($this->plan_expires_at->startOfDay(), false);
     }
 
     /**

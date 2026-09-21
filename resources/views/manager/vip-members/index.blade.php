@@ -16,6 +16,7 @@
                     <th class="px-4 py-3">Plan</th>
                     <th class="px-4 py-3">Account</th>
                     <th class="px-4 py-3">Activation</th>
+                    <th class="px-4 py-3">Plan Validity</th>
                     <th class="px-4 py-3"></th>
                 </tr>
             </thead>
@@ -48,6 +49,50 @@
                                 </form>
                             @endif
                         </td>
+                        {{-- Plan validity. Approve / Reject appear only once the plan has expired. --}}
+                        <td class="px-4 py-3">
+                            @php $site = $member->vipMicrosite; @endphp
+                            @if (! $site?->isActivated())
+                                <span class="text-xs text-slate-400">Not activated</span>
+                            @elseif ($site->hasExpiredPlan())
+                                <p class="text-xs font-semibold text-red-600 mb-1.5">
+                                    Expired {{ $site->plan_expires_at->format('d M Y') }}
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <form action="{{ route('manager.vip-members.renewal.approve', $member) }}" method="POST"
+                                          data-confirm="Confirm the renewal payment has been received? This brings their page back online."
+                                          data-confirm-title="Approve Renewal" data-confirm-button="Yes, approve">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-green-700">
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('manager.vip-members.renewal.reject', $member) }}" method="POST"
+                                          data-confirm="Reject this renewal? Their page stays on the maintenance notice." data-confirm-danger
+                                          data-confirm-title="Reject Renewal" data-confirm-button="Yes, reject">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="bg-white border border-red-200 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-red-50">
+                                            Reject
+                                        </button>
+                                    </form>
+                                </div>
+                                @if ($last = $site->renewals->first())
+                                    <p class="text-xs text-slate-400 mt-1.5">
+                                        Last decision: {{ $last->decision }} on {{ $last->decided_at->format('d M Y') }}
+                                    </p>
+                                @endif
+                            @else
+                                @php $daysLeft = $site->daysUntilExpiry(); @endphp
+                                <span class="px-2 py-0.5 rounded text-xs {{ $daysLeft !== null && $daysLeft <= 30 ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700' }}">
+                                    Valid till {{ $site->plan_expires_at?->format('d M Y') ?? '—' }}
+                                </span>
+                                @if ($daysLeft !== null && $daysLeft <= 30)
+                                    <p class="text-xs text-amber-600 mt-0.5">{{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} left</p>
+                                @endif
+                            @endif
+                        </td>
                         <td class="px-4 py-3 text-right space-x-3">
                             @if ($member->vipMicrosite)
                                 <a href="{{ $member->vipMicrosite->publicPath() }}" target="_blank" class="text-brand-700 hover:underline">View Page</a>
@@ -63,7 +108,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">You haven't added any VIP Members yet.</td></tr>
+                    <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">You haven't added any VIP Members yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

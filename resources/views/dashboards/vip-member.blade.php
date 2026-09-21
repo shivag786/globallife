@@ -13,6 +13,18 @@
     ];
 @endphp
 <x-layouts.app title="VIP Dashboard" heading="VIP Dashboard">
+    {{-- Without this the member has no way to know their public page went dark. --}}
+    @if ($microsite?->hasExpiredPlan())
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
+            <p class="font-semibold text-amber-800">Your plan expired on {{ $microsite->plan_expires_at->format('d M Y') }}</p>
+            <p class="text-sm text-amber-700 mt-1">
+                Visitors to your page are currently seeing a maintenance notice. Contact your Commission
+                Partner to renew — your page goes live again as soon as they approve it. Your content,
+                leads and reviews are all safe in the meantime.
+            </p>
+        </div>
+    @endif
+
     <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
             <p class="text-slate-600">Welcome back, <strong>{{ $user->name }}</strong>.</p>

@@ -28,7 +28,7 @@
                     @php
                         $u = $m->user;
                         $tx = $m->commissionTransaction;
-                        $renewsAt = $m->activated_at?->copy()->addYear();
+                        $renewsAt = $m->plan_expires_at;
                         $overdue = $renewsAt && $renewsAt->isPast();
                         // Upline: prefer the recorded activation split, fall back to the creator chain.
                         $cpName = $tx?->commissionPartner?->name ?? $u?->creator?->name;

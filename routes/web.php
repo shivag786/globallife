@@ -216,6 +216,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::patch('vip-members/{vipMember}/activate', [App\Http\Controllers\Manager\VipMemberController::class, 'activate'])
             ->name('vip-members.activate');
 
+        // Plan renewal — only meaningful once the member's plan has expired.
+        Route::patch('vip-members/{vipMember}/renewal/approve', [App\Http\Controllers\Manager\VipMemberController::class, 'approveRenewal'])
+            ->name('vip-members.renewal.approve');
+        Route::patch('vip-members/{vipMember}/renewal/reject', [App\Http\Controllers\Manager\VipMemberController::class, 'rejectRenewal'])
+            ->name('vip-members.renewal.reject');
+
         Route::get('/revenue', [App\Http\Controllers\Manager\RevenueController::class, 'index'])->name('revenue.index');
     });
 
