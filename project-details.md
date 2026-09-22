@@ -96,6 +96,7 @@ dashboard (admin/branch/manager/vip) or, for customers, to `account.orders`.
 - `Order` / `OrderItem` — `STATUS_FLOW = pending→confirmed→processing→dispatched→delivered`; route key = `order_number`; `commission_credited` flag.
 - `Wallet` — per-user balance; `CommissionEarning` — one row per beneficiary per order item (pending → approved on delivery).
 - `VipRenewal` — audit trail of a Commission Partner's approve/reject decision on an expired plan.
+- `WithdrawalRequest` — a VIP member asking to withdraw their wallet; `pending` until an admin records the manual transfer's UTR / screenshot, which is when the wallet is debited.
 - `CommissionPayout` — a super-admin settlement of one beneficiary's earnings for one calendar month (`period` = `YYYY-MM`), splitting `product_amount` / `vip_amount` and recording `wallet_debited`.
 
 ## 5. Two SEPARATE commission systems
@@ -183,6 +184,33 @@ hides anything**: the member keeps what they have and simply cannot add more.
 
 Approving a renewal switches `vip_microsites.vip_plan_id` to the chosen package,
 which is what moves the member's caps, and sets the new expiry from *today*.
+
+## 5c. VIP member withdrawals
+
+`WithdrawalService` — **VIP members only**. Commission Partners and Branch
+Managers are settled monthly by the Super Admin via `admin/partner-payouts`
+instead; same wallet, two deliberately separate mechanisms.
+
+- `MINIMUM_AMOUNT = 500`, `COOLDOWN_HOURS = 24` — one request per 24 hours.
+- `availableBalance()` = wallet minus any pending request, so two open requests
+  can never together exceed the wallet.
+- **The wallet is debited on mark-paid, not on request**, so a pending request
+  never makes money vanish from the member's view.
+- `blockReason()` is checked **before** the amount is validated, because the
+  Request button is deliberately always enabled: pressing it must report "already
+  available, kindly try after 24 hours" rather than complain about the figure.
+  `hasOpenRequest()` decides whether the form stays on screen at all — it does
+  while a request is open, but not when the balance is simply below ₹500.
+- `markPaid()` requires a UTR number **or** a screenshot (`required_without`
+  both ways, plus a service-level guard). There is no payment gateway: the admin
+  transfers by hand and records proof, which is what the member is shown.
+- Member side (`/wallet`): request form + one card per request showing amount and
+  status. **View Detail appears only once paid**, opening a `<dialog>` with the
+  UTR, note and screenshot.
+- Admin side (`admin/withdrawals`, super-admin only): table of who asked, for how
+  much, wallet now vs at request, with a Mark as Paid `<dialog>` carrying the
+  proof form. The admin dashboard has a "Withdrawal Requests from VIP Members"
+  box with the pending count that links straight to the queue.
 
 ## 6. E-commerce flow
 
@@ -347,7 +375,10 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 503 maintenance page, approve/reject, not-yet-expired refusal, ownership),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
-keeps existing rows, retired package refused).
+keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
+30-day window, early renewal stacking on remaining days), `VipWithdrawalTest`
+(the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
+UTR/screenshot required, View Detail hidden while pending, RBAC).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 

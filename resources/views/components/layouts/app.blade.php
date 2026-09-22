@@ -62,6 +62,7 @@
                         <a href="{{ route('admin.branch-managers.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Branch Managers</a>
                         <a href="{{ route('admin.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
                         <a href="{{ route('admin.partner-payouts.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Partner Payouts</a>
+                        <a href="{{ route('admin.withdrawals.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">VIP Withdrawals</a>
 
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">VIP Membership</p>
                         <a href="{{ route('admin.vip-plans.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">VIP Plans</a>

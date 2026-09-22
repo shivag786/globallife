@@ -10,6 +10,8 @@ use App\Models\Lead;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\VipPlan;
+use App\Models\WithdrawalRequest;
+use App\Services\PermissionMatrixService;
 use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +39,16 @@ class DashboardController extends Controller
             'overview' => $isAdmin ? $this->overview() : null,
             'isSuperAdmin' => $user->hasRole('super_admin'),
             'charts' => $isAdmin ? $this->charts() : null,
+            // Drives the "Withdrawal Requests" box; Super-Admin-only, like the
+            // page it links to.
+            'withdrawals' => $user->hasRole('super_admin')
+                ? [
+                    'pending' => WithdrawalRequest::pending()->count(),
+                    'pending_amount' => (float) WithdrawalRequest::pending()->sum('amount'),
+                ]
+                : null,
             'permissionMatrix' => $user->hasRole('sub_admin')
-                ? \App\Services\PermissionMatrixService::groupByModule($user->getAllPermissions()->pluck('name'))
+                ? PermissionMatrixService::groupByModule($user->getAllPermissions()->pluck('name'))
                 : null,
         ]);
     }

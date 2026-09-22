@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\VipMemberController;
 use App\Http\Controllers\Admin\VipPlanController;
+use App\Http\Controllers\Admin\WithdrawalController as AdminWithdrawalController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Branch\CommissionPartnerController;
 use App\Http\Controllers\CartController;
@@ -51,6 +52,7 @@ use App\Http\Controllers\Vip\ServiceController;
 use App\Http\Controllers\Vip\VideoController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
@@ -97,6 +99,13 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
     // Product-commission wallet — shared by VIP members, Commission Partners, Branch Managers.
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+
+    // Withdrawal requests against that wallet. VIP members only: Commission
+    // Partners and Branch Managers are settled monthly by the Super Admin
+    // through admin/partner-payouts instead.
+    Route::post('/wallet/withdrawals', [WithdrawalController::class, 'store'])
+        ->middleware(['role:vip_member', 'throttle:10,1'])
+        ->name('withdrawals.store');
 
     // Customer account area.
     Route::get('/account/orders', [OrderController::class, 'index'])->name('account.orders.index');
@@ -183,6 +192,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
             Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
             Route::get('revenue', [RevenueController::class, 'index'])->name('revenue.index');
+
+            // VIP-member withdrawal queue + the manual "mark as paid" action.
+            Route::get('withdrawals', [AdminWithdrawalController::class, 'index'])->name('withdrawals.index');
+            Route::patch('withdrawals/{withdrawal}/mark-paid', [AdminWithdrawalController::class, 'markPaid'])
+                ->name('withdrawals.mark-paid');
 
             Route::resource('vip-plans', VipPlanController::class)->except(['show']);
 

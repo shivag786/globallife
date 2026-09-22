@@ -50,6 +50,24 @@
             :product-hint="'Company margin on '.$overview['products']['count'].' delivered order'.($overview['products']['count'] === 1 ? '' : 's')" />
     @endif
 
+    @if ($withdrawals)
+        <div class="mb-3 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                <x-icon name="rupee" class="w-4 h-4" />
+            </span>
+            <h2 class="font-semibold text-slate-800">Payouts</h2>
+            <span class="text-xs text-slate-400">&mdash; money waiting to go out</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+            <x-stat-tile label="Withdrawal Requests from VIP Members" :value="$withdrawals['pending']"
+                icon="rupee" color="amber" :href="route('admin.withdrawals.index', ['status' => 'pending'])"
+                cta="Mark as paid"
+                :hint="$withdrawals['pending'] > 0
+                    ? '₹'.number_format($withdrawals['pending_amount'], 2).' awaiting payment'
+                    : 'Nothing pending'" />
+        </div>
+    @endif
+
     @if ($stats)
         <div class="mb-3 flex items-center gap-2">
             <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
