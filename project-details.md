@@ -159,8 +159,9 @@ Partner per month:
   one-per-microsite and joining-only.
 
 **The four packages** (seeded by migration `2026_09_21_000003` and
-`VipPlanSeeder`; the legacy Silver/Gold/Platinum/Diamond rows are set
-`inactive`, never deleted, because live microsites still reference them):
+`VipPlanSeeder`). The legacy Silver/Gold/Platinum/Diamond rows were **deleted**
+by `2026_09_22_000002`; there is no admin screen to add or edit plans, so these
+four are fixed in code and changing one needs a migration:
 
 | Package | Price | Validity | Products | Services |
 |---------|-------|----------|----------|----------|
@@ -211,6 +212,25 @@ instead; same wallet, two deliberately separate mechanisms.
   much, wallet now vs at request, with a Mark as Paid `<dialog>` carrying the
   proof form. The admin dashboard has a "Withdrawal Requests from VIP Members"
   box with the pending count that links straight to the queue.
+
+### Deleting the legacy plans (2026-09-22)
+
+The pre-package plans are gone, which required two concessions:
+
+- `vip_microsites.vip_plan_id` is NOT NULL, so microsites still on a legacy plan
+  were **repointed** to the equivalent package (silver→growth, gold→professional,
+  platinum→growth-plus, diamond→premium). That also gave them real caps: the
+  legacy rows carried `product_limit = 0`, which had been blocking those members
+  from adding any content.
+- `commission_transactions.vip_plan_id` and `vip_renewals.vip_plan_id` are now
+  **nullable with ON DELETE SET NULL**. The money facts — `package_amount`, the
+  percentages and every party's share — survive untouched, but those historical
+  rows no longer name the package that was sold. Anything reading a plan off
+  *history* must use `?->`; a microsite's own `vipPlan` is still never null.
+
+The admin VIP Plans CRUD (controller, form requests, views, routes, sidebar link)
+was removed at the same time. The dashboard still counts active plans but no
+longer links anywhere.
 
 ## 6. E-commerce flow
 
@@ -376,7 +396,8 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `VipWithdrawalTest`
+30-day window, early renewal stacking on remaining days), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
+commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
 Helper: `tests/Support/BuildsCommissionChain`.

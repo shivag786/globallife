@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\HomeSection;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\BuildsCommissionChain;
@@ -68,13 +67,8 @@ class VipPlansHiddenTest extends TestCase
         $this->get('/')->assertOk()->assertSee('About Global Life', false);
     }
 
-    public function test_super_admin_can_still_manage_vip_plans(): void
-    {
-        $this->seedRoles();
-        $admin = User::factory()->create(['status' => 'active']);
-        $admin->assignRole('super_admin');
-
-        // Hiding the public entry points must not take the admin CRUD with it.
-        $this->actingAs($admin)->get('/admin/vip-plans')->assertOk();
-    }
+    // The admin VIP Plans CRUD used to be asserted here, to prove that hiding the
+    // public entry points had not taken the admin tooling with it. That screen has
+    // since been removed on purpose — the four packages are fixed — so the
+    // contract now lives in LegacyVipPlansRemovedTest, which asserts it is gone.
 }

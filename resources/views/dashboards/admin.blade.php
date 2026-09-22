@@ -84,8 +84,9 @@
                 :href="$isSuperAdmin ? route('admin.branch-managers.index') : null" cta="Manage" />
             <x-stat-tile label="Commission Partners" :value="$stats['commission_partners']" icon="users" color="violet"
                 :href="$isSuperAdmin ? route('admin.commission-partners.index') : null" cta="View" />
+            {{-- The four packages are fixed, so there is no admin screen to link to. --}}
             <x-stat-tile label="Active VIP Plans" :value="$stats['vip_plans']" icon="sparkles" color="amber"
-                :href="$isSuperAdmin ? route('admin.vip-plans.index') : null" cta="Manage plans" />
+                hint="Growth, Professional, Growth Plus, Premium" />
             <x-stat-tile label="VIP Members" :value="$stats['vip_members']" icon="star" color="teal"
                 :href="$isSuperAdmin ? route('admin.vip-members.index') : null" cta="View members" />
         </div>

@@ -23,7 +23,6 @@ use App\Http\Controllers\Admin\RevenueController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\VipMemberController;
-use App\Http\Controllers\Admin\VipPlanController;
 use App\Http\Controllers\Admin\WithdrawalController as AdminWithdrawalController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Branch\CommissionPartnerController;
@@ -197,8 +196,6 @@ Route::middleware(['auth', 'active_account'])->group(function () {
             Route::get('withdrawals', [AdminWithdrawalController::class, 'index'])->name('withdrawals.index');
             Route::patch('withdrawals/{withdrawal}/mark-paid', [AdminWithdrawalController::class, 'markPaid'])
                 ->name('withdrawals.mark-paid');
-
-            Route::resource('vip-plans', VipPlanController::class)->except(['show']);
 
             Route::resource('home-sections', HomeSectionController::class)
                 ->except(['show'])
