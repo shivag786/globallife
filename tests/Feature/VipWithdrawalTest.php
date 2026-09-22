@@ -314,7 +314,11 @@ class VipWithdrawalTest extends TestCase
         $this->actingAs($member)->get('/vip/dashboard')
             ->assertOk()
             ->assertSee('Wallet &amp; Withdrawals', false)
-            ->assertSee('business page has not been set up yet', false);
+            ->assertSee('business page has not been set up yet', false)
+            // The page must not be empty: earnings work without a microsite.
+            ->assertSee('Withdrawable Balance', false)
+            ->assertSee('Lifetime Earnings', false)
+            ->assertDontSee('Total Visitors', false);
 
         $this->actingAs($member)->get('/wallet')
             ->assertOk()

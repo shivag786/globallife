@@ -46,8 +46,8 @@
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
             <p class="font-semibold text-amber-800">Your business page has not been set up yet</p>
             <p class="text-sm text-amber-700 mt-1">
-                Your Commission Partner creates it for you. Everything else in the menu, including your
-                Wallet &amp; Withdrawals, still works in the meantime.
+                Your Commission Partner creates it for you. Visitor and enquiry figures appear here once
+                it is live &mdash; your earnings and withdrawals below work regardless.
             </p>
         </div>
     @endunless
@@ -67,7 +67,43 @@
         @endif
     </div>
 
+    {{-- Earnings first: it is the one part of this page that works whether or not
+         the business page exists, and it is what members come here for. --}}
+    <div class="mb-3 flex items-center gap-2">
+        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
+            <x-icon name="rupee" class="w-4 h-4" />
+        </span>
+        <h2 class="font-semibold text-slate-800">Earnings</h2>
+        <span class="text-xs text-slate-400">&mdash; your commission wallet</span>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <x-stat-tile label="Withdrawable Balance" :value="$earnings['balance']" money icon="rupee"
+            color="emerald" :href="route('wallet.index')" cta="Wallet & Withdrawals"
+            hint="Ready to request" />
+        <x-stat-tile label="Pending Commission" :value="$earnings['pending']" money icon="sparkles"
+            color="amber" :href="route('wallet.index')" cta="See breakdown"
+            hint="Unlocks as orders deliver" />
+        <x-stat-tile label="Lifetime Earnings" :value="$earnings['lifetime']" money icon="star"
+            color="brand" :href="route('wallet.index')" cta="View history" />
+
+        @if ($earnings['open_request'])
+            <x-stat-tile label="Withdrawal Requested" :value="$earnings['open_request']->amount" money
+                icon="truck" color="violet" :href="route('wallet.index')" cta="Track request"
+                :hint="'Awaiting payment since '.$earnings['open_request']->created_at->format('d M')" />
+        @else
+            <x-stat-tile label="Withdrawal Requests" value="0" icon="inbox" color="sky"
+                :href="route('wallet.index')" cta="Request a withdrawal" hint="None open right now" />
+        @endif
+    </div>
+
     @if ($microsite)
+        <div class="mb-3 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <x-icon name="eye" class="w-4 h-4" />
+            </span>
+            <h2 class="font-semibold text-slate-800">Business Page</h2>
+            <span class="text-xs text-slate-400">&mdash; visitors &amp; engagement</span>
+        </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
             @foreach ($tiles as $tile)
                 <x-stat-tile :label="$tile['label']" :value="$tile['value']" :icon="$tile['icon']"

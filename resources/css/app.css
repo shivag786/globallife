@@ -38,6 +38,22 @@
         box-shadow: 0 20px 50px -20px rgb(15 41 28 / 0.25);
     }
 
+    /* Native <dialog> centring. Tailwind's Preflight sets `margin: 0` on every
+       element, which overrides the UA stylesheet's `margin: auto` on a modal
+       dialog — leaving it pinned to the left edge instead of centred. The
+       attribute selector also out-specifies Preflight's `*`, so layer order
+       cannot undo it. */
+    dialog[open] {
+        margin: auto;
+        max-height: calc(100vh - 2rem);
+        max-width: calc(100vw - 2rem);
+        overflow-y: auto;
+    }
+
+    dialog::backdrop {
+        background-color: rgb(15 23 42 / 0.5);
+    }
+
     /* Package picker (x-package-card, selectable mode). Tailwind's peer-checked:
        variant only reaches direct siblings of the input, and the card's action
        area is nested inside the frame — so the checked state is wired here. */

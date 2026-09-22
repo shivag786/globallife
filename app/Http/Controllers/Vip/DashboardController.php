@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Vip;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessProfileEvent;
+use App\Models\CommissionEarning;
 use App\Models\Lead;
+use App\Models\User;
+use App\Models\WithdrawalRequest;
 use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -13,18 +16,24 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $user = Auth::user()->load('vipMicrosite.city', 'vipMicrosite.vipPlan');
+        $user = Auth::user()->load('vipMicrosite.city', 'vipMicrosite.vipPlan', 'wallet');
         $microsite = $user->vipMicrosite;
 
-        // A vip_member without a microsite used to crash here on a null
+        // Earnings do not depend on the business page, so they are shown either
+        // way. Without this, a member whose page is not set up yet got a
+        // dashboard with nothing on it at all.
+        $earnings = $this->earnings($user);
+
+        // A vip_member without a microsite used to crash below on a null
         // dereference, which took the whole panel down: with the dashboard
         // 500ing they could not reach the sidebar, so Wallet and everything else
-        // became unreachable. The view already renders without a microsite.
+        // became unreachable. Every microsite-derived stat is simply absent.
         if (! $microsite) {
             return view('dashboards.vip-member', [
                 'user' => $user,
                 'stats' => null,
                 'visitorsChart' => null,
+                'earnings' => $earnings,
             ]);
         }
 
@@ -54,6 +63,23 @@ class DashboardController extends Controller
             'user' => $user,
             'stats' => $stats,
             'visitorsChart' => $visitorsChart,
+            'earnings' => $earnings,
         ]);
+    }
+
+    /**
+     * Wallet position for a VIP member: what they can withdraw, what is still
+     * pending delivery, and whether a withdrawal request is already open.
+     *
+     * @return array<string, mixed>
+     */
+    private function earnings(User $user): array
+    {
+        return [
+            'balance' => (float) ($user->wallet?->balance ?? 0),
+            'pending' => (float) CommissionEarning::where('beneficiary_id', $user->id)->pending()->sum('amount'),
+            'lifetime' => (float) CommissionEarning::where('beneficiary_id', $user->id)->approved()->sum('amount'),
+            'open_request' => WithdrawalRequest::where('user_id', $user->id)->pending()->latest('created_at')->first(),
+        ];
     }
 }
