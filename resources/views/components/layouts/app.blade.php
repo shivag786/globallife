@@ -140,9 +140,11 @@
                     <a href="{{ route('vip.profile.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Profile</a>
                     <a href="{{ route('vip.modules.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Section Visibility</a>
 
+                    <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Earnings</p>
+                    <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Wallet &amp; Withdrawals</a>
+
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Sell Products</p>
                     <a href="{{ route('vip.marketplace.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">My Store</a>
-                    <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
 
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Business Page</p>
                     <a href="{{ route('vip.banners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Homepage Banner</a>

@@ -1,6 +1,8 @@
 @php
     $microsite = $user->vipMicrosite;
-    $tiles = [
+    // $stats is null when the member has no microsite yet; the tiles below are
+    // only rendered inside @if ($microsite), so don't build them at all.
+    $tiles = $stats === null ? [] : [
         ['label' => 'Total Visitors', 'value' => $stats['total_visitors'], 'icon' => 'eye', 'color' => 'sky'],
         ["label" => "Today's Visitors", 'value' => $stats['today_visitors'], 'icon' => 'sparkles', 'color' => 'indigo'],
         ['label' => 'Total Leads', 'value' => $stats['total_leads'], 'icon' => 'inbox', 'color' => 'emerald', 'href' => route('vip.leads.index'), 'cta' => 'View leads'],
@@ -39,6 +41,16 @@
             </p>
         </div>
     @endif
+
+    @unless ($microsite)
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
+            <p class="font-semibold text-amber-800">Your business page has not been set up yet</p>
+            <p class="text-sm text-amber-700 mt-1">
+                Your Commission Partner creates it for you. Everything else in the menu, including your
+                Wallet &amp; Withdrawals, still works in the meantime.
+            </p>
+        </div>
+    @endunless
 
     <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>

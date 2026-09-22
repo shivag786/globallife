@@ -300,6 +300,27 @@ class VipWithdrawalTest extends TestCase
             ->assertSee('1,500.00 awaiting payment', false);
     }
 
+    public function test_a_member_without_a_microsite_can_still_reach_their_wallet(): void
+    {
+        // The VIP dashboard used to 500 on a null microsite, which took the whole
+        // sidebar down with it — so Wallet became unreachable rather than merely
+        // hidden. Both pages must survive.
+        $member = User::factory()->create(['status' => 'active']);
+        $member->assignRole('vip_member');
+        Wallet::create(['user_id' => $member->id, 'balance' => 1500]);
+
+        $this->assertNull($member->vipMicrosite);
+
+        $this->actingAs($member)->get('/vip/dashboard')
+            ->assertOk()
+            ->assertSee('Wallet &amp; Withdrawals', false)
+            ->assertSee('business page has not been set up yet', false);
+
+        $this->actingAs($member)->get('/wallet')
+            ->assertOk()
+            ->assertSee('Withdraw your balance', false);
+    }
+
     public function test_a_vip_member_cannot_reach_the_admin_queue(): void
     {
         [$member] = $this->memberWithBalance(2000);

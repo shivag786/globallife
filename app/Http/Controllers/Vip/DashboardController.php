@@ -15,6 +15,19 @@ class DashboardController extends Controller
     {
         $user = Auth::user()->load('vipMicrosite.city', 'vipMicrosite.vipPlan');
         $microsite = $user->vipMicrosite;
+
+        // A vip_member without a microsite used to crash here on a null
+        // dereference, which took the whole panel down: with the dashboard
+        // 500ing they could not reach the sidebar, so Wallet and everything else
+        // became unreachable. The view already renders without a microsite.
+        if (! $microsite) {
+            return view('dashboards.vip-member', [
+                'user' => $user,
+                'stats' => null,
+                'visitorsChart' => null,
+            ]);
+        }
+
         $events = $microsite->events();
 
         $stats = [
