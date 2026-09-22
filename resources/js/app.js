@@ -30,6 +30,9 @@ if (document.getElementById('flash-data') || document.querySelector('[data-confi
 if (document.querySelector('[data-cart-ajax]')) {
     import('./cart').then(({ initCart }) => initCart());
 }
+if (document.querySelector('[data-city-picker]')) {
+    import('./forms/city-picker').then(({ initCityPicker }) => initCityPicker());
+}
 
 // Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
 // [data-modal-close] element or a click on the backdrop itself closes it.

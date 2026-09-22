@@ -1,10 +1,6 @@
 @csrf
 @isset($partner) @method('PUT') @endisset
 
-@php
-    $assignedCityIds = isset($partner) ? $partner->cities->pluck('id')->all() : old('cities', []);
-@endphp
-
 <div class="bootstrap-scope max-w-3xl">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
@@ -37,22 +33,14 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
                 <h2 class="h6 mb-0 fw-semibold">Cities</h2>
-                <p class="small text-muted mb-0">Only cities assigned to your branch are selectable.</p>
+                <p class="small text-muted mb-0">
+                    Pick a state, then the city. If the city isn't listed, choose &ldquo;Other&rdquo; and type it
+                    &mdash; it will be created and added to your branch.
+                </p>
             </div>
             <div class="card-body">
-                <div class="row g-2">
-                    @forelse ($cities as $city)
-                        <div class="col-md-4">
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="checkbox" name="cities[]" value="{{ $city->id }}"
-                                       @checked(in_array($city->id, $assignedCityIds))>
-                                <span class="text-sm">{{ $city->name }}, {{ $city->state }}</span>
-                            </label>
-                        </div>
-                    @empty
-                        <p class="text-slate-400 text-sm">You have no cities assigned yet. Contact your Super Admin.</p>
-                    @endforelse
-                </div>
+                <x-city-picker :states="$states" :cities-by-state="$citiesByState"
+                               :selected="$partner->cities ?? null" />
             </div>
         </div>
 

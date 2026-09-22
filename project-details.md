@@ -232,6 +232,30 @@ The admin VIP Plans CRUD (controller, form requests, views, routes, sidebar link
 was removed at the same time. The dashboard still counts active plans but no
 longer links anywhere.
 
+### Branch Manager city picker (state -> city, with inline creation)
+
+Adding a Commission Partner used a flat checkbox list of the Branch Manager's
+assigned cities. It is now `<x-city-picker>`: a **state** dropdown, a **city**
+dropdown filtered to that state, and "Other" on either one revealing a text box
+so a missing city (or a state with no cities yet) can be typed in. Each pick
+becomes a removable chip.
+
+- `CityDirectoryService` supplies `states()` and `citiesByState()` for the
+  cascade, and `resolveOrCreate($name, $state)` for typed entries. Matching is
+  case-insensitive on name + state, so "  jhansi " reuses the existing Jhansi
+  rather than duplicating it.
+- **`cities.slug` is globally unique** because it is the first segment of a
+  microsite URL, so a second "Springfield" in another state gets
+  `springfield-bihar`, then a numeric suffix if that is taken too.
+- The form posts `cities[]` (existing ids) and `new_cities[N][name|state]`
+  (typed). `CommissionPartnerService::resolveCities()` merges them and
+  **`syncWithoutDetaching`s every city onto the Branch Manager's branch** —
+  `CityWithinBranchManager` was dropped, so assigning a partner is now also how a
+  Branch Manager takes on new territory.
+- The picker JS is code-split (`resources/js/forms/city-picker.js`), loaded only
+  when `[data-city-picker]` is present. Without JS the chips still post
+  correctly, so a failed submit never loses what was entered.
+
 ## 6. E-commerce flow
 
 - **Cart** (`CartService`) — session-backed, guest-friendly. Stores only
@@ -396,7 +420,8 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
+30-day window, early renewal stacking on remaining days), `BranchCityPickerTest` (the cascade, typed cities, dedupe by name+state, slug
+collisions across states, branch attachment), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
