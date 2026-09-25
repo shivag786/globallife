@@ -57,6 +57,20 @@
         background-color: rgb(15 23 42 / 0.5);
     }
 
+    /* Permission cards. Tailwind's peer-checked: variant only reaches direct
+       siblings of the input, and the tick sits inside the frame, so its checked
+       state is wired here. */
+    .perm-check:checked ~ .perm-frame .perm-tick {
+        background-color: var(--color-brand-600);
+        border-color: var(--color-brand-600);
+        color: #fff;
+    }
+
+    .perm-check:focus-visible ~ .perm-frame {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+    }
+
     /* Package picker (x-package-card, selectable mode). Tailwind's peer-checked:
        variant only reaches direct siblings of the input, and the card's action
        area is nested inside the frame — so the checked state is wired here. */

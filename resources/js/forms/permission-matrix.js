@@ -9,7 +9,8 @@
  * The row/column/all boxes are UI only — they carry no name and are never
  * submitted. They also reflect the grid: tick every cell in a row by hand and
  * that row's toggle turns itself on, and a partly-filled row shows as
- * indeterminate rather than pretending to be off.
+ * indeterminate rather than pretending to be off. The header's granted tally is
+ * kept in step from here too, so the count never disagrees with the boxes.
  */
 export function initPermissionMatrix() {
     document.querySelectorAll('[data-permission-matrix]').forEach(setup);
@@ -20,6 +21,7 @@ function setup(root) {
     if (boxes.length === 0) return;
 
     const all = root.querySelector('[data-permission-all]');
+    const counter = document.querySelector('[data-permission-count]');
     const rows = [...root.querySelectorAll('[data-permission-row]')];
     const columns = [...root.querySelectorAll('[data-permission-column]')];
 
@@ -37,6 +39,8 @@ function setup(root) {
         rows.forEach((t) => reflect(t, inRow(t.dataset.permissionRow)));
         columns.forEach((t) => reflect(t, inColumn(t.dataset.permissionColumn)));
         if (all) reflect(all, boxes);
+        // Live tally in the header, so the count never lies about the grid.
+        if (counter) counter.textContent = String(boxes.filter((b) => b.checked).length);
     }
 
     function apply(group, checked) {

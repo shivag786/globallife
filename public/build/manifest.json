@@ -248,7 +248,7 @@
     "src": "_manrope-800-normal-uHUdIJgA.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-B4XLJZLn.css",
+    "file": "assets/app-DlsJOJ7g.css",
     "name": "app",
     "names": [
       "app.css"
@@ -275,7 +275,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-B_Jk2tG2.js",
+    "file": "assets/app-C1lL4mE_.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -310,7 +310,7 @@
     "isDynamicEntry": true
   },
   "resources/js/forms/permission-matrix.js": {
-    "file": "assets/permission-matrix-CMsLHX0E.js",
+    "file": "assets/permission-matrix-zcoriauE.js",
     "name": "permission-matrix",
     "src": "resources/js/forms/permission-matrix.js",
     "isDynamicEntry": true
@@ -322,7 +322,7 @@
     "isDynamicEntry": true
   },
   "resources/js/notify/init.js": {
-    "file": "assets/init-Ud6PIhwa.js",
+    "file": "assets/init-B2x5f6Lm.js",
     "name": "init",
     "src": "resources/js/notify/init.js",
     "isDynamicEntry": true,
