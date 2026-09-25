@@ -30,6 +30,9 @@
     --color-gold-600: #b5912b;
 
     --color-cream: #f8f5ef;
+
+    /* Border on every form control. One dial — darken or lighten here. */
+    --color-input-border: #64748b;
     --color-cream-dark: #efe9dc;
 }
 
@@ -362,6 +365,29 @@
  * Left unlayered and using the attribute-scoped selector (higher specificity
  * than a bare utility), so these win over Tailwind utilities without !important.
  * ============================================================ */
+/* Every form control gets a visible, dark border.
+   Deliberately unlayered: a rule inside @layer base loses to Tailwind's
+   utilities layer whatever its specificity, so `border-slate-300` would win.
+   Preflight also sets `border: 0 solid` on everything and this project has no
+   forms plugin, which means those utility classes were only ever colouring a
+   ZERO-width border — most inputs rendered with no border at all. Hence setting
+   width and style here too, not just the colour. */
+:root input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='submit']):not([type='button']):not([type='range']):not([type='hidden']),
+:root select,
+:root textarea {
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--color-input-border);
+}
+
+/* Focus colour has to be restated for the same reason: `focus:border-*`
+   utilities sit in the utilities layer and would lose to the rule above. */
+:root input:not([type='checkbox']):not([type='radio']):not([type='file']):focus,
+:root select:focus,
+:root textarea:focus {
+    border-color: var(--color-brand-600);
+}
+
 [data-theme='dark'] body {
     background-color: #0b1220;
     color: #e2e8f0;

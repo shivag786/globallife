@@ -33,6 +33,9 @@ if (document.querySelector('[data-cart-ajax]')) {
 if (document.querySelector('[data-city-picker]')) {
     import('./forms/city-picker').then(({ initCityPicker }) => initCityPicker());
 }
+if (document.querySelector('[data-permission-matrix]')) {
+    import('./forms/permission-matrix').then(({ initPermissionMatrix }) => initPermissionMatrix());
+}
 
 // Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
 // [data-modal-close] element or a click on the backdrop itself closes it.
@@ -320,6 +323,38 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
         } else if (state.step === 'email') {
             state.email = value;
             submitLead();
+        }
+    });
+})();
+
+// Autofocus: mark the first usable field of every form, and put the cursor in
+// the very first one on the page. Fields inside a closed <dialog> or a hidden
+// container are skipped, so opening a modal later is not fought over, and
+// preventScroll stops the page jumping to a form below the fold.
+(function () {
+    const SKIP_TYPES = ['hidden', 'checkbox', 'radio', 'submit', 'button', 'reset', 'image', 'file'];
+    const alreadyMarked = document.querySelector('[autofocus]');
+    let focused = Boolean(alreadyMarked);
+
+    document.querySelectorAll('form').forEach((form) => {
+        if (form.closest('dialog:not([open])') || form.closest('[hidden]')) return;
+
+        const field = [...form.elements].find((el) => {
+            const tag = el.tagName;
+            if (tag !== 'INPUT' && tag !== 'SELECT' && tag !== 'TEXTAREA') return false;
+            if (el.disabled || el.readOnly) return false;
+            if (tag === 'INPUT' && SKIP_TYPES.includes(el.type)) return false;
+            // offsetParent is null for display:none (and anything inside it).
+            return el.offsetParent !== null;
+        });
+
+        if (!field) return;
+
+        field.setAttribute('autofocus', '');
+
+        if (!focused) {
+            focused = true;
+            field.focus({ preventScroll: true });
         }
     });
 })();

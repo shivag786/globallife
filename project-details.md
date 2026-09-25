@@ -274,6 +274,34 @@ nesting forms is invalid HTML, and a reset should not ride along with a save).
 - `User::getActivitylogOptions()` uses `logOnly([...])` without `password`, so no
   hash reaches `activity_log`.
 
+### Form and permission UI conventions
+
+- **Input borders.** `--color-input-border` in `resources/css/app.css` is the one
+  dial for every form control's border. The rule is **deliberately unlayered**
+  (placed after every `@layer` block): a rule inside `@layer base` loses to
+  Tailwind's utilities layer whatever its specificity, so `border-slate-300`
+  would win. It sets `border-width` and `border-style` too, not just the colour —
+  Preflight sets `border: 0 solid` and this project has no Tailwind forms plugin,
+  so those utility classes had only been colouring a zero-width border and most
+  inputs rendered with no border at all. Focus colour is restated there for the
+  same cascade reason.
+- **Autofocus.** `resources/js/app.js` marks the first usable field of every form
+  with `autofocus` and focuses the first one on the page. It skips disabled,
+  readonly, hidden and `display:none` fields, anything inside a closed
+  `<dialog>`, and uses `preventScroll` so the page does not jump.
+- **Permission grids.** `<form data-permission-matrix>` picks up
+  `resources/js/forms/permission-matrix.js`, giving select-all, per-row (module)
+  and per-column (action) toggles. The toggles carry no `name`, so they are never
+  submitted, and they reflect the grid — a partly-filled row shows indeterminate.
+- **Active modules only.** `BranchPermissionMatrixService::ACTIVE_MODULES` lists
+  the modules with a real page (`commission-partners`). `MODULES` still holds the
+  Phase 2 names so previously granted permissions stay recognised names, but the
+  permissions screen and the branch sidebar both render only the active ones.
+  Saving from that screen therefore clears any grant on an inactive module.
+- **A Branch Manager's cities are optional.** They can be created before their
+  territory is decided, and they pick up a city automatically when assigning a
+  Commission Partner to one.
+
 ## 6. E-commerce flow
 
 - **Cart** (`CartService`) — session-backed, guest-friendly. Stores only
@@ -438,7 +466,9 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
+30-day window, early renewal stacking on remaining days), `AdminFormUsabilityTest` (permission grid lists only live modules and offers
+bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
+optional), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
 clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
 `BranchCityPickerTest` (the cascade, typed cities, dedupe by name+state, slug
 collisions across states, branch attachment), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,

@@ -248,7 +248,7 @@
     "src": "_manrope-800-normal-uHUdIJgA.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BC_TqW1z.css",
+    "file": "assets/app-B4XLJZLn.css",
     "name": "app",
     "names": [
       "app.css"
@@ -275,7 +275,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-DsVzUyMg.js",
+    "file": "assets/app-B_Jk2tG2.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -287,7 +287,8 @@
       "resources/js/charts/init.js",
       "resources/js/notify/init.js",
       "resources/js/cart.js",
-      "resources/js/forms/city-picker.js"
+      "resources/js/forms/city-picker.js",
+      "resources/js/forms/permission-matrix.js"
     ]
   },
   "resources/js/cart.js": {
@@ -308,6 +309,12 @@
     "src": "resources/js/forms/city-picker.js",
     "isDynamicEntry": true
   },
+  "resources/js/forms/permission-matrix.js": {
+    "file": "assets/permission-matrix-CMsLHX0E.js",
+    "name": "permission-matrix",
+    "src": "resources/js/forms/permission-matrix.js",
+    "isDynamicEntry": true
+  },
   "resources/js/microsite/init.js": {
     "file": "assets/init-BeJpCGCT.js",
     "name": "init",
@@ -315,7 +322,7 @@
     "isDynamicEntry": true
   },
   "resources/js/notify/init.js": {
-    "file": "assets/init-CJNNisL1.js",
+    "file": "assets/init-Ud6PIhwa.js",
     "name": "init",
     "src": "resources/js/notify/init.js",
     "isDynamicEntry": true,

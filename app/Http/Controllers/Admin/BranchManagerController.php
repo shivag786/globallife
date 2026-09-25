@@ -38,7 +38,7 @@ class BranchManagerController extends Controller
     {
         $data = $request->validated();
 
-        $this->branchManagers->createBranchManager($data, $data['cities'], (float) $data['commission_percentage']);
+        $this->branchManagers->createBranchManager($data, $data['cities'] ?? [], (float) $data['commission_percentage']);
 
         return redirect()->route('admin.branch-managers.index')->with('status', 'Branch Manager created successfully.');
     }
@@ -55,7 +55,7 @@ class BranchManagerController extends Controller
     {
         $data = $request->validated();
 
-        $this->branchManagers->updateBranchManager($branchManager, $data, $data['cities'], (float) $data['commission_percentage']);
+        $this->branchManagers->updateBranchManager($branchManager, $data, $data['cities'] ?? [], (float) $data['commission_percentage']);
 
         return redirect()->route('admin.branch-managers.index')->with('status', 'Branch Manager updated successfully.');
     }
@@ -90,7 +90,7 @@ class BranchManagerController extends Controller
     {
         return view('admin.branch-managers.permissions', [
             'manager' => $branchManager,
-            'modules' => BranchPermissionMatrixService::MODULES,
+            'modules' => BranchPermissionMatrixService::activeModules(),
             'actions' => BranchPermissionMatrixService::ACTIONS,
             'granted' => $branchManager->getAllPermissions()->pluck('name')->all(),
         ]);

@@ -39,7 +39,11 @@
 
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
-                <h2 class="h6 mb-0 fw-semibold">Assigned Branches (Cities)</h2>
+                <h2 class="h6 mb-0 fw-semibold">Assigned Branches (Cities) <span class="fw-normal text-muted small">— optional</span></h2>
+                <p class="small text-muted mb-0">
+                    Leave empty if their territory isn't decided yet. They also pick up a city
+                    automatically whenever they assign a Commission Partner to one.
+                </p>
             </div>
             <div class="card-body">
                 <div class="row g-2">

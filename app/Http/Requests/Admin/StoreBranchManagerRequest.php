@@ -22,7 +22,9 @@ class StoreBranchManagerRequest extends FormRequest
             'mobile' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'cities' => ['required', 'array', 'min:1'],
+            // Optional: a Branch Manager may be created before their territory is
+            // decided, and they pick up cities anyway when assigning a partner.
+            'cities' => ['nullable', 'array'],
             'cities.*' => ['integer', 'exists:cities,id'],
             'commission_percentage' => ['required', 'numeric', 'min:0', new PercentageWithinCap(100)],
         ];

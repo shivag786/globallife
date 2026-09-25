@@ -21,11 +21,50 @@ class BranchPermissionMatrixService
     ];
 
     /**
+     * Modules that actually have a page in the Branch portal today.
+     *
+     * The rest of MODULES are Phase 2 placeholders with no route behind them, so
+     * granting them does nothing. They are hidden from both the permissions
+     * screen and the sidebar; MODULES still lists them so any permission already
+     * granted stays a valid name rather than becoming unrecognised.
+     *
+     * @var list<string>
+     */
+    public const ACTIVE_MODULES = ['commission-partners'];
+
+    /**
      * Actions assignable per module.
      *
      * @var list<string>
      */
     public const ACTIONS = ['view', 'edit', 'delete'];
+
+    /**
+     * @return list<string>
+     */
+    public static function activeModules(): array
+    {
+        return self::ACTIVE_MODULES;
+    }
+
+    /**
+     * Permission names for the modules that are live, i.e. what the permissions
+     * screen actually offers.
+     *
+     * @return list<string>
+     */
+    public static function activePermissions(): array
+    {
+        $permissions = [];
+
+        foreach (self::ACTIVE_MODULES as $module) {
+            foreach (self::ACTIONS as $action) {
+                $permissions[] = "branch.{$module}.{$action}";
+            }
+        }
+
+        return $permissions;
+    }
 
     /**
      * All "branch.{module}.{action}" permission names in the matrix.

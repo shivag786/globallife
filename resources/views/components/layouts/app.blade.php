@@ -103,16 +103,11 @@
                     <a href="{{ route('branch.revenue.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Revenue Tracking</a>
                     <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Product Wallet</a>
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch Tools</p>
-                    @foreach (\App\Services\BranchPermissionMatrixService::MODULES as $module)
+                    {{-- Only modules with a real page; the Phase 2 names are not
+                         listed at all rather than shown as dead "soon" rows. --}}
+                    @foreach (\App\Services\BranchPermissionMatrixService::activeModules() as $module)
                         @if (\App\Services\BranchPermissionMatrixService::userCanAccessModule($user, $module))
-                            @if ($module === 'commission-partners')
-                                <a href="{{ route('branch.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
-                            @else
-                                <span class="flex items-center justify-between px-3 py-2 rounded text-slate-500">
-                                    {{ ucwords(str_replace('-', ' ', $module)) }}
-                                    <span class="text-xs bg-slate-800 px-2 py-0.5 rounded">soon</span>
-                                </span>
-                            @endif
+                            <a href="{{ route('branch.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
                         @endif
                     @endforeach
                 @endif
