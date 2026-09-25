@@ -168,6 +168,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
                 ->parameters(['branch-managers' => 'branchManager']);
             Route::patch('branch-managers/{branchManager}/toggle-status', [BranchManagerController::class, 'toggleStatus'])
                 ->name('branch-managers.toggle-status');
+            // Password reset for a Branch Manager. The only place in the app where
+            // one account can set another's, so it is its own explicit endpoint.
+            Route::put('branch-managers/{branchManager}/password', [BranchManagerController::class, 'updatePassword'])
+                ->name('branch-managers.password.update');
             Route::get('branch-managers/{branchManager}/permissions', [BranchManagerController::class, 'permissions'])
                 ->name('branch-managers.permissions.edit');
             Route::put('branch-managers/{branchManager}/permissions', [BranchManagerController::class, 'updatePermissions'])

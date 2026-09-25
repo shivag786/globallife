@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreBranchManagerRequest;
+use App\Http\Requests\Admin\UpdateBranchManagerPasswordRequest;
 use App\Http\Requests\Admin\UpdateBranchManagerRequest;
 use App\Models\City;
 use App\Models\User;
@@ -15,9 +16,7 @@ use Illuminate\Http\Request;
 
 class BranchManagerController extends Controller
 {
-    public function __construct(private readonly BranchManagerService $branchManagers)
-    {
-    }
+    public function __construct(private readonly BranchManagerService $branchManagers) {}
 
     public function index(): View
     {
@@ -59,6 +58,25 @@ class BranchManagerController extends Controller
         $this->branchManagers->updateBranchManager($branchManager, $data, $data['cities'], (float) $data['commission_percentage']);
 
         return redirect()->route('admin.branch-managers.index')->with('status', 'Branch Manager updated successfully.');
+    }
+
+    /**
+     * Set a Branch Manager's password. Deliberately its own endpoint and its own
+     * form on the edit screen: it is the only place in the app where one account
+     * may change another's, so it stays explicit rather than riding along with a
+     * profile save.
+     */
+    public function updatePassword(UpdateBranchManagerPasswordRequest $request, User $branchManager): RedirectResponse
+    {
+        // The route model is any User, so confirm it really is a Branch Manager
+        // before this becomes a way to reset anyone's password.
+        abort_unless($branchManager->hasRole('branch_manager'), 404);
+
+        $this->branchManagers->setPassword($branchManager, $request->validated()['password']);
+
+        return redirect()
+            ->route('admin.branch-managers.edit', $branchManager)
+            ->with('status', "Password updated for {$branchManager->name}. They have been signed out everywhere and must use the new password.");
     }
 
     public function toggleStatus(User $branchManager): RedirectResponse

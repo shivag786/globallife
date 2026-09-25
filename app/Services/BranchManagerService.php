@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class BranchManagerService
 {
@@ -50,6 +51,29 @@ class BranchManagerService
             ]);
 
             $manager->branchCities()->sync($cityIds);
+
+            return $manager;
+        });
+    }
+
+    /**
+     * Set a Branch Manager's password on their behalf (Super Admin only).
+     *
+     * A reset is usually a response to a lost or compromised login, so the old
+     * credentials are cut off properly: every stored session for that account is
+     * dropped and the remember-me token is rotated, otherwise an existing browser
+     * would keep working with the password that was just replaced.
+     */
+    public function setPassword(User $manager, string $password): User
+    {
+        return DB::transaction(function () use ($manager, $password) {
+            $manager->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            // The session driver is `database`, so this is where a live login lives.
+            DB::table('sessions')->where('user_id', $manager->id)->delete();
 
             return $manager;
         });

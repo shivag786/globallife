@@ -256,6 +256,24 @@ becomes a removable chip.
   when `[data-city-picker]` is present. Without JS the chips still post
   correctly, so a failed submit never loses what was entered.
 
+### Admin-set Branch Manager password
+
+`PUT admin/branch-managers/{branchManager}/password` is the **only** place in the
+app where one account can set another's password, and its form lives solely on
+the Branch Manager edit screen (its own `<form>`, a sibling of the profile form —
+nesting forms is invalid HTML, and a reset should not ride along with a save).
+
+- Super-admin only, via `UpdateBranchManagerPasswordRequest`, and the controller
+  additionally `abort_unless($branchManager->hasRole('branch_manager'), 404)` so
+  the route's `User` binding cannot be used to reset an arbitrary account.
+- `password` needs `confirmed` — an admin typing someone else's password gets no
+  login attempt to catch a typo.
+- `BranchManagerService::setPassword()` also **drops every `sessions` row for that
+  user and rotates `remember_token`**, so a reset genuinely cuts off the old
+  credentials rather than leaving a live browser working.
+- `User::getActivitylogOptions()` uses `logOnly([...])` without `password`, so no
+  hash reaches `activity_log`.
+
 ## 6. E-commerce flow
 
 - **Cart** (`CartService`) — session-backed, guest-friendly. Stores only
@@ -420,7 +438,9 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `BranchCityPickerTest` (the cascade, typed cities, dedupe by name+state, slug
+30-day window, early renewal stacking on remaining days), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
+clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
+`BranchCityPickerTest` (the cascade, typed cities, dedupe by name+state, slug
 collisions across states, branch attachment), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
