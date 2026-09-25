@@ -17,7 +17,10 @@
                         <x-forms.input name="name" label="Name" :value="$manager->name ?? ''" required />
                     </div>
                     <div class="col-md-6">
-                        <x-forms.input name="mobile" label="Mobile Number" :value="$manager->mobile ?? ''" />
+                        <x-forms.input name="mobile" label="Mobile Number" :value="$manager->mobile ?? ''"
+                                       data-mobile-input type="tel" inputmode="numeric" maxlength="10"
+                                       autocomplete="tel-national" placeholder="9876543210"
+                                       help="10 digits. A +91 or leading 0 is trimmed automatically." />
                     </div>
                     <div class="col-md-6">
                         <x-forms.input name="email" type="email" label="Email" :value="$manager->email ?? ''" required />

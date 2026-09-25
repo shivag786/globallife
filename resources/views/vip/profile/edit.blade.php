@@ -38,7 +38,10 @@
                             <x-forms.input name="owner_name" label="Owner Name" :value="$microsite->owner_name ?? ''" />
                         </div>
                         <div class="col-md-6">
-                            <x-forms.input name="mobile" label="Mobile Number" :value="$user->mobile ?? ''" />
+                            <x-forms.input name="mobile" label="Mobile Number" :value="$user->mobile ?? ''"
+                                          data-mobile-input type="tel" inputmode="numeric" maxlength="10"
+                                          autocomplete="tel-national" placeholder="9876543210"
+                                          help="10 digits. A +91 or leading 0 is trimmed automatically." />
                         </div>
                         <div class="col-md-6">
                             <x-forms.input name="business_category" label="Business Category" :value="$microsite->business_category ?? ''" placeholder="e.g. Healthcare, Restaurant, Consulting" />

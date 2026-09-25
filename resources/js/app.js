@@ -36,6 +36,9 @@ if (document.querySelector('[data-city-picker]')) {
 if (document.querySelector('[data-permission-matrix]')) {
     import('./forms/permission-matrix').then(({ initPermissionMatrix }) => initPermissionMatrix());
 }
+if (document.querySelector('[data-mobile-input]')) {
+    import('./forms/mobile-input').then(({ initMobileInputs }) => initMobileInputs());
+}
 
 // Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
 // [data-modal-close] element or a click on the backdrop itself closes it.

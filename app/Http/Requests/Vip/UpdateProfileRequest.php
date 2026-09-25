@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Vip;
 
+use App\Support\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProfileRequest extends FormRequest
 {
@@ -17,7 +19,10 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mobile' => ['nullable', 'string', 'max:30'],
+            // Exactly 10 digits after normalisation, and no two accounts may
+            // share one — `users.mobile` is written here and from the VIP
+            // profile, so both have to agree or the rule means nothing.
+            'mobile' => ['nullable', 'digits:'.MobileNumber::LENGTH, Rule::unique('users', 'mobile')->ignore($this->user()->id)],
 
             'owner_name' => ['nullable', 'string', 'max:150'],
             'business_category' => ['nullable', 'string', 'max:100'],
@@ -52,5 +57,16 @@ class UpdateProfileRequest extends FormRequest
             'telegram_url' => ['nullable', 'url', 'max:255'],
             'pinterest_url' => ['nullable', 'url', 'max:255'],
         ];
+    }
+
+    /**
+     * Normalise the mobile before any rule sees it, so "+91 98765 43210" and
+     * "09876543210" both validate and store as the same 10 digits.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('mobile')) {
+            $this->merge(['mobile' => MobileNumber::normalise($this->input('mobile'))]);
+        }
     }
 }
