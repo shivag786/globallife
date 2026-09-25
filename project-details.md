@@ -274,6 +274,25 @@ nesting forms is invalid HTML, and a reset should not ride along with a save).
 - `User::getActivitylogOptions()` uses `logOnly([...])` without `password`, so no
   hash reaches `activity_log`.
 
+### Mobile numbers
+
+`App\Support\MobileNumber::normalise()` reduces any input to its **last 10
+digits**, so `+91 98765 43210`, `09876543210` and `+91-98765-43210` all store as
+`9876543210` — taking the tail handles every country code and trunk prefix
+without needing a list of prefixes to strip. Shorter input is returned as-is so
+validation reports it rather than silently accepting a wrong number.
+
+Every request that writes `users.mobile` calls it from `prepareForValidation()`,
+then validates `digits:10` + `Rule::unique('users','mobile')`: both branch
+manager requests **and** `Vip\UpdateProfileRequest`, which writes the same
+column — the rule has to hold there too or it means nothing.
+
+`resources/js/forms/mobile-input.js` (`[data-mobile-input]`) mirrors this in the
+browser with one deliberate difference: **bulk input takes the last 10 digits,
+typing takes the first 10**. Taking the tail while someone types would drop the
+digits they entered first. It listens to `input`, `change` and `blur`, because
+autofill often fires only `change`.
+
 ### Form and permission UI conventions
 
 - **Input borders.** `--color-input-border` in `resources/css/app.css` is the one
@@ -466,7 +485,9 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `AdminFormUsabilityTest` (permission grid lists only live modules and offers
+30-day window, early renewal stacking on remaining days), `MobileNumberTest` (every input shape normalises to 10 digits, duplicates
+refused across both forms and across formats, optional, self-ignore on edit),
+`AdminFormUsabilityTest` (permission grid lists only live modules and offers
 bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
 optional), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
 clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
