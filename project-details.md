@@ -263,7 +263,7 @@ a state with no cities yet — can be typed in.
   when `[data-city-picker]` is present. Without JS the chips still post
   correctly, so a failed submit never loses what was entered.
 
-### Admin-set Branch Manager password
+### Admin-set passwords
 
 `PUT admin/branch-managers/{branchManager}/password` is the **only** place in the
 app where one account can set another's password, and its form lives solely on
@@ -280,6 +280,17 @@ nesting forms is invalid HTML, and a reset should not ride along with a save).
   credentials rather than leaving a live browser working.
 - `User::getActivitylogOptions()` uses `logOnly([...])` without `password`, so no
   hash reaches `activity_log`.
+
+The Branch Manager has the same power one level down:
+`PUT branch/commission-partners/{commissionPartner}/password`, its form living
+only on the partner edit screen. `UpdateCommissionPartnerPasswordRequest`
+requires the `branch_manager` role **and** `created_by === $user->id`, so a
+manager can only reset a partner they created, and the controller `abort_unless`
+the target holds `commission_partner`. `CommissionPartnerService::setPassword()`
+mirrors the Branch Manager one — sessions dropped, remember-me token rotated.
+
+These two screens are the only places in the app where one account can set
+another's password.
 
 ### Mobile numbers
 
@@ -496,7 +507,8 @@ keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
 refused across both forms and across formats, optional, self-ignore on edit),
 `AdminFormUsabilityTest` (permission grid lists only live modules and offers
 bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
-optional), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
+optional), `CommissionPartnerPasswordTest` (branch-side only, ownership enforced,
+non-partner ids 404, sessions cleared), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
 clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
 `VipMemberCityPickerTest` (the cascade on the add-member form, typed cities,
 dedupe by name+state, slug collisions across states, territory granted to both

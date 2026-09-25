@@ -252,6 +252,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
             ->parameters(['commission-partners' => 'commissionPartner']);
         Route::patch('commission-partners/{commissionPartner}/toggle-status', [CommissionPartnerController::class, 'toggleStatus'])
             ->name('commission-partners.toggle-status');
+        // Password reset for a Commission Partner, Branch Manager side only.
+        Route::put('commission-partners/{commissionPartner}/password', [CommissionPartnerController::class, 'updatePassword'])
+            ->name('commission-partners.password.update');
 
         Route::get('/revenue', [App\Http\Controllers\Branch\RevenueController::class, 'index'])->name('revenue.index');
     });
