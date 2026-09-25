@@ -13,7 +13,81 @@
  * partner cannot be assigned the same city twice.
  */
 export function initCityPicker() {
-    document.querySelectorAll('[data-city-picker]').forEach(setup);
+    document.querySelectorAll('[data-city-picker]').forEach((root) => {
+        if (root.dataset.cityPicker === 'single') {
+            setupSingle(root);
+        } else {
+            setup(root);
+        }
+    });
+}
+
+/**
+ * Single-select variant: the same cascade, but one city.
+ *
+ * The city <select> is named city_id and its "Other" option carries an empty
+ * value, so choosing it posts no id and the typed name/state are used instead —
+ * no disabling, and a no-JS submit still posts something coherent.
+ */
+function setupSingle(root) {
+    const byState = JSON.parse(root.dataset.cities || '{}');
+
+    const stateSelect = root.querySelector('[data-city-state]');
+    const stateInput = root.querySelector('[data-city-state-new]');
+    const citySelect = root.querySelector('[data-city-select]');
+    const cityInput = root.querySelector('[data-city-name-new]');
+    const stateValue = root.querySelector('[data-city-state-value]');
+
+    const show = (el, visible) => el?.classList.toggle('hidden', !visible);
+    const isCustomState = () => stateSelect.value === OTHER;
+    const currentState = () => (isCustomState() ? stateInput.value : stateSelect.value).trim();
+
+    /** Only meaningful when the chosen option is the "Other" one. */
+    const typingCity = () => Boolean(citySelect.selectedOptions[0]?.dataset.other);
+
+    function refreshCities() {
+        const custom = isCustomState();
+        show(stateInput, custom);
+
+        const list = custom ? [] : byState[stateSelect.value] || [];
+
+        citySelect.innerHTML = '';
+        citySelect.add(new Option(stateSelect.value === '' ? 'Select a state first…' : 'Select a city…', ''));
+        list.forEach((city) => citySelect.add(new Option(city.name, String(city.id))));
+
+        const other = new Option('Other — type the city name…', '');
+        other.dataset.other = '1';
+        citySelect.add(other);
+
+        // A hand-typed state can only ever produce a hand-typed city.
+        if (custom) citySelect.selectedIndex = citySelect.options.length - 1;
+
+        citySelect.disabled = stateSelect.value === '';
+        refreshCityInput();
+    }
+
+    function refreshCityInput() {
+        const typing = typingCity();
+        show(cityInput, typing);
+        if (!typing) cityInput.value = '';
+        if (stateValue) stateValue.value = currentState();
+    }
+
+    stateSelect?.addEventListener('change', refreshCities);
+    citySelect?.addEventListener('change', refreshCityInput);
+    stateInput?.addEventListener('input', () => {
+        if (stateValue) stateValue.value = currentState();
+    });
+
+    refreshCities();
+
+    // Re-select whatever survived a failed submit.
+    const keepCity = cityInput?.value.trim();
+    if (keepCity) {
+        citySelect.selectedIndex = citySelect.options.length - 1;
+        refreshCityInput();
+        cityInput.value = keepCity;
+    }
 }
 
 const OTHER = '__other__';

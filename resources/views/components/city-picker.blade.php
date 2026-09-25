@@ -2,8 +2,10 @@
     // state => [['id' => 1, 'name' => 'Jhansi'], ...]
     'citiesByState' => [],
     'states' => [],
-    // Already-selected cities: a collection of City models.
+    // Already-selected cities: a collection of City models (multi mode only).
     'selected' => null,
+    // Single mode posts one city_id (or new_city[name]/[state]) instead of chips.
+    'single' => false,
 ])
 
 @php
@@ -14,6 +16,43 @@
     $preselected = \App\Models\City::whereIn('id', $oldIds)->orderBy('name')->get();
 @endphp
 
+@if ($single)
+    {{-- Single-select: the same state -> city cascade, but one city, posted as
+         city_id — or, when "Other" is chosen, as new_city[name]/[state] for the
+         server to find-or-create. The "Other" option carries value="" so a
+         no-JS submit still posts an empty city_id rather than a bad one. --}}
+    <div data-city-picker="single" data-cities='@json($citiesByState)' class="row g-4">
+        <div class="col-md-6">
+            <label for="city-picker-state" class="form-label small fw-medium text-slate-700">State</label>
+            <select id="city-picker-state" data-city-state class="form-select">
+                <option value="">Select a state&hellip;</option>
+                @foreach ($states as $state)
+                    <option value="{{ $state }}" @selected(old('new_city.state') === $state)>{{ $state }}</option>
+                @endforeach
+                <option value="__other__" @selected(old('new_city.state') && ! in_array(old('new_city.state'), $states, true))>
+                    Other &mdash; type the state name&hellip;
+                </option>
+            </select>
+            <input type="text" data-city-state-new class="form-control mt-2 hidden"
+                   placeholder="Type the state name" maxlength="120"
+                   value="{{ old('new_city.state') && ! in_array(old('new_city.state'), $states, true) ? old('new_city.state') : '' }}">
+            @error('new_city.state')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="col-md-6">
+            <label for="city-picker-city" class="form-label small fw-medium text-slate-700">City</label>
+            <select id="city-picker-city" name="city_id" data-city-select class="form-select">
+                <option value="">Select a state first&hellip;</option>
+            </select>
+            <input type="text" name="new_city[name]" data-city-name-new class="form-control mt-2 hidden"
+                   placeholder="Type the city name" maxlength="120" value="{{ old('new_city.name') }}">
+            {{-- Mirrors whichever state is active, so a typed city carries one. --}}
+            <input type="hidden" name="new_city[state]" data-city-state-value value="{{ old('new_city.state') }}">
+            @error('city_id')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+            @error('new_city.name')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+        </div>
+    </div>
+@else
 <div data-city-picker data-cities='@json($citiesByState)'>
     <div class="row g-3 align-items-end">
         <div class="col-md-5">
@@ -92,3 +131,4 @@
         @foreach ($messages as $message)<p class="text-sm text-red-600 mt-2">{{ $message }}</p>@endforeach
     @endforeach
 </div>
+@endif

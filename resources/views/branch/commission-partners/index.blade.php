@@ -23,7 +23,9 @@
                     <tr class="border-t border-slate-100">
                         <td class="px-4 py-3 font-medium">{{ $partner->name }}</td>
                         <td class="px-4 py-3">{{ $partner->email }}</td>
-                        <td class="px-4 py-3">{{ $partner->cities->pluck('name')->implode(', ') }}</td>
+                        <td class="px-4 py-3 text-slate-500">
+                            {{ $partner->cities->isEmpty() ? '—' : $partner->cities->pluck('name')->implode(', ') }}
+                        </td>
                         <td class="px-4 py-3">{{ $partner->commission_percentage }}%</td>
                         <td class="px-4 py-3">
                             <span class="px-2 py-0.5 rounded text-xs {{ $partner->status === 'active' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600' }}">

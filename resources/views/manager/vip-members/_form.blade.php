@@ -67,13 +67,13 @@
                         <div class="col-md-6">
                             <x-forms.input name="business_name" label="Business Name" required />
                         </div>
-                        <div class="col-md-6">
-                            <x-forms.input name="city_id" label="City" as="select" required>
-                                <option value="">Select a city&hellip;</option>
-                                @foreach ($cities as $city)
-                                    <option value="{{ $city->id }}" @selected(old('city_id') == $city->id)>{{ $city->name }}, {{ $city->state }}</option>
-                                @endforeach
-                            </x-forms.input>
+                        <div class="col-12">
+                            <x-city-picker single :states="$states" :cities-by-state="$citiesByState" />
+                            <p class="small text-muted mt-2 mb-0">
+                                Pick the state, then the city. If the city isn't listed, choose
+                                &ldquo;Other&rdquo; and type it &mdash; it will be created and added to the
+                                cities you serve.
+                            </p>
                         </div>
                     @endif
                     <div class="col-12">

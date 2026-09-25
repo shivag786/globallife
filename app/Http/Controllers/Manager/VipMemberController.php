@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\VipMicrosite;
 use App\Models\VipPlan;
 use App\Repositories\VipPlanRepository;
+use App\Services\CityDirectoryService;
 use App\Services\VipActivationService;
 use App\Services\VipMemberService;
 use App\Services\VipRenewalService;
@@ -42,17 +43,22 @@ class VipMemberController extends Controller
         return view('manager.vip-members.index', ['members' => $members]);
     }
 
-    public function create(VipPlanRepository $plans): View
+    public function create(VipPlanRepository $plans, CityDirectoryService $cities): View
     {
         return view('manager.vip-members.create', [
-            'cities' => Auth::user()->cities,
+            'states' => $cities->states(),
+            'citiesByState' => $cities->citiesByState(),
             'plans' => $plans->activeOrdered(),
         ]);
     }
 
-    public function store(StoreVipMemberRequest $request): RedirectResponse
+    public function store(StoreVipMemberRequest $request, CityDirectoryService $cities): RedirectResponse
     {
-        $this->members->createMember($request->validated(), Auth::user());
+        $this->members->createMember(
+            $request->validated(),
+            Auth::user(),
+            $request->resolveCity($cities),
+        );
 
         return redirect()->route('manager.vip-members.index')->with('status', 'VIP Member created successfully.');
     }

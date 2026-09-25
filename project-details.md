@@ -232,13 +232,13 @@ The admin VIP Plans CRUD (controller, form requests, views, routes, sidebar link
 was removed at the same time. The dashboard still counts active plans but no
 longer links anywhere.
 
-### Branch Manager city picker (state -> city, with inline creation)
+### City picker (state -> city, with inline creation)
 
-Adding a Commission Partner used a flat checkbox list of the Branch Manager's
-assigned cities. It is now `<x-city-picker>`: a **state** dropdown, a **city**
-dropdown filtered to that state, and "Other" on either one revealing a text box
-so a missing city (or a state with no cities yet) can be typed in. Each pick
-becomes a removable chip.
+`<x-city-picker>` has two modes. **Multi** (chips) is used by the Branch Manager
+form; **single** (`single` prop) is used when adding a VIP Member, which needs
+exactly one city. Both give a **state** dropdown, a **city** dropdown filtered to
+that state, and "Other" on either one revealing a text box so a missing city — or
+a state with no cities yet — can be typed in.
 
 - `CityDirectoryService` supplies `states()` and `citiesByState()` for the
   cascade, and `resolveOrCreate($name, $state)` for typed entries. Matching is
@@ -247,11 +247,18 @@ becomes a removable chip.
 - **`cities.slug` is globally unique** because it is the first segment of a
   microsite URL, so a second "Springfield" in another state gets
   `springfield-bihar`, then a numeric suffix if that is taken too.
-- The form posts `cities[]` (existing ids) and `new_cities[N][name|state]`
-  (typed). `CommissionPartnerService::resolveCities()` merges them and
-  **`syncWithoutDetaching`s every city onto the Branch Manager's branch** —
-  `CityWithinBranchManager` was dropped, so assigning a partner is now also how a
-  Branch Manager takes on new territory.
+- **Territory follows the work.** Neither a Commission Partner nor a Branch
+  Manager is handed cities on a form any more: `CityWithinCommissionPartner` and
+  `CityWithinBranchManager` are both gone. Registering a VIP Member is what
+  grants the city — `VipMemberService::createMember()` takes an already-resolved
+  `City` and `syncWithoutDetaching`s it onto the partner's `cities` **and** their
+  Branch Manager's `branchCities`.
+- Single mode posts `city_id`, or `new_city[name|state]` when "Other" is chosen;
+  its "Other" option carries `value=""` so a no-JS submit posts an empty id
+  rather than a bad one. `StoreVipMemberRequest::prepareForValidation()` resolves
+  a typed city that already exists to its id, so the per-city business-name check
+  still works; a genuinely new city is created in the service instead, rather
+  than stranding a row if validation then fails.
 - The picker JS is code-split (`resources/js/forms/city-picker.js`), loaded only
   when `[data-city-picker]` is present. Without JS the chips still post
   correctly, so a failed submit never loses what was entered.
@@ -491,8 +498,9 @@ refused across both forms and across formats, optional, self-ignore on edit),
 bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
 optional), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
 clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
-`BranchCityPickerTest` (the cascade, typed cities, dedupe by name+state, slug
-collisions across states, branch attachment), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
+`VipMemberCityPickerTest` (the cascade on the add-member form, typed cities,
+dedupe by name+state, slug collisions across states, territory granted to both
+partner and branch, and no city fields left on the partner form), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
