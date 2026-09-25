@@ -120,28 +120,28 @@
                         </label>
                     </div>
 
-                    <div class="p-5 grid sm:grid-cols-3 gap-3">
+                    {{-- One row per action, each with its own on/off switch. The
+                         whole row is the label, so anywhere on it toggles. --}}
+                    <div class="divide-y divide-slate-100">
                         @foreach ($actions as $action)
                             @php $permission = "branch.{$module}.{$action}"; @endphp
-                            <label class="relative block cursor-pointer select-none">
+                            <label class="block cursor-pointer select-none">
                                 <input type="checkbox" name="permissions[{{ $permission }}]" value="1"
                                        data-permission-box data-action="{{ $action }}" data-module="{{ $module }}"
-                                       class="peer perm-check sr-only"
+                                       class="perm-check sr-only"
                                        aria-label="{{ $action }} {{ $module }}"
                                        @checked(in_array($permission, $granted, true))>
 
-                                <span class="perm-frame block rounded-lg border p-3.5 transition
-                                             border-slate-200 bg-white hover:border-brand-300
-                                             peer-checked:border-brand-600 peer-checked:bg-brand-50">
-                                    <span class="flex items-center justify-between gap-2">
-                                        <span class="font-semibold text-slate-800 capitalize text-sm">{{ $action }}</span>
-                                        {{-- Tick only once the box behind it is checked. --}}
-                                        <span class="perm-tick flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-transparent transition">
-                                            <x-icon name="check" class="w-3 h-3" />
+                                <span class="perm-row flex items-center justify-between gap-4 px-5 py-3.5 transition hover:bg-slate-50">
+                                    <span class="min-w-0">
+                                        <span class="block font-semibold text-slate-800 capitalize text-sm">{{ $action }}</span>
+                                        <span class="block text-xs text-slate-500 mt-0.5">
+                                            {{ $actionHints[$action] ?? 'Allow this action' }}
                                         </span>
                                     </span>
-                                    <span class="block text-xs text-slate-500 mt-1">
-                                        {{ $actionHints[$action] ?? 'Allow this action' }}
+
+                                    <span class="perm-track" aria-hidden="true">
+                                        <span class="perm-knob"></span>
                                     </span>
                                 </span>
                             </label>

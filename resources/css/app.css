@@ -57,18 +57,52 @@
         background-color: rgb(15 23 42 / 0.5);
     }
 
-    /* Permission cards. Tailwind's peer-checked: variant only reaches direct
-       siblings of the input, and the tick sits inside the frame, so its checked
-       state is wired here. */
-    .perm-check:checked ~ .perm-frame .perm-tick {
-        background-color: var(--color-brand-600);
-        border-color: var(--color-brand-600);
-        color: #fff;
+    /* Permission rows: a sliding on/off switch per action.
+       Wired here rather than with Tailwind's peer-checked: variant, which only
+       reaches direct siblings of the input — the track and knob sit inside the
+       row, so the variant could never reach them. */
+    .perm-track {
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+        width: 2.75rem;
+        height: 1.5rem;
+        border-radius: 9999px;
+        background-color: #cbd5e1;
+        transition: background-color 180ms ease;
     }
 
-    .perm-check:focus-visible ~ .perm-frame {
+    .perm-knob {
+        position: absolute;
+        top: 0.1875rem;
+        left: 0.1875rem;
+        width: 1.125rem;
+        height: 1.125rem;
+        border-radius: 9999px;
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgb(15 23 42 / 0.3);
+        transition: transform 180ms ease;
+    }
+
+    .perm-check:checked ~ .perm-row .perm-track {
+        background-color: var(--color-brand-600);
+    }
+
+    .perm-check:checked ~ .perm-row .perm-knob {
+        transform: translateX(1.25rem);
+    }
+
+    .perm-check:checked ~ .perm-row {
+        background-color: var(--color-brand-50);
+    }
+
+    .perm-check:focus-visible ~ .perm-row .perm-track {
         outline: 2px solid var(--color-brand-500);
         outline-offset: 2px;
+    }
+
+    .perm-check:disabled ~ .perm-row {
+        opacity: 0.6;
     }
 
     /* Package picker (x-package-card, selectable mode). Tailwind's peer-checked:
