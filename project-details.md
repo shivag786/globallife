@@ -143,6 +143,25 @@ Partner per month:
   now() + validity_months`. **A microsite that was never activated has a NULL
   expiry and is NOT expired** — it behaves exactly as before.
 - Expired = `plan_expires_at` is set and in the past (`hasExpiredPlan()`).
+- **A microsite goes public at activation, not at creation.**
+  `VipMicrosite::isLive()` = `isActivated() && ! hasExpiredPlan()`, and that is
+  what every public gate checks. An unactivated microsite has a NULL expiry and
+  is therefore "not expired", so `hasExpiredPlan()` alone is never enough — use
+  `isLive()`. (Before `isLive()` existed, such a microsite was publicly live from
+  the moment it was created.)
+- **Adding a VIP Member activates them.** `VipMemberService::createMember()`
+  calls `VipActivationService::activate()` inside its own transaction, so the
+  account, the microsite, the live page and the `CommissionTransaction` split all
+  land together or not at all. The partner only fills that form once the joining
+  fee is in hand, so the form itself carries the "Confirm payment received?"
+  `data-confirm`. A broken upline chain throws, nothing is created, and the
+  message comes back on the form.
+- **The manual Activate button is legacy-only.** `PATCH
+  /manager/vip-members/{member}/activate` and the button on
+  `/manager/vip-members` still exist, but only render for rows with
+  `activated_at` NULL — i.e. members added before auto-activation. Activating
+  twice is refused (`VipActivationService` throws), so the split cannot be
+  double-booked.
 - **Public effect of expiry**: `MicrositeController` serves
   `microsite.maintenance` with **HTTP 503** instead of the profile, records no
   `page_view`, and blocks review submission; `MicrositeClickController` stops
@@ -503,7 +522,11 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 `VipPackageRenewalTest` (the four packages' prices/validity/caps, renewal onto a
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
-30-day window, early renewal stacking on remaining days), `MobileNumberTest` (every input shape normalises to 10 digits, duplicates
+30-day window, early renewal stacking on remaining days),
+`VipMemberActivatesOnCreationTest` (creating a member books the split and puts
+the page live, one booking only, legacy rows still activatable by hand),
+`MicrositeGoesLiveOnActivationTest` (not public before activation, goes live on
+it, contact shortcuts and reviews shut until then), `MobileNumberTest` (every input shape normalises to 10 digits, duplicates
 refused across both forms and across formats, optional, self-ignore on edit),
 `AdminFormUsabilityTest` (permission grid lists only live modules and offers
 bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities

@@ -15,9 +15,9 @@ class MicrositeController extends Controller
     {
         $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
 
-        // Plan lapsed: serve the maintenance notice instead of the profile, and
-        // don't count it as a page view.
-        if ($microsite->hasExpiredPlan()) {
+        // Not activated yet, or the plan has lapsed: serve the maintenance
+        // notice instead of the profile, and don't count it as a page view.
+        if (! $microsite->isLive()) {
             return $this->maintenance($microsite);
         }
 
@@ -41,7 +41,7 @@ class MicrositeController extends Controller
     {
         $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
 
-        if ($microsite->hasExpiredPlan()) {
+        if (! $microsite->isLive()) {
             return back()->with('error', 'This profile is temporarily unavailable.');
         }
 

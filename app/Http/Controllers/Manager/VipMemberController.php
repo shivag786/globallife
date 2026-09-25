@@ -52,15 +52,30 @@ class VipMemberController extends Controller
         ]);
     }
 
+    /**
+     * Adding a member activates their plan straight away — the page goes live and
+     * the commission split is booked. There is no separate Activate step for new
+     * members; see VipMemberService::createMember().
+     */
     public function store(StoreVipMemberRequest $request, CityDirectoryService $cities): RedirectResponse
     {
-        $this->members->createMember(
-            $request->validated(),
-            Auth::user(),
-            $request->resolveCity($cities),
-        );
+        try {
+            $member = $this->members->createMember(
+                $request->validated(),
+                Auth::user(),
+                $request->resolveCity($cities),
+            );
+        } catch (RuntimeException $e) {
+            // The split could not be recorded, so nothing was created. Say why
+            // rather than dropping them on a list with no new member on it.
+            return back()->withInput()->with('error', $e->getMessage());
+        }
 
-        return redirect()->route('manager.vip-members.index')->with('status', 'VIP Member created successfully.');
+        return redirect()->route('manager.vip-members.index')->with('status', sprintf(
+            'VIP Member created and activated — %s is live until %s, and the commission is recorded.',
+            $member->name,
+            $member->vipMicrosite->plan_expires_at->format('d M Y'),
+        ));
     }
 
     public function edit(User $vipMember, VipPlanRepository $plans): View
@@ -89,6 +104,13 @@ class VipMemberController extends Controller
         return back()->with('status', "VIP Member status set to {$vipMember->fresh()->status}.");
     }
 
+    /**
+     * Activate a member by hand.
+     *
+     * New members are activated as they are created, so this only ever answers
+     * accounts that predate that — rows still sitting at activated_at NULL. It
+     * stays because those pages would otherwise have no way to go live.
+     */
     public function activate(User $vipMember): RedirectResponse
     {
         abort_unless($vipMember->created_by === Auth::id(), 403);

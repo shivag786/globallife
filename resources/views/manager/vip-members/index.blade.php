@@ -38,6 +38,8 @@
                                     Activated {{ $member->vipMicrosite->activated_at->format('d M Y') }}
                                 </span>
                             @else
+                                {{-- New members are activated as they are created, so this
+                                     only shows for accounts added before that change. --}}
                                 <form action="{{ route('manager.vip-members.activate', $member) }}" method="POST" class="inline"
                                       data-confirm="Confirm payment received? This records the commission split and cannot be undone."
                                       data-confirm-title="Activate VIP Member" data-confirm-button="Yes, activate">

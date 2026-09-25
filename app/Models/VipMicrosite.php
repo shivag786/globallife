@@ -201,6 +201,19 @@ class VipMicrosite extends Model
     }
 
     /**
+     * Whether the public microsite may be served at all.
+     *
+     * Two ways to be off the air, and the visitor is told neither: the plan was
+     * never activated (no payment recorded yet), or its paid cycle has run out.
+     * Activation is the moment a microsite first goes live — before that it is
+     * only a draft its owner is filling in.
+     */
+    public function isLive(): bool
+    {
+        return $this->isActivated() && ! $this->hasExpiredPlan();
+    }
+
+    /**
      * Whether a renewal can be taken now: inside the last month of the cycle, or
      * any time after it lapsed. Deliberately wider than `hasExpiredPlan()` — the
      * public page only goes down at true expiry, but the partner can collect and

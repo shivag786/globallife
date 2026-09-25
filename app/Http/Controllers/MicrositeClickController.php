@@ -19,9 +19,10 @@ class MicrositeClickController extends Controller
     {
         abort_unless(array_key_exists($type, self::EVENT_MAP), 404);
 
-        // A lapsed plan shows the maintenance notice, so its contact shortcuts
-        // must not keep working (or keep recording analytics) behind its back.
-        if ($vipMicrosite->hasExpiredPlan()) {
+        // A page that is not live shows the maintenance notice, so its contact
+        // shortcuts must not keep working (or keep recording analytics) behind
+        // its back.
+        if (! $vipMicrosite->isLive()) {
             return redirect()->to($vipMicrosite->publicPath());
         }
 

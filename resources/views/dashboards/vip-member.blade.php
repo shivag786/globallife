@@ -42,6 +42,18 @@
         </div>
     @endif
 
+    {{-- Not activated yet: the page is not public, and only their Commission
+         Partner can change that. --}}
+    @if ($microsite && ! $microsite->isActivated())
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
+            <p class="font-semibold text-amber-800">Your page is not live yet</p>
+            <p class="text-sm text-amber-700 mt-1">
+                Visitors currently see a maintenance notice. Your Commission Partner activates it once your
+                plan is paid &mdash; everything you add here is saved in the meantime and goes live with it.
+            </p>
+        </div>
+    @endif
+
     @unless ($microsite)
         <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
             <p class="font-semibold text-amber-800">Your business page has not been set up yet</p>
