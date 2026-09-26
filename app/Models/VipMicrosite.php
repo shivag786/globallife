@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\BusinessModules;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -93,8 +96,10 @@ class VipMicrosite extends Model
     }
 
     /**
-     * Super-Admin catalog products this VIP has chosen to sell (with commission).
-     * Distinct from `products()`, which are the VIP's own free-text business products.
+     * Per-product storefront settings this VIP has saved. Distinct from
+     * `products()`, which are the VIP's own free-text business products.
+     *
+     * A row here is an *override*, not an opt-in: see visibleCatalogProducts().
      *
      * @return BelongsToMany<Product, $this>
      */
@@ -106,19 +111,47 @@ class VipMicrosite extends Model
     }
 
     /**
-     * Enabled, in-stock catalog products for the public storefront, featured first.
+     * Catalog products for the public storefront, featured first.
+     *
+     * The company catalog is on sale by default: every active product shows on
+     * every VIP page unless that member has explicitly switched it off. So the
+     * absence of a `vip_products` row means visible, and a product added to the
+     * catalog tomorrow starts earning on every page without anyone opting in.
+     * Only a row with `is_visible = 0` hides one.
      *
      * @return Collection<int, Product>
      */
     public function visibleCatalogProducts(): Collection
     {
-        return $this->catalogProducts()
-            ->wherePivot('is_visible', true)
+        return Product::query()
+            ->select('products.*')
+            ->leftJoin('vip_products', function (JoinClause $join) {
+                $join->on('vip_products.product_id', '=', 'products.id')
+                    ->where('vip_products.vip_microsite_id', '=', $this->id);
+            })
             ->where('products.status', 'active')
-            ->orderByPivot('is_featured', 'desc')
-            ->orderByPivot('display_order')
+            // No row at all counts as visible.
+            ->where(fn (Builder $q) => $q
+                ->whereNull('vip_products.is_visible')
+                ->orWhere('vip_products.is_visible', true))
+            ->orderByDesc(DB::raw('COALESCE(vip_products.is_featured, 0)'))
+            ->orderBy(DB::raw('COALESCE(vip_products.display_order, 0)'))
             ->orderBy('products.name')
             ->get();
+    }
+
+    /**
+     * Whether this member currently shows the given catalog product. Mirrors the
+     * default-on rule above, for one product.
+     */
+    public function showsCatalogProduct(Product $product): bool
+    {
+        $row = DB::table('vip_products')
+            ->where('vip_microsite_id', $this->id)
+            ->where('product_id', $product->id)
+            ->first();
+
+        return $row === null || (bool) $row->is_visible;
     }
 
     /**

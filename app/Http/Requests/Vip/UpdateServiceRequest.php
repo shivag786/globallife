@@ -27,15 +27,29 @@ class UpdateServiceRequest extends FormRequest
             'long_description' => ['nullable', 'string', 'max:5000'],
             'category' => ['nullable', 'string', 'max:100'],
             'tags' => ['nullable', 'string', 'max:255'],
+            // Discount and strike-through are derived from these two, never typed
+            // — see BusinessService::discountPercentage(). Either may stand alone,
+            // so the sale price is only compared against an MRP that was given.
             'mrp' => ['nullable', 'numeric', 'min:0'],
-            'offer_price' => ['nullable', 'numeric', 'min:0'],
-            'discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'strike_price' => ['nullable', 'numeric', 'min:0'],
+            'offer_price' => array_values(array_filter([
+                'nullable', 'numeric', 'min:0',
+                $this->filled('mrp') ? 'lte:mrp' : null,
+            ])),
             'show_pricing' => ['nullable', 'boolean'],
             'status' => ['required', 'in:draft,published'],
             'is_featured' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'show_book_now' => ['nullable', 'boolean'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'offer_price.lte' => 'The sale price has to be lower than the MRP — otherwise there is no discount to show.',
         ];
     }
 

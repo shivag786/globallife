@@ -46,7 +46,17 @@
                     <tr class="border-t border-slate-100">
                         <td class="px-4 py-3 font-medium">{{ $service->name }} @if($service->is_featured) <span class="text-xs bg-gold-400/20 text-gold-600 px-2 py-0.5 rounded">Featured</span> @endif</td>
                         <td class="px-4 py-3">{{ $service->category ?? '—' }}</td>
-                        <td class="px-4 py-3">{{ $service->offer_price ?? $service->mrp ?? '—' }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            @if ($service->hasPrice())
+                                <span class="font-medium">₹{{ number_format($service->sellingPrice(), 2) }}</span>
+                                @if ($service->strikeThroughPrice())
+                                    <span class="text-xs text-slate-400 line-through ml-1">₹{{ number_format($service->strikeThroughPrice(), 2) }}</span>
+                                    <span class="text-xs font-semibold text-emerald-600 ml-1">{{ $service->discountPercentage() }}% off</span>
+                                @endif
+                            @else
+                                <span class="text-slate-400">—</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3">
                             <span class="px-2 py-0.5 rounded text-xs {{ $service->status === 'published' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ ucfirst($service->status) }}

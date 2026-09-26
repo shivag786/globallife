@@ -39,6 +39,12 @@ if (document.querySelector('[data-permission-matrix]')) {
 if (document.querySelector('[data-mobile-input]')) {
     import('./forms/mobile-input').then(({ initMobileInputs }) => initMobileInputs());
 }
+if (document.querySelector('[data-slug-preview]') || document.querySelector('[data-price-preview]')) {
+    import('./forms/offer-pricing').then(({ initOfferPricing }) => initOfferPricing());
+}
+if (document.querySelector('[data-profit-calc]')) {
+    import('./forms/profit-calculator').then(({ initProfitCalculator }) => initProfitCalculator());
+}
 
 // Generic modal: [data-modal-open="#id"] opens the matching [data-modal]; a
 // [data-modal-close] element or a click on the backdrop itself closes it.

@@ -101,6 +101,15 @@ class ServiceController extends Controller
         $data['show_pricing'] = $request->boolean('show_pricing');
         $data['is_featured'] = $request->boolean('is_featured');
         $data['show_book_now'] = $request->boolean('show_book_now');
+        // Pricing is entered as MRP + sale price only. The discount is derived, so
+        // it is recomputed here rather than trusted from the form, and the old
+        // free-typed strike price is retired — the MRP is what gets struck through.
+        $data['discount_percent'] = $this->discountFrom($data['mrp'] ?? null, $data['offer_price'] ?? null);
+        $data['strike_price'] = null;
+
+        // The slug is the service's SEO title and its place in the page URL, so it
+        // is generated from the name (see the request's prepareForValidation) and
+        // shown read-only on the form rather than typed.
         $data['meta_title'] = $data['name'];
         $data['meta_description'] = $data['short_description'] ?? Str::limit(strip_tags($data['long_description'] ?? ''), 160);
         $data['meta_keywords'] = $data['category'] ?? null;
@@ -110,5 +119,26 @@ class ServiceController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * Percentage off, or null when the two figures describe no real saving — the
+     * same rule BusinessService::discountPercentage() applies when rendering, so
+     * the stored column and the public page can never disagree.
+     */
+    private function discountFrom(mixed $mrp, mixed $salePrice): ?float
+    {
+        if ($mrp === null || $salePrice === null) {
+            return null;
+        }
+
+        $mrp = (float) $mrp;
+        $salePrice = (float) $salePrice;
+
+        if ($mrp <= 0 || $salePrice <= 0 || $salePrice >= $mrp) {
+            return null;
+        }
+
+        return round(($mrp - $salePrice) / $mrp * 100, 2);
     }
 }

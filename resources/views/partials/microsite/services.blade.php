@@ -16,9 +16,9 @@
                                     <x-icon name="sparkles" class="w-10 h-10 text-brand-400" />
                                 </div>
                             @endif
-                            @if ($service->show_pricing && $service->discount_percent)
+                            @if ($service->show_pricing && $service->discountPercentage())
                                 <span class="absolute top-3 left-3 bg-gold-500 text-brand-950 text-xs font-bold px-3 py-1 rounded-full">
-                                    {{ $service->discount_percent }}% OFF
+                                    {{ $service->discountPercentage() }}% OFF
                                 </span>
                             @endif
                         </div>
@@ -32,11 +32,17 @@
                             @endif
 
                             <div class="flex items-center justify-between mt-5">
-                                @if ($service->show_pricing && ($service->offer_price || $service->mrp))
+                                {{-- One price when only the MRP or only the sale price is set;
+                                     sale price plus a struck-through MRP when both are. --}}
+                                @if ($service->show_pricing && $service->hasPrice())
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-xl font-extrabold text-brand-700">₹{{ $service->offer_price ?? $service->mrp }}</span>
-                                        @if ($service->offer_price && $service->mrp && $service->mrp > $service->offer_price)
-                                            <span class="text-sm text-slate-400 line-through">₹{{ $service->mrp }}</span>
+                                        <span class="text-xl font-extrabold text-brand-700">
+                                            ₹{{ number_format($service->sellingPrice(), 2) }}
+                                        </span>
+                                        @if ($service->strikeThroughPrice())
+                                            <span class="text-sm text-slate-400 line-through">
+                                                ₹{{ number_format($service->strikeThroughPrice(), 2) }}
+                                            </span>
                                         @endif
                                     </div>
                                 @else

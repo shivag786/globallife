@@ -193,6 +193,53 @@ four are fixed in code and changing one needs a migration:
 `business_products` (`/vip/products`) and `business_services`
 (`/vip/services`). The marketplace (`catalogProducts`) is not capped.
 
+## 5d. The company catalogue sells by default on every VIP page
+
+`vip_products` is an **override table, not an opt-in list.** No row for a
+product means that member shows it; only a row with `is_visible = 0` hides one.
+So a new member's shop is stocked from day one, and a product Super Admin adds
+tomorrow starts earning on every page without anyone ticking anything.
+
+- Read it through `VipMicrosite::visibleCatalogProducts()` (LEFT JOIN, treating a
+  NULL `is_visible` as visible) or `showsCatalogProduct($product)` for one.
+  **Never query `vip_products` directly to decide visibility** — an absent row is
+  the common case.
+- `MarketplaceController::update()` writes a row for *every* active product with
+  whatever the member chose, so unticking Show is what stores
+  `is_visible = false`. Featured sorts first, then `display_order`, then name.
+- The VIP still controls visibility / featured / order only. Price, description
+  and commission stay Super-Admin owned.
+- The same page (`/vip/marketplace`) carries a **profit calculator**: per product
+  it shows the sale price, the member's commission rate and what one sale pays,
+  times a unit count. Rates come from `ProductCommissionService::resolveRule($product,
+  'vip_member')` — the same rules that settle a real order — so the page cannot
+  promise a rate the ledger would not honour. Products with no price or no rule
+  are left out, and the panel is hidden entirely when nothing qualifies.
+
+## 5e. Service pricing is derived, never typed
+
+`business_services` is priced with **two** figures only: `mrp` and `offer_price`
+(labelled "Sale Price" on the form). Everything else follows from them via
+accessors on `BusinessService`, mirroring the ones on `Product`:
+
+| Entered | `sellingPrice()` | `strikeThroughPrice()` | `discountPercentage()` |
+|---------|------------------|------------------------|------------------------|
+| MRP only | the MRP | null | null |
+| sale only | the sale price | null | null |
+| both, MRP higher | the sale price | the MRP | rounded % saved |
+| both, equal/inverted | the sale price | null | null |
+
+- `discount_percent` is **recomputed on save** by the controller, never read from
+  the form; `strike_price` is retired and written as NULL (the MRP is what gets
+  struck through). The columns remain on the table but nothing reads them for
+  display — rendering goes through the accessors.
+- Validation refuses a sale price above the MRP, but only when an MRP was given,
+  so "sale price only" stays legal.
+- The **slug is the SEO title and the page URL**, generated from the name by
+  `Str::slug` in the request's `prepareForValidation()`. The form shows it in a
+  *disabled* mirror field, so a browser never posts it and a forged `slug` in the
+  request body cannot override the generated one.
+
 The cap is on the **total row count**, so items created under a bigger package
 still count afterwards: 15 products on Growth (15) means no 16th, while
 Professional (35) leaves 20 free slots. Read it via
@@ -523,6 +570,9 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
 30-day window, early renewal stacking on remaining days),
+`ServiceOfferPricingTest` (the three MRP/sale cases, derived discount, forged
+slug ignored), `CatalogueDefaultsOnAndProfitCalculatorTest` (catalogue visible
+without opt-in, per-member hiding, calculator rates from the real rules),
 `VipMemberActivatesOnCreationTest` (creating a member books the split and puts
 the page live, one booking only, legacy rows still activatable by hand),
 `MicrositeGoesLiveOnActivationTest` (not public before activation, goes live on
