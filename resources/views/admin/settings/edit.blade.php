@@ -1,8 +1,43 @@
 <x-layouts.app title="Site Settings" heading="Site Settings">
     <p class="fs-sm text-secondary mb-6">Controls the logo, title, SEO, analytics, and social sharing details used across the public site.</p>
 
-    {{-- .bootstrap-scope activates Bootstrap's real (unprefixed) classes for this
-         subtree only — see resources/css/bootstrap.scss / scripts/build-bootstrap.mjs. --}}
+    {{-- Where uploaded images are stored, and whether a deploy can delete them.
+         Readable from the browser, so it can be checked without server access. --}}
+    <div class="card shadow-sm mb-6 mw-4xl {{ $uploads['safe'] ? 'border-0' : 'border-danger border-2' }}">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+                <span class="badge rounded-pill {{ $uploads['safe'] ? 'text-bg-success' : 'text-bg-danger' }} mt-1">
+                    {{ $uploads['safe'] ? 'Safe' : 'At risk' }}
+                </span>
+                <div class="min-w-0">
+                    <h2 class="h6 fw-semibold mb-1">Uploaded images storage</h2>
+                    <p class="fs-sm mb-3">{{ $uploads['reason'] }}</p>
+                    <dl class="d-grid grid-cols-sm-2 column-gap-6 row-gap-2 fs-sm mb-0">
+                        <div>
+                            <dt class="fs-xs text-secondary text-uppercase tracking-wide">Uploads folder</dt>
+                            <dd class="font-monospace text-break mb-0">{{ $uploads['root'] }}</dd>
+                        </div>
+                        <div>
+                            <dt class="fs-xs text-secondary text-uppercase tracking-wide">Deploy folder</dt>
+                            <dd class="font-monospace text-break mb-0">{{ $uploads['deploy_dir'] }}</dd>
+                        </div>
+                        <div>
+                            <dt class="fs-xs text-secondary text-uppercase tracking-wide">Set by</dt>
+                            <dd class="mb-0">{{ $uploads['explicit'] ? 'FILESYSTEM_PUBLIC_ROOT in .env' : 'Automatic (beside the deploy folder)' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="fs-xs text-secondary text-uppercase tracking-wide">Environment</dt>
+                            <dd class="mb-0">
+                                {{ $uploads['environment'] }} &middot; PHP {{ $uploads['php'] }}
+                                @if ($uploads['config_cached']) &middot; config cached @endif
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="mw-4xl">
         @csrf
         @method('PUT')

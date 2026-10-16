@@ -28,6 +28,11 @@ return [
     |
     */
 
+    // Kept in config (rather than read with env() at runtime) because env()
+    // returns nothing once the config is cached. AppServiceProvider re-resolves
+    // the public disk root from this on every request.
+    'public_root_override' => env('FILESYSTEM_PUBLIC_ROOT'),
+
     'disks' => [
 
         // `serve` is off deliberately. It registered a framework route at
@@ -48,7 +53,7 @@ return [
         // since. FILESYSTEM_PUBLIC_ROOT overrides. See App\Support\UploadsRoot.
         'public' => [
             'driver' => 'local',
-            'root' => App\Support\UploadsRoot::resolve(),
+            'root' => App\Support\UploadsRoot::resolve(env('FILESYSTEM_PUBLIC_ROOT'), env('APP_ENV', 'production')),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
@@ -85,7 +90,7 @@ return [
         // Kept in step with the `public` disk root above, so `storage:link` points
         // at wherever uploads actually live. The link is only a fast path: when it
         // is missing, `/storage/...` still resolves via the `storage.file` route.
-        public_path('storage') => App\Support\UploadsRoot::resolve(),
+        public_path('storage') => App\Support\UploadsRoot::resolve(env('FILESYSTEM_PUBLIC_ROOT'), env('APP_ENV', 'production')),
     ],
 
 ];

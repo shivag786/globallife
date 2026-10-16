@@ -7,22 +7,23 @@ namespace App\Support;
  *
  * Production deploys from git by rebuilding the deploy directory from the
  * repository, so any file the repository does not contain is gone after the
- * next push -- which is why a re-uploaded product image kept disappearing while
- * older, committed ones survived. Uploads therefore have to live OUTSIDE the
- * deploy directory.
+ * next push -- which is why re-uploaded product images kept disappearing while
+ * older, committed ones survived. Uploads therefore live OUTSIDE the deploy
+ * directory.
  *
  * Resolution order:
  *   1. FILESYSTEM_PUBLIC_ROOT, if set -- an explicit absolute path always wins.
- *   2. Outside local/testing: a sibling of the deploy directory, e.g.
+ *   2. Except under the test suite: a sibling of the deploy directory, e.g.
  *      .../domains/site/public_html-uploads beside .../domains/site/public_html.
- *      The deploy only ever rewrites public_html, so this survives every push.
- *      Created on first use; if the parent is not writable it is skipped
- *      rather than breaking every upload.
- *   3. storage/app/public inside the project (local development, and the safe
- *      fallback).
+ *      Created on first use. Deliberately NOT tied to APP_ENV: a server whose
+ *      .env still says APP_ENV=local would otherwise keep losing uploads.
+ *   3. storage/app/public inside the project -- the test suite, and the
+ *      fallback if the sibling folder cannot be created (rather than breaking
+ *      every upload).
  *
- * Called from config/filesystems.php, so with `config:cache` it is resolved
- * once, at cache time.
+ * The root is applied at RUNTIME by AppServiceProvider, not only in
+ * config/filesystems.php, so a stale `config:cache` on the server cannot pin
+ * uploads to the old folder.
  */
 final class UploadsRoot
 {
@@ -32,17 +33,15 @@ final class UploadsRoot
         return storage_path('app/public');
     }
 
-    public static function resolve(?string $explicit = null, ?string $environment = null, ?string $basePath = null): string
+    public static function resolve(?string $explicit, ?string $environment, ?string $basePath = null): string
     {
-        $explicit ??= env('FILESYSTEM_PUBLIC_ROOT');
-        $environment ??= (string) env('APP_ENV', 'production');
         $basePath ??= base_path();
 
         if (is_string($explicit) && trim($explicit) !== '') {
             return rtrim($explicit, '/\\');
         }
 
-        if (in_array($environment, ['local', 'testing'], true)) {
+        if ($environment === 'testing') {
             return self::legacy();
         }
 
@@ -58,16 +57,53 @@ final class UploadsRoot
             return $persistent;
         }
 
-        // Could not set up the persistent folder: keep uploads working where
-        // they always have, rather than failing every upload.
         return self::legacy();
     }
 
-    /** The sibling-of-the-deploy-directory location used in production. */
+    /** The sibling-of-the-deploy-directory location. */
     public static function persistentPath(string $basePath): string
     {
         $basePath = rtrim($basePath, '/\\');
 
         return dirname($basePath).DIRECTORY_SEPARATOR.basename($basePath).'-uploads';
+    }
+
+    /**
+     * A plain report of where uploads are going and whether that is safe, for
+     * the Site Settings page -- so this can be checked from a browser, without
+     * shell access to the server.
+     *
+     * @return array{root: string, safe: bool, reason: string, writable: bool, explicit: bool, environment: string, deploy_dir: string, config_cached: bool, php: string}
+     */
+    public static function diagnose(string $root, ?string $explicit, string $environment): array
+    {
+        $deployDir = rtrim(base_path(), '/\\');
+        $realRoot = realpath($root) ?: $root;
+        $realDeploy = realpath($deployDir) ?: $deployDir;
+
+        $inside = str_starts_with(
+            rtrim(str_replace('\\', '/', $realRoot), '/').'/',
+            rtrim(str_replace('\\', '/', $realDeploy), '/').'/'
+        );
+
+        $writable = is_dir($root) && is_writable($root);
+
+        $reason = match (true) {
+            ! $writable => 'The uploads folder does not exist or cannot be written to, so uploads will fail.',
+            $inside => 'Uploads are inside the deploy folder, so every push deletes anything uploaded since the last commit. Set FILESYSTEM_PUBLIC_ROOT in .env to a folder outside it.',
+            default => 'Uploads are outside the deploy folder, so pushes cannot delete them.',
+        };
+
+        return [
+            'root' => $realRoot,
+            'safe' => $writable && ! $inside,
+            'reason' => $reason,
+            'writable' => $writable,
+            'explicit' => is_string($explicit) && trim($explicit) !== '',
+            'environment' => $environment,
+            'deploy_dir' => $realDeploy,
+            'config_cached' => app()->configurationIsCached(),
+            'php' => PHP_VERSION,
+        ];
     }
 }

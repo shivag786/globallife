@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateSettingsRequest;
 use App\Services\SettingsService;
+use App\Support\UploadsRoot;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -16,7 +17,14 @@ class SettingsController extends Controller
 
     public function edit(): View
     {
-        return view('admin.settings.edit', ['settings' => $this->settings->all()]);
+        return view('admin.settings.edit', [
+            'settings' => $this->settings->all(),
+            'uploads' => UploadsRoot::diagnose(
+                (string) config('filesystems.disks.public.root'),
+                config('filesystems.public_root_override'),
+                app()->environment(),
+            ),
+        ]);
     }
 
     private const FILE_KEYS = ['site_logo', 'favicon', 'og_image'];

@@ -724,8 +724,9 @@ existed.
 What makes uploads survive:
 
 1. **`App\Support\UploadsRoot`** decides the `public` disk root (and the
-   `storage:link` target): `FILESYSTEM_PUBLIC_ROOT` if set; otherwise, outside
-   `local`/`testing`, a **sibling of the deploy directory** --
+   `storage:link` target): `FILESYSTEM_PUBLIC_ROOT` if set; otherwise -- in every
+   environment except `testing`, deliberately not tied to `APP_ENV` -- a
+   **sibling of the deploy directory** --
    `.../public_html-uploads` beside `.../public_html` -- created on first use;
    otherwise `storage/app/public`. It falls back to `storage/app/public` rather
    than break uploads if the sibling cannot be created. This default exists
@@ -745,6 +746,12 @@ on, the framework registered its own `/storage/{path}` route that shadowed
 signed-URL gated so private files were never exposed, and nothing in the app
 reads that disk.
 
+   It is applied **at runtime** in `AppServiceProvider::boot()` (from
+   `config('filesystems.public_root_override')`, since `env()` is empty under a
+   cached config), so a stale `config:cache` cannot pin uploads back inside the
+   deploy folder. **Site Settings** shows an "Uploaded images storage" panel
+   (Safe / At risk, the resolved folder, the deploy folder) so this can be
+   checked from a browser.
 3. **Legacy adoption.** The 19 upload files force-tracked under
    `storage/app/public/uploads` still arrive with every deploy, in the old
    location. When `storage.file` is asked for a file that is not on the

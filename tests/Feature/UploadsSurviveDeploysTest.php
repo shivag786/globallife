@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use App\Support\UploadsRoot;
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -19,6 +22,8 @@ use Tests\TestCase;
  */
 class UploadsSurviveDeploysTest extends TestCase
 {
+    use RefreshDatabase;
+
     private string $sandbox;
 
     protected function setUp(): void
@@ -72,10 +77,50 @@ class UploadsSurviveDeploysTest extends TestCase
         $this->assertFileExists($existing.DIRECTORY_SEPARATOR.'keep.txt');
     }
 
-    public function test_local_and_testing_keep_the_in_project_folder(): void
+    public function test_only_the_test_suite_keeps_the_in_project_folder(): void
     {
-        $this->assertSame(UploadsRoot::legacy(), UploadsRoot::resolve('', 'local', $this->deployDir()));
         $this->assertSame(UploadsRoot::legacy(), UploadsRoot::resolve('', 'testing', $this->deployDir()));
+    }
+
+    public function test_a_server_whose_env_still_says_local_is_protected_too(): void
+    {
+        // A .env copied from a dev machine (APP_ENV=local) is common on a
+        // server; tying the move to APP_ENV left exactly that case losing
+        // uploads on every push.
+        $root = UploadsRoot::resolve(null, 'local', $this->deployDir());
+
+        $this->assertSame($this->sandbox.DIRECTORY_SEPARATOR.'public_html-uploads', $root);
+    }
+
+    public function test_the_report_flags_uploads_inside_the_deploy_folder(): void
+    {
+        $report = UploadsRoot::diagnose(base_path('storage/app/public'), null, 'production');
+
+        $this->assertFalse($report['safe']);
+        $this->assertStringContainsString('every push deletes', $report['reason']);
+    }
+
+    public function test_the_report_clears_uploads_outside_the_deploy_folder(): void
+    {
+        $outside = $this->sandbox.DIRECTORY_SEPARATOR.'public_html-uploads';
+        File::ensureDirectoryExists($outside);
+
+        $report = UploadsRoot::diagnose($outside, null, 'production');
+
+        $this->assertTrue($report['safe']);
+        $this->assertTrue($report['writable']);
+    }
+
+    public function test_site_settings_shows_where_uploads_are_stored(): void
+    {
+        $this->seed(RolesAndPermissionsSeeder::class);
+        $admin = User::factory()->create(['status' => 'active']);
+        $admin->assignRole('super_admin');
+
+        $this->actingAs($admin)->get('/admin/settings')
+            ->assertOk()
+            ->assertSee('Uploaded images storage', false)
+            ->assertSee('Deploy folder', false);
     }
 
     public function test_an_unusable_parent_falls_back_rather_than_breaking_uploads(): void
