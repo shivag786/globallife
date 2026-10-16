@@ -165,7 +165,7 @@
                 <tbody>
                     @foreach ($permissionMatrix as $module => $actions)
                         <tr class="border-top">
-                            <td class="py-2 text-capitalize">{{ $module }}</td>
+                            <td class="py-2 text-capitalize">{{ str_replace('-', ' ', $module) }}</td>
                             <td class="py-2">
                                 @forelse ($actions as $action)
                                     <span class="d-inline-block bg-primary-subtle text-primary fs-xs px-2 py-1 rounded me-1">{{ $action }}</span>

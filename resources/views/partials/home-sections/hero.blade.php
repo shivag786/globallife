@@ -2,8 +2,8 @@
     $heroSettings = app(\App\Services\SettingsService::class)->all();
 @endphp
 <div class="position-relative overflow-hidden" style="background: linear-gradient(to bottom, color-mix(in srgb, var(--color-brand-100) 60%, transparent), var(--color-cream), var(--color-cream))">
-    <div class="position-absolute top-n24 end-n24 w-96 h-96 bg-brand-subtle rounded-pill animate-float" aria-hidden="true"></div>
-    <div class="position-absolute bottom-n24 start-n24 w-96 h-96 bg-gold-subtle rounded-pill animate-float" style="animation-delay: -2s" aria-hidden="true"></div>
+    <div class="position-absolute top-n24 end-n24 w-96 h-96 rounded-pill animate-float" style="background-color: color-mix(in srgb, var(--color-brand-200) 30%, transparent)" aria-hidden="true"></div>
+    <div class="position-absolute bottom-n24 start-n24 w-96 h-96 rounded-pill animate-float" style="animation-delay: -2s; background-color: color-mix(in srgb, var(--color-gold-400) 20%, transparent)" aria-hidden="true"></div>
     <canvas id="hero-3d-canvas" class="position-absolute top-0 start-0 w-100 h-100 z-n1 opacity-75" aria-hidden="true"></canvas>
 
     <div class="position-relative mw-5xl mx-auto px-6 py-24 py-md-28 text-center">

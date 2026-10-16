@@ -44,7 +44,7 @@
             <tbody>
                 @forelse ($products as $product)
                     <tr class="border-top">
-                        <td class="px-4 py-3 fw-medium">{{ $product->name }} @if($product->is_featured) <span class="fs-xs bg-gold-subtle text-gold px-2 py-1 rounded">Featured</span> @endif</td>
+                        <td class="px-4 py-3 fw-medium">{{ $product->name }} @if($product->is_featured) <span class="fs-xs text-gold px-2 py-1 rounded" style="background-color: color-mix(in srgb, var(--color-gold-400) 20%, transparent)">Featured</span> @endif</td>
                         <td class="px-4 py-3">{{ $product->sku ?? '—' }}</td>
                         <td class="px-4 py-3">{{ $product->stock ?? '—' }}</td>
                         <td class="px-4 py-3">{{ $product->offer_price ?? $product->mrp ?? '—' }}</td>

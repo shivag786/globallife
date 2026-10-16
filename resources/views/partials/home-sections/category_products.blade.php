@@ -23,7 +23,7 @@
                                  class="w-100 h-100 object-fit-cover">
                         @else
                             <div class="w-100 h-100 d-flex align-items-center justify-content-center">
-                                <x-icon name="tag" class="w-10 h-10 text-brand" />
+                                <x-icon name="tag" class="w-10 h-10 text-brand-" />
                             </div>
                         @endif
                     </div>

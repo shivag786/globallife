@@ -10,9 +10,9 @@
     <div class="rounded-4 overflow-hidden premium-shadow mb-6" style="background: linear-gradient(135deg,#1b3c2c,#0d2118);">
         <div class="px-6 py-5 px-sm-8 py-sm-6 d-flex flex-wrap align-items-start justify-content-between gap-5">
             <div class="min-w-0">
-                <p class="fs-xs text-uppercase tracking-widest text-gold fw-semibold">Membership Renewal</p>
+                <p class="fs-xs text-uppercase tracking-widest text-gold-400 fw-semibold">Membership Renewal</p>
                 <h2 class="font-display fs-2xl fs-3xl fw-bold text-white mt-1 text-truncate">{{ $member->name }}</h2>
-                <p class="fs-sm text-brand mt-1 text-truncate">
+                <p class="fs-sm text-brand- mt-1 text-truncate">
                     {{ $microsite->business_name }}
                     @if ($microsite->city) &middot; {{ $microsite->city->name }} @endif
                     &middot; {{ $member->email }}
@@ -20,22 +20,25 @@
             </div>
 
             {{-- Two states: still live but due, or already lapsed and offline. --}}
-            <div class="d-flex align-items-center gap-2 rounded-3 px-4 py-3 border {{ $expired ? 'bg-danger-subtle border' : 'bg-gold-subtle border-gold-subtle' }}">
+            <div class="d-flex align-items-center gap-2 rounded-3 px-4 py-3 border"
+                 style="{{ $expired
+                    ? 'background-color: color-mix(in srgb, #ef4444 15%, transparent); border-color: color-mix(in srgb, #f87171 30%, transparent) !important'
+                    : 'background-color: color-mix(in srgb, var(--color-gold-500) 15%, transparent); border-color: color-mix(in srgb, var(--color-gold-400) 30%, transparent) !important' }}">
                 <x-icon name="{{ $expired ? 'x-mark' : 'calendar' }}"
-                        class="w-5 h-5 flex-shrink-0 {{ $expired ? 'text-danger' : 'text-gold' }}" />
+                        class="w-5 h-5 flex-shrink-0 {{ $expired ? 'text-red-light' : 'text-gold-400' }}" />
                 <div>
                     @if ($expired)
-                        <p class="fs-sm fw-semibold text-danger">
+                        <p class="fs-sm fw-semibold text-red-light">
                             Expired {{ $microsite->plan_expires_at->format('d M Y') }}
                         </p>
-                        <p class="fs-xs">
+                        <p class="fs-xs text-red-light opacity-75">
                             {{ abs($daysLeft) }} day{{ abs($daysLeft) === 1 ? '' : 's' }} ago &middot; page showing maintenance notice
                         </p>
                     @else
-                        <p class="fs-sm fw-semibold text-gold">
+                        <p class="fs-sm fw-semibold text-gold-400">
                             Expires {{ $microsite->plan_expires_at->format('d M Y') }}
                         </p>
-                        <p class="fs-xs text-brand">
+                        <p class="fs-xs text-brand-">
                             in {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} &middot; page still live
                         </p>
                     @endif
@@ -46,21 +49,21 @@
         {{-- Usage strip: the numbers that decide which package actually fits. --}}
         <div class="d-grid grid-cols-1 grid-cols-sm-3 border-top border-white border-opacity-10 divide-y divide-x">
             <div class="px-6 py-4">
-                <p class="text-uppercase tracking-wider text-brand">Previous package</p>
+                <p class="text-uppercase tracking-wider text-brand-">Previous package</p>
                 <p class="text-white fw-semibold mt-1 text-truncate">{{ $current->name ?? '—' }}</p>
             </div>
             <div class="px-6 py-4">
-                <p class="text-uppercase tracking-wider text-brand">Products in use</p>
+                <p class="text-uppercase tracking-wider text-brand-">Products in use</p>
                 <p class="text-white fw-semibold mt-1">
                     {{ $productQuota['used'] }}
-                    <span class="text-brand fw-normal fs-sm">/ {{ $productQuota['limit'] }}</span>
+                    <span class="text-brand- fw-normal fs-sm">/ {{ $productQuota['limit'] }}</span>
                 </p>
             </div>
             <div class="px-6 py-4">
-                <p class="text-uppercase tracking-wider text-brand">Services in use</p>
+                <p class="text-uppercase tracking-wider text-brand-">Services in use</p>
                 <p class="text-white fw-semibold mt-1">
                     {{ $serviceQuota['used'] }}
-                    <span class="text-brand fw-normal fs-sm">/ {{ $serviceQuota['limit'] }}</span>
+                    <span class="text-brand- fw-normal fs-sm">/ {{ $serviceQuota['limit'] }}</span>
                 </p>
             </div>
         </div>
@@ -125,7 +128,7 @@
                         @foreach ($packages as $package)
                             <th class="px-5 py-3 fw-semibold text-center text-nowrap">
                                 {{ strtoupper($package->name) }}
-                                <span class="d-block fw-normal text-gold fs-xs mt-1">{{ $money($package->renewal_price) }}</span>
+                                <span class="d-block fw-normal text-gold-400 fs-xs mt-1">{{ $money($package->renewal_price) }}</span>
                             </th>
                         @endforeach
                     </tr>

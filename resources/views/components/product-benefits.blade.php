@@ -14,7 +14,7 @@
     </button>
 
     <div id="{{ $modalId }}" data-modal
-         class="d-none position-fixed top-0 start-0 w-100 h-100 z-3 align-items-center justify-content-center bg-brand-subtle p-4"
+         class="d-none position-fixed top-0 start-0 w-100 h-100 z-3 align-items-center justify-content-center p-4" style="background-color: color-mix(in srgb, var(--color-brand-950) 50%, transparent)"
          role="dialog" aria-modal="true" aria-labelledby="{{ $modalId }}-title">
         <div class="bg-body rounded-4 mw-lg w-100 overflow-y-auto premium-shadow animate-fade-in-up">
             <div class="d-flex align-items-center justify-content-between gap-4 px-6 py-4 border-bottom position-sticky top-0 bg-body rounded-top">

@@ -48,7 +48,7 @@
                 @endforeach
                 <div class="d-flex align-items-center justify-content-between border-top border-white border-opacity-10 pt-3 mt-3">
                     <span class="fs-sm text-body-tertiary">Company (remainder)</span>
-                    <span class="fw-semibold font-monospace text-brand">{{ $money($preview['company']) }}</span>
+                    <span class="fw-semibold font-monospace text-brand-">{{ $money($preview['company']) }}</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-between border-top border-white border-opacity-10 pt-3">
                     <span class="fs-sm fw-medium">Total</span>

@@ -13,7 +13,7 @@
                                 <img src="{{ asset('storage/'.$product->image_path) }}" loading="lazy" class="w-100 h-100 object-fit-cover">
                             @else
                                 <div class="w-100 h-100 bg-brand-subtle d-flex align-items-center justify-content-center">
-                                    <x-icon name="tag" class="w-8 h-8 text-brand" />
+                                    <x-icon name="tag" class="w-8 h-8 text-brand-" />
                                 </div>
                             @endif
                             @if ($product->show_pricing && $product->discount_percent)

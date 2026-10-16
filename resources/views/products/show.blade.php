@@ -41,7 +41,7 @@
 
             <div class="reveal" style="transition-delay: 0.1s">
                 @if ($product->badge)
-                    <span class="d-inline-flex align-items-center gap-1 fs-xs fw-semibold bg-gold-subtle text-gold px-2 py-1 rounded-pill mb-3">
+                    <span class="d-inline-flex align-items-center gap-1 fs-xs fw-semibold text-gold px-2 py-1 rounded-pill mb-3" style="background-color: color-mix(in srgb, var(--color-gold-500) 10%, transparent)">
                         <x-icon name="sparkles" class="w-3.5 h-3.5" /> {{ $product->badge }}
                     </span>
                 @endif

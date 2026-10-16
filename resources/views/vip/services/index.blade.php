@@ -44,7 +44,7 @@
             <tbody>
                 @forelse ($services as $service)
                     <tr class="border-top">
-                        <td class="px-4 py-3 fw-medium">{{ $service->name }} @if($service->is_featured) <span class="fs-xs bg-gold-subtle text-gold px-2 py-1 rounded">Featured</span> @endif</td>
+                        <td class="px-4 py-3 fw-medium">{{ $service->name }} @if($service->is_featured) <span class="fs-xs text-gold px-2 py-1 rounded" style="background-color: color-mix(in srgb, var(--color-gold-400) 20%, transparent)">Featured</span> @endif</td>
                         <td class="px-4 py-3">{{ $service->category ?? '—' }}</td>
                         <td class="px-4 py-3 text-nowrap">
                             @if ($service->hasPrice())

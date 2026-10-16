@@ -15,9 +15,9 @@
         <div class="bg-brand text-white px-4 py-3 d-flex align-items-center justify-content-between flex-shrink-0">
             <div>
                 <p class="fw-semibold fs-sm">Global Life Assistant</p>
-                <p class="fs-xs text-brand">Usually replies instantly</p>
+                <p class="fs-xs text-brand-">Usually replies instantly</p>
             </div>
-            <button type="button" id="chatbot-close" class="btn btn-link p-0 text-decoration-none text-brand" aria-label="Close chat">
+            <button type="button" id="chatbot-close" class="btn btn-link p-0 text-decoration-none text-brand-" aria-label="Close chat">
                 <x-icon name="x-mark" class="w-5 h-5" />
             </button>
         </div>

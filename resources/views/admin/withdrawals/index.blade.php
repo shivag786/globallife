@@ -13,8 +13,8 @@
             <p class="fs-2xl fw-bold text-warning">{{ $totals['pending_count'] }}</p>
         </div>
         <div class="rounded-2 shadow-sm p-5 text-white" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))">
-            <p class="fs-xs text-uppercase text-brand">Pending Amount</p>
-            <p class="fs-2xl fw-bold text-gold">{{ $money($totals['pending_amount']) }}</p>
+            <p class="fs-xs text-uppercase text-brand-">Pending Amount</p>
+            <p class="fs-2xl fw-bold text-gold-400">{{ $money($totals['pending_amount']) }}</p>
         </div>
         <div class="bg-body rounded-2 shadow-sm p-5 border">
             <p class="fs-xs text-uppercase text-secondary">Paid Requests</p>

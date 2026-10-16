@@ -420,7 +420,7 @@
                             <x-icon name="play" class="w-7 h-7 text-brand" />
                         </button>
                         <div class="position-absolute start-0 end-0 bottom-0 p-7 text-white">
-                            <div class="d-flex text-gold mb-2">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
+                            <div class="d-flex text-gold-400 mb-2">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
                             <p class="fs-lg lh-lg mw-md">“{{ $featuredStory['text'] }}”</p>
                             <div class="mt-5">
                                 <p class="w3-head fw-bold">{{ $featuredStory['name'] }}</p>

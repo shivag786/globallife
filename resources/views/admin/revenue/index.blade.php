@@ -17,8 +17,8 @@
             <p class="fs-2xl fw-bold text-brand-emphasis">₹{{ number_format($totals['managers'], 2) }}</p>
         </div>
         <div class="rounded-2 shadow-sm p-5 text-white" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))">
-            <p class="fs-xs text-uppercase text-brand">Company Revenue</p>
-            <p class="fs-2xl fw-bold text-gold">₹{{ number_format($totals['company'], 2) }}</p>
+            <p class="fs-xs text-uppercase text-brand-">Company Revenue</p>
+            <p class="fs-2xl fw-bold text-gold-400">₹{{ number_format($totals['company'], 2) }}</p>
         </div>
     </div>
 

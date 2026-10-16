@@ -12,7 +12,7 @@
                                 <h1 class="msite-heading fs-4xl fs-5xl text-white mb-4">{{ $slide->heading }}</h1>
                             @endif
                             @if ($slide->subheading)
-                                <p class="text-brand fs-lg mb-8 mw-lg">{{ $slide->subheading }}</p>
+                                <p class="text-brand- fs-lg mb-8 mw-lg">{{ $slide->subheading }}</p>
                             @endif
                             <div class="d-flex flex-wrap align-items-center gap-4">
                                 @if ($slide->button_text && $slide->button_link)

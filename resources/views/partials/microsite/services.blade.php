@@ -13,7 +13,7 @@
                                 <img src="{{ asset('storage/'.$service->image_path) }}" loading="lazy" class="w-100 h-100 object-fit-cover">
                             @else
                                 <div class="w-100 h-100 bg-brand-subtle d-flex align-items-center justify-content-center">
-                                    <x-icon name="sparkles" class="w-10 h-10 text-brand" />
+                                    <x-icon name="sparkles" class="w-10 h-10 text-brand-" />
                                 </div>
                             @endif
                             @if ($service->show_pricing && $service->discountPercentage())

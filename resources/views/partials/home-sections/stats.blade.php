@@ -9,9 +9,9 @@
         <div class="d-grid grid-cols-2 grid-cols-md-3 gap-8 text-center">
             @foreach ($section->items ?? [] as $index => $item)
                 <div class="reveal" style="transition-delay: {{ $index * 0.1 }}s">
-                    <x-icon name="{{ $statIcons[$index % count($statIcons)] }}" class="w-6 h-6 mx-auto mb-2 text-gold" />
-                    <p class="fs-4xl fw-bolder text-gold" data-countup="{{ $item['value'] ?? '' }}">0</p>
-                    <p class="fs-sm text-brand mt-2">{{ $item['label'] ?? '' }}</p>
+                    <x-icon name="{{ $statIcons[$index % count($statIcons)] }}" class="w-6 h-6 mx-auto mb-2 text-gold-400" />
+                    <p class="fs-4xl fw-bolder text-gold-400" data-countup="{{ $item['value'] ?? '' }}">0</p>
+                    <p class="fs-sm text-brand- mt-2">{{ $item['label'] ?? '' }}</p>
                 </div>
             @endforeach
         </div>

@@ -42,8 +42,8 @@
             <p class="fs-2xl fw-bold text-success">{{ $money($summary['paid']) }}</p>
         </div>
         <div class="rounded-2 shadow-sm p-5 text-white" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))">
-            <p class="fs-xs text-uppercase text-brand">Payable Now</p>
-            <p class="fs-2xl fw-bold text-gold">{{ $money($summary['payable']) }}</p>
+            <p class="fs-xs text-uppercase text-brand-">Payable Now</p>
+            <p class="fs-2xl fw-bold text-gold-400">{{ $money($summary['payable']) }}</p>
         </div>
     </div>
 

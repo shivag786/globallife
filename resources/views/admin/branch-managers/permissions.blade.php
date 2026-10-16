@@ -24,20 +24,20 @@
     <div class="rounded-4 overflow-hidden premium-shadow mb-6" style="background: linear-gradient(135deg,#1b3c2c,#0d2118);">
         <div class="px-6 py-5 px-sm-8 py-sm-6 d-flex flex-wrap align-items-start justify-content-between gap-5">
             <div class="min-w-0">
-                <p class="fs-xs text-uppercase tracking-widest text-gold fw-semibold">Portal Access</p>
+                <p class="fs-xs text-uppercase tracking-widest text-gold-400 fw-semibold">Portal Access</p>
                 <h2 class="font-display fs-2xl fs-3xl fw-bold text-white mt-1 text-truncate">{{ $manager->name }}</h2>
-                <p class="fs-sm text-brand mt-1 text-truncate">{{ $manager->email }}</p>
+                <p class="fs-sm text-brand- mt-1 text-truncate">{{ $manager->email }}</p>
             </div>
 
             <div class="text-end">
-                <p class="fs-xs text-uppercase tracking-wider text-brand">Granted</p>
-                <p class="font-display fs-3xl fw-bold text-gold mt-1">
-                    <span data-permission-count>{{ $grantedCount }}</span><span class="text-brand fs-xl">/{{ $total }}</span>
+                <p class="fs-xs text-uppercase tracking-wider text-brand-">Granted</p>
+                <p class="font-display fs-3xl fw-bold text-gold-400 mt-1">
+                    <span data-permission-count>{{ $grantedCount }}</span><span class="text-brand- fs-xl">/{{ $total }}</span>
                 </p>
             </div>
         </div>
 
-        <p class="px-6 px-sm-8 py-3 border-top border-white border-opacity-10 fs-xs text-brand">
+        <p class="px-6 px-sm-8 py-3 border-top border-white border-opacity-10 fs-xs text-brand-">
             Set by Super Admin only, and never passed down to their Commission Partners.
             Modules without a live page are not listed.
         </p>

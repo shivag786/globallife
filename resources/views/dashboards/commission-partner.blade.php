@@ -4,8 +4,12 @@
     </div>
 
     <div class="d-grid grid-cols-2 grid-cols-md-4 gap-4 mb-6">
-        <x-stat-tile label="Your Commission" :value="$manager->commission_percentage" suffix="%"
-            icon="tag" color="brand" hint="Your share of each activation" />
+        {{-- A partner whose Branch Manager has not set a rate yet would otherwise
+             get a blank tile and a bare "%" below; say so plainly instead. --}}
+        @php $rateSet = $manager->commission_percentage !== null; @endphp
+        <x-stat-tile label="Your Commission" :value="$rateSet ? $manager->commission_percentage : null" suffix="%"
+            icon="tag" color="brand"
+            :hint="$rateSet ? 'Your share of each activation' : 'Not set yet — ask your Branch Manager'" />
         <x-stat-tile label="VIP Members" :value="$stats['vip_members']" icon="users" color="indigo"
             :href="route('manager.vip-members.index')" cta="Manage members" />
         <x-stat-tile label="Activations" :value="$stats['activations']" icon="sparkles" color="violet"
@@ -39,7 +43,7 @@
             <p class="text-secondary fs-sm">No cities assigned yet. Contact your Branch Manager.</p>
         @endforelse
         <div class="border-top pt-3 mt-3 fs-sm text-secondary">
-            Commission: <strong class="text-brand">{{ $manager->commission_percentage }}%</strong>
+            Commission: <strong class="text-brand">{{ $manager->commission_percentage !== null ? $manager->commission_percentage.'%' : 'not set yet' }}</strong>
             @if ($manager->creator)
                 &mdash; set by {{ $manager->creator->name }}
             @endif

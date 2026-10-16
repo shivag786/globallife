@@ -34,18 +34,18 @@
         <div class="rounded-4 p-5 p-sm-6 mb-6 text-white premium-shadow" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))"
              data-profit-calc data-products="{{ json_encode($calcProducts) }}">
             <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-white bg-opacity-10 text-gold">
+                <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-white bg-opacity-10 text-gold-400">
                     <x-icon name="rupee" class="w-4 h-4" />
                 </span>
                 <h2 class="fw-semibold">Profit Calculator</h2>
             </div>
-            <p class="fs-sm text-brand mb-5">
+            <p class="fs-sm text-brand- mb-5">
                 What you earn when you sell from your own web page.
             </p>
 
             <div class="d-grid grid-cols-md-3 gap-4 mb-5">
                 <div>
-                    <label for="calc-product" class="d-block fs-xs text-uppercase tracking-wide text-brand mb-2">Product</label>
+                    <label for="calc-product" class="d-block fs-xs text-uppercase tracking-wide text-brand- mb-2">Product</label>
                     <select id="calc-product" data-calc-product
                             class="w-100 rounded-2 bg-white bg-opacity-10 border-white border-opacity-25 text-white fs-sm px-3 py-2">
                         @foreach ($calcProducts as $index => $item)
@@ -54,32 +54,32 @@
                     </select>
                 </div>
                 <div>
-                    <label for="calc-units" class="d-block fs-xs text-uppercase tracking-wide text-brand mb-2">Units sold</label>
+                    <label for="calc-units" class="d-block fs-xs text-uppercase tracking-wide text-brand- mb-2">Units sold</label>
                     <input type="number" id="calc-units" data-calc-units value="10" min="1" step="1"
                            class="w-100 rounded-2 bg-white bg-opacity-10 border-white border-opacity-25 text-white fs-sm px-3 py-2">
                 </div>
                 <div>
-                    <p class="d-block fs-xs text-uppercase tracking-wide text-brand mb-2">Sale price each</p>
+                    <p class="d-block fs-xs text-uppercase tracking-wide text-brand- mb-2">Sale price each</p>
                     <p class="fs-lg fw-semibold py-2" data-calc-price>—</p>
                 </div>
             </div>
 
             <div class="d-grid grid-cols-sm-3 gap-4">
                 <div class="bg-white bg-opacity-10 rounded-3 px-4 py-3 border border-white border-opacity-10">
-                    <p class="fs-xs text-uppercase tracking-wide text-brand mb-1">Your commission</p>
-                    <p class="fs-xl fw-bold text-gold" data-calc-rate>—</p>
+                    <p class="fs-xs text-uppercase tracking-wide text-brand- mb-1">Your commission</p>
+                    <p class="fs-xl fw-bold text-gold-400" data-calc-rate>—</p>
                 </div>
                 <div class="bg-white bg-opacity-10 rounded-3 px-4 py-3 border border-white border-opacity-10">
-                    <p class="fs-xs text-uppercase tracking-wide text-brand mb-1">You earn per sale</p>
-                    <p class="fs-xl fw-bold text-gold" data-calc-each>—</p>
+                    <p class="fs-xs text-uppercase tracking-wide text-brand- mb-1">You earn per sale</p>
+                    <p class="fs-xl fw-bold text-gold-400" data-calc-each>—</p>
                 </div>
-                <div class="bg-gold-subtle rounded-3 px-4 py-3 border border-gold-subtle">
-                    <p class="fs-xs text-uppercase tracking-wide text-gold mb-1">Total you earn</p>
-                    <p class="fs-2xl fw-bolder text-gold" data-calc-total>—</p>
+                <div class="rounded-3 px-4 py-3 border" style="background-color: color-mix(in srgb, var(--color-gold-400) 10%, transparent); border-color: color-mix(in srgb, var(--color-gold-400) 30%, transparent) !important">
+                    <p class="fs-xs text-uppercase tracking-wide text-gold-400 mb-1">Total you earn</p>
+                    <p class="fs-2xl fw-bolder text-gold-400" data-calc-total>—</p>
                 </div>
             </div>
 
-            <p class="fs-xs text-brand mt-4">
+            <p class="fs-xs text-brand- mt-4">
                 Commission is credited to your wallet once the order is delivered, not at checkout.
             </p>
         </div>

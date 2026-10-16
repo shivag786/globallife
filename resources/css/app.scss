@@ -336,6 +336,18 @@ $max-widths: (xs: 20rem, sm: 24rem, md: 28rem, lg: 32rem, xl: 36rem, 2xl: 42rem,
     .mw-#{$name} { max-width: $width !important; }
 }
 
+// Light brand tints as text, for copy on the dark green banners (renewal
+// header, profit calculator, payout headers). text-brand is the 600 shade,
+// which disappears on those backgrounds.
+.text-brand-50  { color: $brand-50 !important; }
+.text-brand-100 { color: $brand-100 !important; }
+.text-brand-200 { color: $brand-200 !important; }
+.text-brand-300 { color: $brand-300 !important; }
+.text-brand-400 { color: $brand-400 !important; }
+.text-gold-400  { color: $gold-400 !important; }
+// Light red for warnings on those same dark banners (an expired plan).
+.text-red-light { color: #fecaca !important; }
+
 // Lists that do want markers say so.
 .list-disc { list-style: disc; padding-left: 1.25rem; }
 .list-decimal { list-style: decimal; padding-left: 1.25rem; }

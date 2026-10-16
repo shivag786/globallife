@@ -123,8 +123,8 @@
             @endforeach
 
             <div class="rounded-4 p-5 text-white premium-shadow" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))">
-                <p class="fs-xs text-uppercase tracking-wide text-brand mb-2">Profile Completion</p>
-                <p class="fs-3xl fw-bolder text-gold">{{ $stats['completion'] }}%</p>
+                <p class="fs-xs text-uppercase tracking-wide text-brand- mb-2">Profile Completion</p>
+                <p class="fs-3xl fw-bolder text-gold-400">{{ $stats['completion'] }}%</p>
                 <div class="w-100 h-2 bg-white bg-opacity-10 rounded-pill mt-3 overflow-hidden">
                     <div class="h-100 bg-gold rounded-pill" style="width: {{ $stats['completion'] }}%"></div>
                 </div>
