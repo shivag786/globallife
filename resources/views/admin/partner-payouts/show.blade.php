@@ -16,7 +16,7 @@
     <form method="GET" class="mb-5 d-flex flex-wrap align-items-center gap-3">
         <label for="period" class="fs-sm text-body-secondary">Month</label>
         <select id="period" name="period" onchange="this.form.submit()"
-                class="rounded-2 shadow-sm fs-sm">
+                class="rounded-2 fs-sm">
             @foreach ($periods as $value => $optionLabel)
                 <option value="{{ $value }}" @selected($value === $period)>{{ $optionLabel }}</option>
             @endforeach
@@ -82,12 +82,12 @@
                         <label for="reference" class="d-block fs-xs text-secondary mb-1">Reference (optional)</label>
                         <input type="text" id="reference" name="reference" maxlength="120" value="{{ old('reference') }}"
                                placeholder="UTR / cheque no."
-                               class="rounded-2 shadow-sm fs-sm">
+                               class="rounded-2 fs-sm">
                     </div>
                     <div>
                         <label for="note" class="d-block fs-xs text-secondary mb-1">Note (optional)</label>
                         <input type="text" id="note" name="note" maxlength="500" value="{{ old('note') }}"
-                               class="rounded-2 shadow-sm fs-sm">
+                               class="rounded-2 fs-sm">
                     </div>
                     <button type="submit" class="btn btn-success btn-sm">
                         Mark {{ $money($totals['payable']) }} paid

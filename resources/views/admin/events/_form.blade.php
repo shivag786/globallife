@@ -26,7 +26,7 @@
     <div>
         <label for="description" class="d-block fs-sm fw-medium text-body-secondary">Description</label>
         <textarea id="description" name="description" rows="5"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('description', $event->description ?? '') }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('description', $event->description ?? '') }}</textarea>
     </div>
 
     <div>
@@ -40,7 +40,7 @@
     <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
         <div>
             <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
                 @foreach (['active', 'inactive'] as $option)
                     <option value="{{ $option }}" @selected(old('status', $event->status ?? 'active') === $option)>{{ ucfirst($option) }}</option>
                 @endforeach

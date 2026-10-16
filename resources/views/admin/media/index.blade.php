@@ -8,17 +8,17 @@
             <div>
                 <label for="title" class="d-block fs-sm fw-medium text-body-secondary">Title</label>
                 <input id="title" type="text" name="title" required
-                       class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                       class="mt-1 d-block w-100 rounded-2">
             </div>
             <div>
                 <label for="category" class="d-block fs-sm fw-medium text-body-secondary">Category</label>
                 <input id="category" type="text" name="category" placeholder="Gallery / Certificates / Events"
-                       class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                       class="mt-1 d-block w-100 rounded-2">
             </div>
             <div>
                 <label for="alt_text" class="d-block fs-sm fw-medium text-body-secondary">Alt Text</label>
                 <input id="alt_text" type="text" name="alt_text"
-                       class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                       class="mt-1 d-block w-100 rounded-2">
             </div>
             <div>
                 <label for="file" class="d-block fs-sm fw-medium text-body-secondary">Image</label>

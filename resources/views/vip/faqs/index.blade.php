@@ -3,8 +3,8 @@
         <h2 class="fw-semibold mb-3">Add FAQ</h2>
         <form method="POST" action="{{ route('vip.faqs.store') }}" class="d-flex flex-column gap-3">
             @csrf
-            <input type="text" name="question" placeholder="Question" required class="d-block w-100 rounded-2 shadow-sm fs-sm">
-            <textarea name="answer" placeholder="Answer" rows="2" required class="d-block w-100 rounded-2 shadow-sm fs-sm"></textarea>
+            <input type="text" name="question" placeholder="Question" required class="d-block w-100 rounded-2 fs-sm">
+            <textarea name="answer" placeholder="Answer" rows="2" required class="d-block w-100 rounded-2 fs-sm"></textarea>
             <button type="submit" class="btn btn-brand btn-sm">Add FAQ</button>
         </form>
     </div>
@@ -16,7 +16,7 @@
                     @csrf
                     @method('PUT')
                     <input type="text" name="question" value="{{ $faq->question }}" class="d-block w-100 rounded-2 shadow-sm fs-sm fw-medium">
-                    <textarea name="answer" rows="2" class="d-block w-100 rounded-2 shadow-sm fs-sm">{{ $faq->answer }}</textarea>
+                    <textarea name="answer" rows="2" class="d-block w-100 rounded-2 fs-sm">{{ $faq->answer }}</textarea>
                     <div class="d-flex align-items-center justify-content-between">
                         <label class="d-flex align-items-center gap-2 fs-xs">
                             <input type="checkbox" name="is_visible" value="1" @checked($faq->is_visible)>

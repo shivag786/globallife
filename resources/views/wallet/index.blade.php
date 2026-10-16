@@ -56,7 +56,7 @@
                             <input type="number" id="amount" name="amount" step="0.01"
                                    min="{{ $minimumWithdrawal }}"
                                    value="{{ old('amount', $defaultWithdrawAmount) }}"
-                                   class="w-40 rounded-2 shadow-sm fs-sm">
+                                   class="w-40 rounded-2 fs-sm">
                             @error('amount')<p class="fs-xs text-danger mt-1">{{ $message }}</p>@enderror
                         </div>
                         <button type="submit" class="btn btn-brand btn-sm">

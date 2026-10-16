@@ -16,7 +16,7 @@
     <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
         <div>
             <label for="category_id" class="d-block fs-sm fw-medium text-body-secondary">Category</label>
-            <select id="category_id" name="category_id" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="category_id" name="category_id" class="mt-1 d-block w-100 rounded-2">
                 <option value="">— Select category —</option>
                 @foreach ($categories as $cat)
                     <option value="{{ $cat->id }}" @selected((string) old('category_id', $product->category_id ?? '') === (string) $cat->id)>{{ $cat->name }}</option>
@@ -28,7 +28,7 @@
         </div>
         <div>
             <label for="brand_id" class="d-block fs-sm fw-medium text-body-secondary">Brand</label>
-            <select id="brand_id" name="brand_id" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="brand_id" name="brand_id" class="mt-1 d-block w-100 rounded-2">
                 <option value="">— No brand —</option>
                 @foreach ($brands as $b)
                     <option value="{{ $b->id }}" @selected((string) old('brand_id', $product->brand_id ?? '') === (string) $b->id)>{{ $b->name }}</option>
@@ -86,7 +86,7 @@
         </div>
         <div>
             <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
                 @foreach (['active', 'inactive'] as $option)
                     <option value="{{ $option }}" @selected(old('status', $product->status ?? 'active') === $option)>{{ ucfirst($option) }}</option>
                 @endforeach
@@ -119,19 +119,19 @@
     <div>
         <label for="ingredients" class="d-block fs-sm fw-medium text-body-secondary">Ingredients</label>
         <textarea id="ingredients" name="ingredients" rows="3"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('ingredients', $product->ingredients ?? '') }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('ingredients', $product->ingredients ?? '') }}</textarea>
     </div>
 
     <div>
         <label for="usage_instructions" class="d-block fs-sm fw-medium text-body-secondary">Usage Instructions</label>
         <textarea id="usage_instructions" name="usage_instructions" rows="3"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('usage_instructions', $product->usage_instructions ?? '') }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('usage_instructions', $product->usage_instructions ?? '') }}</textarea>
     </div>
 
     <div>
         <label for="specs" class="d-block fs-sm fw-medium text-body-secondary">Specifications <span class="text-secondary">("Key | Value" per line)</span></label>
         <textarea id="specs" name="specs" rows="4"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('specs', isset($product) && $product->specs ? collect($product->specs)->map(fn($v, $k) => "$k | $v")->implode("\n") : '') }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('specs', isset($product) && $product->specs ? collect($product->specs)->map(fn($v, $k) => "$k | $v")->implode("\n") : '') }}</textarea>
     </div>
 
     <div>

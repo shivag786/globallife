@@ -50,15 +50,15 @@
                 <form method="POST" action="{{ route('microsite.reviews.store', [$microsite->city->slug, $microsite->business_slug, $microsite->user_id.'-'.$microsite->secure_token.'-'.$microsite->user->created_by]) }}" class="d-flex flex-column gap-3">
                     @csrf
                     <input type="text" name="customer_name" placeholder="Your Name" required
-                           class="d-block w-100 rounded-2 shadow-sm fs-sm">
-                    <select name="rating" required class="d-block w-100 rounded-2 shadow-sm fs-sm">
+                           class="d-block w-100 rounded-2 fs-sm">
+                    <select name="rating" required class="d-block w-100 rounded-2 fs-sm">
                         <option value="">Rating&hellip;</option>
                         @foreach ([5, 4, 3, 2, 1] as $rating)
                             <option value="{{ $rating }}">{{ $rating }} Star{{ $rating > 1 ? 's' : '' }}</option>
                         @endforeach
                     </select>
                     <textarea name="review_text" placeholder="Your experience (optional)" rows="3"
-                              class="d-block w-100 rounded-2 shadow-sm fs-sm"></textarea>
+                              class="d-block w-100 rounded-2 fs-sm"></textarea>
                     <button type="submit" class="btn btn-link p-0 text-decoration-none msite-btn msite-btn-primary w-100">Submit Review</button>
                 </form>
             </div>

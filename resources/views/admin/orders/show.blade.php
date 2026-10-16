@@ -79,7 +79,7 @@
                 <h3 class="fw-semibold text-body mb-3">Update Status</h3>
                 <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
                     @csrf @method('PATCH')
-                    <select name="status" class="d-block w-100 rounded-2 shadow-sm fs-sm mb-3">
+                    <select name="status" class="d-block w-100 rounded-2 fs-sm mb-3">
                         @foreach (['pending', 'confirmed', 'processing', 'dispatched', 'delivered', 'cancelled', 'refunded'] as $s)
                             <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
                         @endforeach

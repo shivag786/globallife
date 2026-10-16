@@ -9,11 +9,11 @@
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Title (optional)</label>
-                <input type="text" name="title" class="mt-1 rounded-2 shadow-sm fs-sm">
+                <input type="text" name="title" class="mt-1 rounded-2 fs-sm">
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Sort Order</label>
-                <input type="number" name="sort_order" value="0" class="mt-1 rounded-2 shadow-sm fs-sm w-24">
+                <input type="number" name="sort_order" value="0" class="mt-1 rounded-2 fs-sm w-24">
             </div>
             <button type="submit" class="btn btn-brand btn-sm">Upload</button>
         </form>

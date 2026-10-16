@@ -20,7 +20,7 @@
                         <label for="service-slug" class="form-label small fw-medium text-body-secondary mb-1">
                             SEO Title &amp; Page URL
                         </label>
-                        <input type="text" id="service-slug" class="form-control bg-light" disabled
+                        <input type="text" id="service-slug" class="form-control" disabled
                                data-slug-preview value="{{ $service->slug ?? '' }}"
                                placeholder="fills-in-from-the-service-name">
                         <p class="small text-muted mt-1 mb-0">
@@ -67,7 +67,7 @@
                          are derived server-side on save; this is only a preview. --}}
                     <div class="col-md-4">
                         <label class="form-label small fw-medium text-body-secondary mb-1">Customers will see</label>
-                        <div class="border rounded-3 bg-light px-3 py-2" style="min-height: 2.75rem">
+                        <div class="border rounded-3 bg-body-tertiary px-3 py-2" style="min-height: 2.75rem">
                             <div class="d-flex align-items-baseline gap-2 flex-wrap" data-price-output>
                                 <span class="text-muted small">Enter a price to preview</span>
                             </div>

@@ -15,7 +15,7 @@
 <div class="d-flex flex-column gap-4 mw-2xl">
     <div>
         <label for="type" class="d-block fs-sm fw-medium text-body-secondary">Section Type</label>
-        <select id="type" name="type" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+        <select id="type" name="type" class="mt-1 d-block w-100 rounded-2">
             @foreach (\App\Models\HomeSection::TYPES as $value => $label)
                 <option value="{{ $value }}" @selected(old('type', $section->type ?? 'hero') === $value)>{{ $label }}</option>
             @endforeach
@@ -44,7 +44,7 @@
             Items <span class="text-secondary">(features/business opportunity/process steps/quality: "Title | Description" per line &middot; stats: "Label | Value" per line &middot; team: "Name | Role" per line &middot; certifications: "Badge | Detail" per line &middot; hero: trust badge label per line, optional)</span>
         </label>
         <textarea id="items" name="items" rows="5"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('items', $itemsText) }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('items', $itemsText) }}</textarea>
     </div>
 
     <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
@@ -71,7 +71,7 @@
 
     <div>
         <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-        <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+        <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
             @foreach (['active', 'inactive'] as $option)
                 <option value="{{ $option }}" @selected(old('status', $section->status ?? 'active') === $option)>{{ ucfirst($option) }}</option>
             @endforeach

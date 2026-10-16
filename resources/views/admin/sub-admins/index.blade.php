@@ -42,7 +42,7 @@
                                 <td>{{ $subAdmin->branch_managers_count }}</td>
                                 <td>
                                     @forelse ($activeModules as $module)
-                                        <span class="badge rounded-pill text-bg-light border me-1">
+                                        <span class="badge rounded-pill bg-body-tertiary text-body border me-1">
                                             {{ str_replace('-', ' ', $module) }}
                                         </span>
                                     @empty

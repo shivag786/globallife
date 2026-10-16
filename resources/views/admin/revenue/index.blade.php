@@ -25,7 +25,7 @@
     <form method="GET" class="mb-4 d-flex align-items-center gap-3">
         <label for="branch_manager_id" class="fs-sm text-body-secondary">Filter by Branch Manager</label>
         <select id="branch_manager_id" name="branch_manager_id" onchange="this.form.submit()"
-                class="rounded-2 shadow-sm fs-sm">
+                class="rounded-2 fs-sm">
             <option value="">All Branch Managers</option>
             @foreach ($branchManagers as $manager)
                 <option value="{{ $manager->id }}" @selected($selectedBranchManagerId === $manager->id)>{{ $manager->name }}</option>

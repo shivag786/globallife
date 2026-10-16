@@ -18,7 +18,7 @@
         <div>
             <label for="code" class="d-block fs-sm fw-medium text-body-secondary">Authentication code</label>
             <input id="code" type="text" name="code" inputmode="numeric" autofocus
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
         </div>
 
         <p class="fs-xs text-secondary text-center">— or, if you've lost access to your device —</p>
@@ -26,7 +26,7 @@
         <div>
             <label for="recovery_code" class="d-block fs-sm fw-medium text-body-secondary">Recovery code</label>
             <input id="recovery_code" type="text" name="recovery_code"
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
         </div>
 
         <button type="submit" class="btn btn-primary w-100">

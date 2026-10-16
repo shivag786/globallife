@@ -42,7 +42,7 @@
 
     <div>
         <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-        <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+        <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
             @foreach (['draft' => 'Draft', 'published' => 'Published'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $post->status ?? 'draft') === $value)>{{ $label }}</option>
             @endforeach

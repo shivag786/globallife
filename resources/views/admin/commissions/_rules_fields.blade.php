@@ -10,7 +10,7 @@
         <div class="d-grid grid-template-sm gap-3 align-items-sm-center" style="--cols-sm: minmax(0, 1fr) 130px minmax(0, 1fr)">
             <label for="value-{{ $role }}" class="fs-sm fw-medium text-body-secondary">{{ $label }}</label>
             <select name="rules[{{ $role }}][type]" aria-label="{{ $label }} commission type"
-                    class="d-block w-100 rounded-2 shadow-sm fs-sm">
+                    class="d-block w-100 rounded-2 fs-sm">
                 <option value="percent" @selected(old("rules.$role.type", $rule->type ?? 'percent') === 'percent')>Percent %</option>
                 <option value="fixed" @selected(old("rules.$role.type", $rule->type ?? '') === 'fixed')>Fixed ₹</option>
             </select>

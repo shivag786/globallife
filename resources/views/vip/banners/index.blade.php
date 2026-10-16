@@ -5,7 +5,7 @@
             @csrf
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Device</label>
-                <select name="device" class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                <select name="device" class="mt-1 d-block w-100 rounded-2 fs-sm">
                     <option value="desktop">Desktop</option>
                     <option value="mobile">Mobile</option>
                 </select>
@@ -16,19 +16,19 @@
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Heading</label>
-                <input type="text" name="heading" class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                <input type="text" name="heading" class="mt-1 d-block w-100 rounded-2 fs-sm">
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Sub Heading</label>
-                <input type="text" name="subheading" class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                <input type="text" name="subheading" class="mt-1 d-block w-100 rounded-2 fs-sm">
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Button Text</label>
-                <input type="text" name="button_text" class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                <input type="text" name="button_text" class="mt-1 d-block w-100 rounded-2 fs-sm">
             </div>
             <div>
                 <label class="d-block fs-sm fw-medium text-body-secondary">Button Link</label>
-                <input type="text" name="button_link" class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                <input type="text" name="button_link" class="mt-1 d-block w-100 rounded-2 fs-sm">
             </div>
             <div class="col-span-sm-2">
                 <button type="submit" class="btn btn-brand btn-sm">Add Slide</button>

@@ -45,7 +45,7 @@
 
                 <div>
                     <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-                    <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                    <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
                         @foreach (['new', 'contacted', 'converted', 'closed'] as $option)
                             <option value="{{ $option }}" @selected(old('status', $lead->status) === $option)>{{ ucfirst($option) }}</option>
                         @endforeach
@@ -54,7 +54,7 @@
 
                 <div>
                     <label for="assigned_manager_id" class="d-block fs-sm fw-medium text-body-secondary">Assigned Manager</label>
-                    <select id="assigned_manager_id" name="assigned_manager_id" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                    <select id="assigned_manager_id" name="assigned_manager_id" class="mt-1 d-block w-100 rounded-2">
                         <option value="">Unassigned</option>
                         @foreach ($managers as $manager)
                             <option value="{{ $manager->id }}" @selected(old('assigned_manager_id', $lead->assigned_manager_id) == $manager->id)>{{ $manager->name }}</option>

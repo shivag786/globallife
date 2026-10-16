@@ -57,7 +57,7 @@
                    minlength="2"
                    maxlength="100"
                    autocomplete="name"
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
 
             <p class="name-error mt-1 fs-sm text-danger d-none"></p>
         </div>
@@ -77,7 +77,7 @@
                    maxlength="254"
                    autocomplete="email"
                    inputmode="email"
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
 
             <p class="email-error mt-1 fs-sm text-danger d-none"></p>
         </div>
@@ -100,7 +100,7 @@
                    autocomplete="tel"
                    placeholder="Enter 10 digit mobile number"
                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
 
             <p class="phone-error mt-1 fs-sm text-danger d-none"></p>
         </div>
@@ -118,7 +118,7 @@
                    value="{{ old('city', $prefillCity) }}"
                    maxlength="100"
                    autocomplete="address-level2"
-                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                   class="mt-1 d-block w-100 rounded-2">
         </div>
 
     </div>
@@ -134,7 +134,7 @@
 
             <select id="interested_plan_id-{{ $source }}"
                     name="interested_plan_id"
-                    class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                    class="mt-1 d-block w-100 rounded-2">
 
                 <option value="">None / General Enquiry</option>
 
@@ -165,7 +165,7 @@
                   name="message"
                   rows="4"
                   maxlength="2000"
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('message', $prefillMessage) }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('message', $prefillMessage) }}</textarea>
     </div>
 
     <button type="submit"

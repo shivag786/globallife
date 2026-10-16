@@ -7,11 +7,11 @@
                 <div class="flex-grow-1">
                     <label class="d-block fs-sm fw-medium text-body-secondary">YouTube URL</label>
                     <input type="url" name="youtube_url" required placeholder="https://youtube.com/watch?v=..."
-                           class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
+                           class="mt-1 d-block w-100 rounded-2 fs-sm">
                 </div>
                 <div>
                     <label class="d-block fs-sm fw-medium text-body-secondary">Title (optional)</label>
-                    <input type="text" name="title" class="mt-1 rounded-2 shadow-sm fs-sm">
+                    <input type="text" name="title" class="mt-1 rounded-2 fs-sm">
                 </div>
                 <button type="submit" class="btn btn-brand btn-sm">Add</button>
             </form>

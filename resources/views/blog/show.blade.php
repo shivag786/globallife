@@ -118,18 +118,18 @@
                     <div>
                         <label for="comment-name" class="d-block fs-sm fw-medium text-body-secondary">Name</label>
                         <input id="comment-name" type="text" name="name" value="{{ old('name') }}" required
-                               class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                               class="mt-1 d-block w-100 rounded-2">
                     </div>
                     <div>
                         <label for="comment-email" class="d-block fs-sm fw-medium text-body-secondary">Email <span class="text-secondary">(optional)</span></label>
                         <input id="comment-email" type="email" name="email" value="{{ old('email') }}"
-                               class="mt-1 d-block w-100 rounded-2 shadow-sm">
+                               class="mt-1 d-block w-100 rounded-2">
                     </div>
                 </div>
                 <div>
                     <label for="comment-content" class="d-block fs-sm fw-medium text-body-secondary">Comment</label>
                     <textarea id="comment-content" name="content" rows="3" required
-                              class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('content') }}</textarea>
+                              class="mt-1 d-block w-100 rounded-2">{{ old('content') }}</textarea>
                 </div>
                 <button type="submit" class="btn btn-brand btn-sm rounded-pill">
                     Post Comment

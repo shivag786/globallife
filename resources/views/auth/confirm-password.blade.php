@@ -19,7 +19,7 @@
             <label for="password" class="d-block fs-sm fw-medium text-body-secondary">Password</label>
             <div class="position-relative mt-1">
                 <input id="password" type="password" name="password" required autofocus
-                       class="d-block w-100 rounded-2 shadow-sm pe-10">
+                       class="d-block w-100 rounded-2 pe-10">
                 <button type="button" data-password-toggle="#password"
                         class="btn btn-link p-0 text-decoration-none position-absolute top-0 bottom-0 end-0 px-3 d-flex align-items-center text-secondary">
                     <x-icon name="eye" class="w-5 h-5" data-icon-eye />

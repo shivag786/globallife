@@ -20,7 +20,7 @@
     <form method="GET" class="mb-5 d-flex flex-wrap align-items-center gap-3">
         <label for="period" class="fs-sm text-body-secondary">Month</label>
         <select id="period" name="period" onchange="this.form.submit()"
-                class="rounded-2 shadow-sm fs-sm">
+                class="rounded-2 fs-sm">
             @foreach ($periods as $value => $label)
                 <option value="{{ $value }}" @selected($value === $period)>{{ $label }}</option>
             @endforeach

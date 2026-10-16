@@ -23,7 +23,7 @@
         </div>
         <div>
             <label for="rating" class="d-block fs-sm fw-medium text-body-secondary">Rating</label>
-            <select id="rating" name="rating" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="rating" name="rating" class="mt-1 d-block w-100 rounded-2">
                 @for ($i = 5; $i >= 1; $i--)
                     <option value="{{ $i }}" @selected(old('rating', $testimonial->rating ?? 5) == $i)>{{ $i }} Star{{ $i > 1 ? 's' : '' }}</option>
                 @endfor
@@ -34,7 +34,7 @@
     <div>
         <label for="content" class="d-block fs-sm fw-medium text-body-secondary">Testimonial</label>
         <textarea id="content" name="content" rows="4" required
-                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('content', $testimonial->content ?? '') }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ old('content', $testimonial->content ?? '') }}</textarea>
     </div>
 
     <div>
@@ -48,7 +48,7 @@
     <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
         <div>
             <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
-            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
+            <select id="status" name="status" class="mt-1 d-block w-100 rounded-2">
                 @foreach (['active', 'inactive'] as $option)
                     <option value="{{ $option }}" @selected(old('status', $testimonial->status ?? 'active') === $option)>{{ ucfirst($option) }}</option>
                 @endforeach

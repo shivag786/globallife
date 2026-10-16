@@ -2,7 +2,7 @@
     <form method="GET" class="mb-4 d-flex align-items-center gap-3">
         <label for="causer_id" class="fs-sm text-body-secondary">Filter by user</label>
         <select id="causer_id" name="causer_id" onchange="this.form.submit()"
-                class="rounded-2 shadow-sm fs-sm">
+                class="rounded-2 fs-sm">
             <option value="">All Branch Managers &amp; Commission Partners</option>
             @foreach ($causers as $causer)
                 <option value="{{ $causer->id }}" @selected($selectedCauserId === $causer->id)>
