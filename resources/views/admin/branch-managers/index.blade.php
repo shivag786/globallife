@@ -15,6 +15,9 @@
                     <th class="px-4 py-3">Branches (Cities)</th>
                     <th class="px-4 py-3">Commission Cap</th>
                     <th class="px-4 py-3">Commission Partners</th>
+                    @if ($seesAll)
+                        <th class="px-4 py-3">Managed By</th>
+                    @endif
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3"></th>
                 </tr>
@@ -27,6 +30,15 @@
                         <td class="px-4 py-3">{{ $manager->branchCities->pluck('name')->implode(', ') }}</td>
                         <td class="px-4 py-3">{{ $manager->commission_percentage }}%</td>
                         <td class="px-4 py-3">{{ $manager->commission_partners_count }}</td>
+                        @if ($seesAll)
+                            <td class="px-4 py-3">
+                                @if ($manager->creator)
+                                    {{ $manager->creator->name }}
+                                @else
+                                    <span class="text-slate-400">Super Admin</span>
+                                @endif
+                            </td>
+                        @endif
                         <td class="px-4 py-3">
                             <span class="px-2 py-0.5 rounded text-xs {{ $manager->status === 'active' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600' }}">
                                 {{ $manager->status }}
@@ -45,7 +57,11 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">No branch managers yet.</td></tr>
+                    <tr>
+                        <td colspan="{{ $seesAll ? 8 : 7 }}" class="px-4 py-6 text-center text-slate-400">
+                            {{ $seesAll ? 'No branch managers yet.' : "You haven't added any Branch Managers yet." }}
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>

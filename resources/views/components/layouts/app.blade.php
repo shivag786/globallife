@@ -59,6 +59,7 @@
 
                         <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Branch &amp; Commission Module</p>
                         <a href="{{ route('admin.cities.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Cities</a>
+                        <a href="{{ route('admin.sub-admins.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Sub Admins</a>
                         <a href="{{ route('admin.branch-managers.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Branch Managers</a>
                         <a href="{{ route('admin.commission-partners.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Commission Partners</a>
                         <a href="{{ route('admin.partner-payouts.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Partner Payouts</a>
@@ -69,6 +70,15 @@
                         <a href="{{ route('admin.settings.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Site Settings</a>
                         <a href="{{ route('admin.settings.payment.edit') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Payment Gateway</a>
                         <a href="{{ route('admin.activity-logs.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Activity Log</a>
+                    @endif
+
+                    {{-- A Sub Admin granted the branch-managers module runs the
+                         Branch Managers they created. Super Admin reaches the same
+                         screen from the Branch & Commission Module block above, so
+                         this is only rendered for everyone else. --}}
+                    @if (! $user->hasRole('super_admin') && \App\Services\PermissionMatrixService::userCanAccessModule($user, 'branch-managers'))
+                        <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">My Network</p>
+                        <a href="{{ route('admin.branch-managers.index') }}" class="block px-3 py-2 rounded hover:bg-slate-800">Branch Managers</a>
                     @endif
 
                     <p class="px-3 pt-4 pb-1 text-xs uppercase tracking-wide text-slate-500">Content</p>

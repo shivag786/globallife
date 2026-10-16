@@ -79,7 +79,37 @@ class User extends Authenticatable
     }
 
     /**
-     * The Branch Manager who created this Commission Partner, if any.
+     * Branch Managers this account owns.
+     *
+     * The user hierarchy is Super Admin → Sub Admin → Branch Manager → Commission
+     * Partner → VIP Member, all on the one `created_by` chain. Role-filtered
+     * because `created_by` is shared by every level, so an unfiltered count on a
+     * Sub Admin would sweep in anything else they happened to create.
+     *
+     * A Branch Manager with `created_by` NULL predates Sub Admins and belongs to
+     * Super Admin until reassigned.
+     *
+     * @return HasMany<User, $this>
+     */
+    public function branchManagers(): HasMany
+    {
+        return $this->hasMany(User::class, 'created_by')->role('branch_manager');
+    }
+
+    /**
+     * Sub Admins this Super Admin created.
+     *
+     * @return HasMany<User, $this>
+     */
+    public function subAdmins(): HasMany
+    {
+        return $this->hasMany(User::class, 'created_by')->role('sub_admin');
+    }
+
+    /**
+     * The account one level up the hierarchy: the Sub Admin who created this
+     * Branch Manager, the Branch Manager who created this Commission Partner, and
+     * so on.
      *
      * @return BelongsTo<User, $this>
      */

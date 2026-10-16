@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Rules\PercentageWithinCap;
+use App\Support\BranchManagerAccess;
 use App\Support\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,7 +12,9 @@ class StoreBranchManagerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin');
+        // Super Admin, or a Sub Admin granted the branch-managers module.
+        return BranchManagerAccess::canManage($this->user())
+            && $this->user()->can('branch-managers.create');
     }
 
     /**
@@ -32,6 +35,10 @@ class StoreBranchManagerRequest extends FormRequest
             'cities' => ['nullable', 'array'],
             'cities.*' => ['integer', 'exists:cities,id'],
             'commission_percentage' => ['required', 'numeric', 'min:0', new PercentageWithinCap(100)],
+            // Which Sub Admin owns them. Only Super Admin is shown this field, and
+            // the controller ignores it for anyone else, so a Sub Admin cannot
+            // post one to park a Branch Manager under somebody else.
+            'created_by' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Account\OrderController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BranchManagerController;
+use App\Http\Controllers\Admin\SubAdminController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CityController;
@@ -160,9 +161,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::patch('orders/{order}/delivery', [App\Http\Controllers\Admin\OrderController::class, 'updateDelivery'])->name('orders.update-delivery');
 
-        Route::middleware('role:super_admin')->group(function () {
-            Route::resource('cities', CityController::class)->except(['show']);
-
+        // Branch Managers sit one level below Sub Admin in the hierarchy, so a Sub
+        // Admin granted the `branch-managers` module manages them too — scoped to
+        // the ones they created, enforced in BranchManagerController via
+        // BranchManagerAccess (the role here only opens the door).
+        Route::middleware('role:super_admin|sub_admin')->group(function () {
             Route::resource('branch-managers', BranchManagerController::class)
                 ->except(['show', 'destroy'])
                 ->parameters(['branch-managers' => 'branchManager']);
@@ -176,6 +179,24 @@ Route::middleware(['auth', 'active_account'])->group(function () {
                 ->name('branch-managers.permissions.edit');
             Route::put('branch-managers/{branchManager}/permissions', [BranchManagerController::class, 'updatePermissions'])
                 ->name('branch-managers.permissions.update');
+        });
+
+        Route::middleware('role:super_admin')->group(function () {
+            Route::resource('cities', CityController::class)->except(['show']);
+
+            // Sub Admins — the layer between Super Admin and Branch Manager.
+            // Super Admin's alone: a Sub Admin cannot mint more Sub Admins.
+            Route::resource('sub-admins', SubAdminController::class)
+                ->except(['show', 'destroy'])
+                ->parameters(['sub-admins' => 'subAdmin']);
+            Route::patch('sub-admins/{subAdmin}/toggle-status', [SubAdminController::class, 'toggleStatus'])
+                ->name('sub-admins.toggle-status');
+            Route::put('sub-admins/{subAdmin}/password', [SubAdminController::class, 'updatePassword'])
+                ->name('sub-admins.password.update');
+            Route::get('sub-admins/{subAdmin}/permissions', [SubAdminController::class, 'permissions'])
+                ->name('sub-admins.permissions.edit');
+            Route::put('sub-admins/{subAdmin}/permissions', [SubAdminController::class, 'updatePermissions'])
+                ->name('sub-admins.permissions.update');
 
             Route::get('commission-partners', [AdminCommissionPartnerController::class, 'index'])
                 ->name('commission-partners.index');

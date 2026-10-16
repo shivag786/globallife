@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\User;
 use App\Models\VipMicrosite;
 use App\Models\VipPlan;
+use App\Services\PermissionMatrixService;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Str;
 
@@ -22,9 +23,34 @@ trait BuildsCommissionChain
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    protected function makeBranchManager(float $percentage): User
+    /**
+     * A Sub Admin, optionally granted modules from the admin permission matrix.
+     *
+     * @param  list<string>  $modules
+     */
+    protected function makeSubAdmin(array $modules = []): User
     {
-        $user = User::factory()->create(['status' => 'active', 'commission_percentage' => $percentage]);
+        $user = User::factory()->create(['status' => 'active']);
+        $user->assignRole('sub_admin');
+
+        foreach ($modules as $module) {
+            $user->givePermissionTo(PermissionMatrixService::permissionsForModule($module));
+        }
+
+        return $user;
+    }
+
+    /**
+     * `$owner` is the Sub Admin who runs them; null leaves them Super Admin's,
+     * which is how every Branch Manager created before Sub Admins existed looks.
+     */
+    protected function makeBranchManager(float $percentage, ?User $owner = null): User
+    {
+        $user = User::factory()->create([
+            'status' => 'active',
+            'commission_percentage' => $percentage,
+            'created_by' => $owner?->id,
+        ]);
         $user->assignRole('branch_manager');
 
         return $user;

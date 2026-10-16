@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Rules\PercentageWithinCap;
+use App\Support\BranchManagerAccess;
 use App\Support\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,7 +12,10 @@ class UpdateBranchManagerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin');
+        // Ownership of this particular Branch Manager is checked in the
+        // controller; this only asks whether the module is theirs at all.
+        return BranchManagerAccess::canManage($this->user())
+            && $this->user()->can('branch-managers.edit');
     }
 
     /**
@@ -20,6 +24,12 @@ class UpdateBranchManagerRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // Reassigning to another Sub Admin is Super Admin's alone, so the key
+            // is dropped outright for anyone else rather than validated and then
+            // quietly ignored — see BranchManagerService::updateBranchManager().
+            ...(BranchManagerAccess::seesAll($this->user())
+                ? ['created_by' => ['nullable', 'integer', 'exists:users,id']]
+                : []),
             'name' => ['required', 'string', 'max:120'],
             // Exactly 10 digits after normalisation, and no two accounts may
             // share one — `users.mobile` is written here and from the VIP

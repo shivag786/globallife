@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\VipPlan;
 use App\Models\WithdrawalRequest;
 use App\Services\PermissionMatrixService;
+use App\Support\BranchManagerAccess;
 use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -26,10 +27,23 @@ class DashboardController extends Controller
         $stats = $isAdmin
             ? [
                 'cities' => City::count(),
+                'sub_admins' => User::role('sub_admin')->count(),
                 'branch_managers' => User::role('branch_manager')->count(),
                 'commission_partners' => User::role('commission_partner')->count(),
                 'vip_plans' => VipPlan::where('status', 'active')->count(),
                 'vip_members' => User::role('vip_member')->count(),
+            ]
+            : null;
+
+        // A Sub Admin running Branch Managers gets their own corner of the
+        // dashboard: the platform-wide figures above are not theirs to see.
+        $network = BranchManagerAccess::canManage($user) && ! $isAdmin
+            ? [
+                'branch_managers' => $user->branchManagers()->count(),
+                'active' => $user->branchManagers()->where('status', 'active')->count(),
+                'commission_partners' => User::role('commission_partner')
+                    ->whereIn('created_by', $user->branchManagers()->select('users.id'))
+                    ->count(),
             ]
             : null;
 
@@ -47,6 +61,7 @@ class DashboardController extends Controller
                     'pending_amount' => (float) WithdrawalRequest::pending()->sum('amount'),
                 ]
                 : null,
+            'network' => $network,
             'permissionMatrix' => $user->hasRole('sub_admin')
                 ? PermissionMatrixService::groupByModule($user->getAllPermissions()->pluck('name'))
                 : null,

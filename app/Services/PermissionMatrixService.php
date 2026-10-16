@@ -7,11 +7,14 @@ use App\Models\User;
 class PermissionMatrixService
 {
     /**
-     * Content modules a Sub Admin's access can be scoped to.
+     * Modules a Sub Admin's access can be scoped to.
+     *
+     * `branch-managers` is the one that is not content: it puts the Sub Admin into
+     * the user hierarchy, letting them run the Branch Managers they create.
      *
      * @var list<string>
      */
-    public const MODULES = ['blog', 'products', 'leads', 'events', 'media', 'testimonials'];
+    public const MODULES = ['blog', 'products', 'leads', 'events', 'media', 'testimonials', 'branch-managers'];
 
     /**
      * Actions assignable per module.
@@ -19,6 +22,29 @@ class PermissionMatrixService
      * @var list<string>
      */
     public const ACTIONS = ['create', 'edit', 'delete', 'publish', 'approve', 'export'];
+
+    /**
+     * Modules where only some of ACTIONS mean anything.
+     *
+     * Managing accounts has nothing to publish, approve or export, and offering
+     * those toggles would grant permissions no code ever checks. Anything absent
+     * here takes the full ACTIONS list.
+     *
+     * @var array<string, list<string>>
+     */
+    private const MODULE_ACTIONS = [
+        'branch-managers' => ['create', 'edit', 'delete'],
+    ];
+
+    /**
+     * The actions worth offering for one module.
+     *
+     * @return list<string>
+     */
+    public static function actionsForModule(string $module): array
+    {
+        return self::MODULE_ACTIONS[$module] ?? self::ACTIONS;
+    }
 
     /**
      * All "{module}.{action}" permission names in the matrix.
@@ -30,7 +56,7 @@ class PermissionMatrixService
         $permissions = [];
 
         foreach (self::MODULES as $module) {
-            foreach (self::ACTIONS as $action) {
+            foreach (self::actionsForModule($module) as $action) {
                 $permissions[] = "{$module}.{$action}";
             }
         }
@@ -45,7 +71,7 @@ class PermissionMatrixService
      */
     public static function permissionsForModule(string $module): array
     {
-        return array_map(fn (string $action) => "{$module}.{$action}", self::ACTIONS);
+        return array_map(fn (string $action) => "{$module}.{$action}", self::actionsForModule($module));
     }
 
     /**

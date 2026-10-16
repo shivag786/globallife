@@ -40,6 +40,22 @@ class UserSeeder extends Seeder
         $subAdmin->syncRoles(['sub_admin']);
         $subAdmin->syncPermissions(PermissionMatrixService::permissionsForModule('blog'));
 
+        // A second Sub Admin showing the other half of the role: the user
+        // hierarchy rather than content. Granted the branch-managers module, so
+        // the demo Branch Manager below has somebody above them.
+        $networkSubAdmin = User::firstOrCreate(
+            ['email' => 'network-subadmin@globallife.in'],
+            [
+                'name' => 'Network Sub Admin',
+                'password' => Hash::make('Password!123'),
+                'status' => 'active',
+                'created_by' => $superAdmin->id,
+                'email_verified_at' => now(),
+            ]
+        );
+        $networkSubAdmin->syncRoles(['sub_admin']);
+        $networkSubAdmin->syncPermissions(PermissionMatrixService::permissionsForModule('branch-managers'));
+
         $jhansi = City::where('slug', 'jhansi')->first();
         $delhi = City::where('slug', 'delhi')->first();
 
@@ -51,6 +67,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('Password!123'),
                 'status' => 'active',
                 'commission_percentage' => 30,
+                'created_by' => $networkSubAdmin->id,
                 'email_verified_at' => now(),
             ]
         );

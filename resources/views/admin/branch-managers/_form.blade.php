@@ -36,6 +36,31 @@
                                        step="0.01" min="0" max="100" required
                                        help="The most this Branch Manager can grant a Commission Partner (0–100%)." />
                     </div>
+                    {{-- Which Sub Admin runs this Branch Manager. Super Admin only:
+                         a Sub Admin's own Branch Managers are always theirs, so they
+                         are never shown a field that could move one away. --}}
+                    @if ($seesAll ?? false)
+                        <div class="col-md-6">
+                            <label for="created_by" class="block text-sm font-medium text-slate-700">Managed By</label>
+                            <select id="created_by" name="created_by"
+                                    class="form-select @error('created_by') is-invalid @enderror">
+                                <option value="">Super Admin (unassigned)</option>
+                                @foreach ($subAdmins as $subAdmin)
+                                    <option value="{{ $subAdmin->id }}"
+                                        @selected((int) old('created_by', $manager->created_by ?? null) === $subAdmin->id)>
+                                        {{ $subAdmin->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('created_by')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                            <p class="small text-muted mb-0 mt-1">
+                                The Sub Admin who manages them. Leave as Super Admin to keep them yourself
+                                &mdash; a Sub Admin only ever sees their own.
+                            </p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

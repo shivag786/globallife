@@ -49,17 +49,46 @@ Roles are seeded by `RolesAndPermissionsSeeder` (const `ROLES`). Eight roles:
 |------|---------------|-------------|-------|
 | `super_admin` | `/admin` | Seeded from `.env` (`SUPER_ADMIN_*`) | **Gate::before bypass** — passes every gate (`AppServiceProvider`) |
 | `admin` | `/admin` | Seeded (`admin@globallife.in`) | Has ALL content-module permissions by default |
-| `sub_admin` | `/admin` | Created by Super Admin | Starts with NO permissions; granted per-module via matrix |
-| `branch_manager` | `/branch` | Created by Super Admin | Assigned cities; granted `branch.*` perms per-user |
+| `sub_admin` | `/admin` | Created by Super Admin | Starts with NO permissions; granted per-module via matrix. With `branch-managers` granted, runs its own Branch Managers |
+| `branch_manager` | `/branch` | Created by Sub Admin, or Super Admin | Assigned cities; granted `branch.*` perms per-user |
 | `commission_partner` | `/manager` | Created by Branch Manager | Serves cities; creates VIP members |
 | `vip_member` | `/vip` | Created by Commission Partner | Owns a public microsite + storefront |
 | `customer` | `/account` | Registers or logs in at checkout | Order history + saved addresses |
 | `visitor` | — | Guest | Unauthenticated |
 
+### 3a. The user hierarchy
+
+**Super Admin → Sub Admin → Branch Manager → Commission Partner → VIP Member**,
+all one `created_by` chain. Relations on `User`: `subAdmins()`,
+`branchManagers()`, `commissionPartners()`, `vipMembers()`, `creator()` — the
+first two are **role-filtered**, because every level shares `created_by`.
+
+- A Sub Admin granted the `branch-managers` module creates and runs the Branch
+  Managers they create, and sees nobody else's. Super Admin sees every one.
+- `branch_managers.created_by` is **NULL** for anyone created before Sub Admins
+  existed. NULL means Super Admin's, visible only to them, and Super Admin can
+  reassign via the **Managed By** select on the Branch Manager form.
+- All of it funnels through `App\Support\BranchManagerAccess`
+  (`canManage` / `seesAll` / `owns` / `scope`), used by the controller *and* the
+  form requests — a scoped list in front of an unscoped update endpoint would be
+  decoration. `BranchManagerController::authorizeModule()` is what stops an
+  ungranted Sub Admin reaching a page that would merely list nothing.
+- **A Sub Admin earns no commission.** It is a management layer, not a
+  beneficiary: `ProductCommissionService::EARNING_ROLES` is unchanged and
+  `resolveBeneficiaries()` walks straight past it to the Branch Manager, so
+  inserting one above a Branch Manager changes nobody's money.
+- Sub Admin CRUD (`Admin\SubAdminController`, `SubAdminService`) is Super
+  Admin's alone — **a Sub Admin cannot mint more Sub Admins.** Creating one
+  lands on its permissions screen, since a new Sub Admin holds nothing.
+
 **Permission matrices** (direct-to-user perms for sub_admin/branch_manager, not role-level):
-- `PermissionMatrixService` — Sub Admin content modules:
-  `blog, products, leads, events, media, testimonials` × actions
+- `PermissionMatrixService` — Sub Admin modules:
+  `blog, products, leads, events, media, testimonials, branch-managers` × actions
   `create, edit, delete, publish, approve, export` → `"{module}.{action}"`.
+  `actionsForModule()` narrows per module — `branch-managers` offers only
+  `create, edit, delete`, because managing accounts has nothing to publish,
+  approve or export. Migration `2026_10_16_000001` registers the new permission
+  rows on existing installs (spatie refuses to grant a permission with no row).
 - `BranchPermissionMatrixService` — Branch Manager `branch.*` permissions.
 - Super Admin bypasses the matrix entirely via `Gate::before`.
 - Admin gets `PermissionMatrixService::allPermissions()` synced to the role.
@@ -546,6 +575,7 @@ Password for all demo accounts: `Password!123` (Super Admin from `.env`).
 | `.env SUPER_ADMIN_EMAIL` | super_admin |
 | `admin@globallife.in` | admin |
 | `blog-subadmin@globallife.in` | sub_admin (blog only) |
+| `network-subadmin@globallife.in` | sub_admin (branch-managers; owns the demo Branch Manager) |
 | `branch.manager@globallife.in` | branch_manager (Jhansi, Delhi) |
 | `jhansi.managerA/B@`, `delhi.managerA@globallife.in` | commission_partner |
 | `vip-member@globallife.in` | vip_member |
@@ -570,6 +600,8 @@ withdrawable but not pending, re-settling a month, month isolation, RBAC),
 package, the 15-of-15 block, 15 old + 20 new slots on Professional, downgrade
 keeps existing rows, retired package refused), `VipRenewalWindowTest` (the
 30-day window, early renewal stacking on remaining days),
+`SubAdminHierarchyTest` (module gating, per-Sub-Admin scoping, ownership on
+create, Super Admin reassignment, no commission cut),
 `ServiceOfferPricingTest` (the three MRP/sale cases, derived discount, forged
 slug ignored), `CatalogueDefaultsOnAndProfitCalculatorTest` (catalogue visible
 without opt-in, per-member hiding, calculator rates from the real rules),

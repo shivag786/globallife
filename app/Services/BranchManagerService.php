@@ -11,14 +11,19 @@ class BranchManagerService
 {
     /**
      * Create a Branch Manager account, assign it to one or more cities, and cap its
-     * commission percentage (Super Admin can grant up to, but never over, 100%).
+     * commission percentage (up to, but never over, 100%).
+     *
+     * `$owner` is whoever created them — a Sub Admin, or Super Admin working
+     * directly — and is recorded on `created_by`, the same chain that already
+     * links Commission Partners to their Branch Manager and VIP Members to their
+     * Partner. It is what scopes a Sub Admin to their own Branch Managers.
      *
      * @param  array<string, mixed>  $data
      * @param  list<int>  $cityIds
      */
-    public function createBranchManager(array $data, array $cityIds, float $commissionPercentage): User
+    public function createBranchManager(array $data, array $cityIds, float $commissionPercentage, ?User $owner = null): User
     {
-        return DB::transaction(function () use ($data, $cityIds, $commissionPercentage) {
+        return DB::transaction(function () use ($data, $cityIds, $commissionPercentage, $owner) {
             $manager = User::create([
                 'name' => $data['name'],
                 'mobile' => $data['mobile'] ?? null,
@@ -26,6 +31,7 @@ class BranchManagerService
                 'password' => Hash::make($data['password']),
                 'status' => 'active',
                 'commission_percentage' => $commissionPercentage,
+                'created_by' => $owner?->id,
                 'email_verified_at' => now(),
             ]);
 
@@ -50,6 +56,13 @@ class BranchManagerService
                 'commission_percentage' => $commissionPercentage,
             ]);
 
+            // Only Super Admin is shown the owner field, and only they can move a
+            // Branch Manager between Sub Admins; `null` hands them back to Super
+            // Admin. A key that was never submitted leaves ownership untouched.
+            if (array_key_exists('created_by', $data)) {
+                $manager->update(['created_by' => $data['created_by'] ?: null]);
+            }
+
             $manager->branchCities()->sync($cityIds);
 
             return $manager;
@@ -57,7 +70,7 @@ class BranchManagerService
     }
 
     /**
-     * Set a Branch Manager's password on their behalf (Super Admin only).
+     * Set a Branch Manager's password on their behalf.
      *
      * A reset is usually a response to a lost or compromised login, so the old
      * credentials are cut off properly: every stored session for that account is

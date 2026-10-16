@@ -2,13 +2,15 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Support\BranchManagerAccess;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBranchManagerPasswordRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin');
+        return BranchManagerAccess::canManage($this->user())
+            && $this->user()->can('branch-managers.edit');
     }
 
     /**

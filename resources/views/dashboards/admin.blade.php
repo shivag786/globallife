@@ -76,10 +76,13 @@
             <h2 class="font-semibold text-slate-800">Network</h2>
             <span class="text-xs text-slate-400">— your team &amp; catalogue</span>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
             {{-- These management pages are Super Admin-only, so only link them for a Super Admin. --}}
             <x-stat-tile label="Cities" :value="$stats['cities']" icon="map-pin" color="sky"
                 :href="$isSuperAdmin ? route('admin.cities.index') : null" cta="Manage cities" />
+            <x-stat-tile label="Sub Admins" :value="$stats['sub_admins']" icon="users" color="brand"
+                :href="$isSuperAdmin ? route('admin.sub-admins.index') : null" cta="Manage"
+                hint="They run Branch Managers" />
             <x-stat-tile label="Branch Managers" :value="$stats['branch_managers']" icon="users" color="indigo"
                 :href="$isSuperAdmin ? route('admin.branch-managers.index') : null" cta="Manage" />
             <x-stat-tile label="Commission Partners" :value="$stats['commission_partners']" icon="users" color="violet"
@@ -129,6 +132,26 @@
         </div>
     @endif
 
+    {{-- A Sub Admin's own network. The platform-wide figures above are not
+         theirs to see, so these count only what they own. --}}
+    @if ($network)
+        <div class="mb-3 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <x-icon name="users" class="w-4 h-4" />
+            </span>
+            <h2 class="font-semibold text-slate-800">My Network</h2>
+            <span class="text-xs text-slate-400">&mdash; the Branch Managers you run</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <x-stat-tile label="Branch Managers" :value="$network['branch_managers']" icon="users" color="indigo"
+                :href="route('admin.branch-managers.index')" cta="Manage" />
+            <x-stat-tile label="Active" :value="$network['active']" icon="sparkles" color="emerald"
+                hint="Suspended accounts cannot sign in" />
+            <x-stat-tile label="Commission Partners" :value="$network['commission_partners']" icon="users" color="violet"
+                hint="Added by your Branch Managers" />
+        </div>
+    @endif
+
     @if ($permissionMatrix)
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100">
             <h2 class="font-semibold mb-3">Your Permission Matrix</h2>
@@ -157,7 +180,7 @@
         </div>
     @endif
 
-    @unless ($stats || $permissionMatrix)
+    @unless ($stats || $permissionMatrix || $network)
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100 text-slate-500">
             You don't have any modules assigned yet. Contact your Super Admin.
         </div>
