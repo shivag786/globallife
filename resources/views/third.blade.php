@@ -202,15 +202,15 @@
 
     {{-- ============================ HEADER ============================ --}}
     <header class="w3-header" id="w3-header">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 h-18 flex items-center justify-between" style="height:4.5rem;">
-            <a href="{{ url('/') }}" class="w3-head text-xl font-extrabold text-brand-800 flex items-center gap-2">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 h-18 d-flex align-items-center justify-content-between" style="height:4.5rem;">
+            <a href="{{ url('/') }}" class="w3-head fs-xl fw-bolder text-brand-emphasis d-flex align-items-center gap-2">
                 @if (! empty($settings['site_logo']))
                     <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="h-9 w-auto">
                 @else
-                    <span class="w-2.5 h-2.5 rounded-full" style="background:var(--w3-brand);box-shadow:0 0 10px var(--w3-brand);"></span> {{ $siteName }}
+                    <span class="w-2.5 h-2.5 rounded-pill" style="background:var(--w3-brand);box-shadow:0 0 10px var(--w3-brand);"></span> {{ $siteName }}
                 @endif
             </a>
-            <nav class="hidden lg:flex items-center gap-8">
+            <nav class="d-none d-lg-flex align-items-center gap-8">
                 <a href="#shop" class="w3-navlink">Shop</a>
                 <a href="#why" class="w3-navlink">Why Us</a>
                 <a href="#business" class="w3-navlink">For Business</a>
@@ -218,9 +218,9 @@
                 <a href="#reviews" class="w3-navlink">Reviews</a>
                 <a href="{{ route('blog.index') }}" class="w3-navlink">Blog</a>
             </nav>
-            <div class="flex items-center gap-3 sm:gap-5">
+            <div class="d-flex align-items-center gap-3 gap-sm-5">
                 @include('partials.cart-icon')
-                <a href="{{ route('login') }}" class="w3-navlink hidden sm:inline">Log in</a>
+                <a href="{{ route('login') }}" class="w3-navlink d-none d-sm-inline">Log in</a>
                 <a href="{{ route('vip-plans.index') }}" class="w3-btn w3-btn-primary" style="padding:.6rem 1.15rem;font-size:.85rem;">Become VIP</a>
             </div>
         </div>
@@ -231,49 +231,49 @@
         <div class="w3-hero-bg w3-img">
             <img src="{{ $img['hero'] }}" alt="Wellness entrepreneur" onerror="this.style.display='none'" fetchpriority="high">
         </div>
-        <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-24 md:py-0 w-full">
-            <div class="grid lg:grid-cols-[1.05fr_.95fr] gap-12 items-center">
+        <div class="position-relative z-1 mw-7xl mx-auto px-5 px-sm-8 py-24 py-md-0 w-100">
+            <div class="d-grid grid-template-lg gap-12 align-items-center" style="--cols-lg: minmax(0, 1.05fr) minmax(0, .95fr)">
                 <div class="text-white">
                     <span class="w3-eyebrow animate-fade-in-up" style="color:#e8c873;">Premium Wellness · Digital Business</span>
-                    <h1 class="w3-head font-extrabold leading-[1.04] mt-5 text-4xl sm:text-5xl lg:text-[3.7rem]">
+                    <h1 class="w3-head fw-bolder lh-1 mt-5 fs-4xl fs-5xl">
                         Feel your best.<br>Then <span class="w3-underline">build a business</span> around it.
                     </h1>
-                    <p class="mt-6 text-lg text-white/85 max-w-xl">
+                    <p class="mt-6 fs-lg text-white text-opacity-75 mw-xl">
                         Lab-tested wellness products people genuinely reorder — and a complete digital
                         platform to sell them, with your own microsite and recurring income.
                     </p>
-                    <div class="mt-8 flex flex-wrap gap-3">
+                    <div class="mt-8 d-flex flex-wrap gap-3">
                         <a href="#shop" class="w3-btn w3-btn-gold">Explore Products</a>
                         <a href="{{ route('vip-plans.index') }}" class="w3-btn w3-btn-light">Become a VIP Member</a>
-                        <a href="{{ $demoUrl }}" class="w3-btn w3-btn-light inline-flex" target="_blank">
+                        <a href="{{ $demoUrl }}" class="w3-btn w3-btn-light d-inline-flex" target="_blank">
                             <x-icon name="play" class="w-4 h-4" /> Watch a live store
                         </a>
                     </div>
-                    <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">
-                        <span class="inline-flex items-center gap-2"><x-icon name="shield-check" class="w-4 h-4" style="color:#e8c873;" /> FSSAI Certified</span>
-                        <span class="inline-flex items-center gap-2"><x-icon name="beaker" class="w-4 h-4" style="color:#e8c873;" /> Lab Tested</span>
-                        <span class="inline-flex items-center gap-2"><x-icon name="truck" class="w-4 h-4" style="color:#e8c873;" /> Pan-India Delivery</span>
+                    <div class="mt-9 d-flex flex-wrap align-items-center column-gap-6 row-gap-2 fs-sm text-white text-opacity-75">
+                        <span class="d-inline-flex align-items-center gap-2"><x-icon name="shield-check" class="w-4 h-4" style="color:#e8c873;" /> FSSAI Certified</span>
+                        <span class="d-inline-flex align-items-center gap-2"><x-icon name="beaker" class="w-4 h-4" style="color:#e8c873;" /> Lab Tested</span>
+                        <span class="d-inline-flex align-items-center gap-2"><x-icon name="truck" class="w-4 h-4" style="color:#e8c873;" /> Pan-India Delivery</span>
                     </div>
                 </div>
 
                 {{-- Floating imagery --}}
-                <div class="hidden lg:block relative h-[460px]" id="w3-hero-media">
-                    <div class="w3-img w3-float absolute top-0 right-4 w-72 h-96 rounded-[26px] shadow-2xl border-4 border-white/20" data-depth="18">
+                <div class="d-none d-lg-block position-relative" id="w3-hero-media">
+                    <div class="w3-img w3-float position-absolute top-0 end-4 w-72 h-96 rounded-4 shadow-lg border-4 border-white border-opacity-25" data-depth="18">
                         <img src="{{ $img['hero'] }}" alt="Entrepreneur with wellness products" onerror="this.style.display='none'">
                     </div>
-                    <div class="w3-img w3-float d1 absolute bottom-2 left-0 w-52 h-52 rounded-3xl shadow-2xl border-4 border-white/30" data-depth="34">
+                    <div class="w3-img w3-float d1 position-absolute bottom-2 start-0 w-52 h-52 rounded-4 shadow-lg border-4 border-white border-opacity-25" data-depth="34">
                         <img src="{{ $img['heroFlat'] }}" alt="Healthy lifestyle" onerror="this.style.display='none'">
                     </div>
                     @if ($products->isNotEmpty())
-                        <div class="w3-float d1 absolute -bottom-4 right-16 bg-white rounded-2xl shadow-xl p-3 flex items-center gap-3 w-56" data-depth="46">
-                            <div class="w-12 h-12 rounded-xl w3-prod-img flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div class="w3-float d1 position-absolute bottom-n4 end-16 bg-body rounded-4 shadow-lg p-3 d-flex align-items-center gap-3 w-56" data-depth="46">
+                            <div class="w-12 h-12 rounded-3 w3-prod-img d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0">
                                 @if ($products->first()->main_image)
-                                    <img src="{{ asset('storage/'.$products->first()->main_image) }}" alt="" class="w-full h-full object-contain p-1">
+                                    <img src="{{ asset('storage/'.$products->first()->main_image) }}" alt="" class="w-100 h-100 object-fit-contain p-1">
                                 @endif
                             </div>
                             <div class="min-w-0">
-                                <p class="text-xs font-semibold text-brand-900 truncate">{{ $products->first()->name }}</p>
-                                <p class="text-xs text-gold-600 font-bold">{{ $products->first()->hasPrice() ? $money($products->first()->sellingPrice()) : '' }}</p>
+                                <p class="fs-xs fw-semibold text-brand-emphasis text-truncate">{{ $products->first()->name }}</p>
+                                <p class="fs-xs text-gold fw-bold">{{ $products->first()->hasPrice() ? $money($products->first()->sellingPrice()) : '' }}</p>
                             </div>
                         </div>
                     @endif
@@ -283,35 +283,35 @@
     </section>
 
     {{-- ============================ TRUST BAR ============================ --}}
-    <section class="border-b" style="border-color:var(--w3-line);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    <section class="border-bottom" style="border-color:var(--w3-line);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 py-10 d-grid grid-cols-2 grid-cols-md-4 gap-8 text-center">
             @foreach ([['2.5L+','Happy customers'],['19+','Cities served'],['750+','Business partners'],['1.2Cr+','Products sold']] as $stat)
                 <div class="reveal">
-                    <p class="w3-head font-extrabold text-3xl md:text-4xl text-brand-800" data-countup="{{ $stat[0] }}">{{ $stat[0] }}</p>
-                    <p class="w3-muted text-sm mt-1">{{ $stat[1] }}</p>
+                    <p class="w3-head fw-bolder fs-3xl fs-4xl text-brand-emphasis" data-countup="{{ $stat[0] }}">{{ $stat[0] }}</p>
+                    <p class="w3-muted fs-sm mt-1">{{ $stat[1] }}</p>
                 </div>
             @endforeach
         </div>
     </section>
 
     {{-- ============================ SHOP BY CATEGORY ============================ --}}
-    <section id="shop" class="py-20 md:py-28" style="background:var(--w3-cream);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="max-w-2xl reveal">
+    <section id="shop" class="py-20 py-md-28" style="background:var(--w3-cream);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="mw-2xl reveal">
                 <span class="w3-eyebrow">Shop by category</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Everything for a healthier you</h2>
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Everything for a healthier you</h2>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-5 mt-12">
                 @foreach ([
                     ['Wellness','cat_wellness'],['Protein','cat_protein'],['Health Care','cat_health'],
                     ['Perfume','cat_perfume'],['Personal Care','cat_personal'],['Lifestyle','cat_life'],
                 ] as $i => $cat)
                     <a href="{{ route('products.index') }}" class="w3-cat reveal h-64" style="transition-delay: {{ ($i % 3) * 0.08 }}s">
-                        <div class="w3-img absolute inset-0"><img src="{{ $img[$cat[1]] }}" alt="{{ $cat[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
-                        <div class="absolute inset-0 z-10 flex items-end p-6">
+                        <div class="w3-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $img[$cat[1]] }}" alt="{{ $cat[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 z-1 d-flex align-items-end p-6">
                             <div>
-                                <h3 class="w3-head text-white font-bold text-xl">{{ $cat[0] }}</h3>
-                                <span class="text-white/80 text-sm inline-flex items-center gap-1 mt-1">Shop now <x-icon name="arrow-right" class="w-4 h-4" /></span>
+                                <h3 class="w3-head text-white fw-bold fs-xl">{{ $cat[0] }}</h3>
+                                <span class="text-white text-opacity-75 fs-sm d-inline-flex align-items-center gap-1 mt-1">Shop now <x-icon name="arrow-right" class="w-4 h-4" /></span>
                             </div>
                         </div>
                     </a>
@@ -322,41 +322,41 @@
 
     {{-- ============================ FEATURED PRODUCTS ============================ --}}
     @if ($products->isNotEmpty())
-        <section class="py-20 md:py-28">
-            <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <div class="flex flex-wrap items-end justify-between gap-4 reveal">
-                    <div class="max-w-xl">
+        <section class="py-20 py-md-28">
+            <div class="mw-7xl mx-auto px-5 px-sm-8">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-4 reveal">
+                    <div class="mw-xl">
                         <span class="w3-eyebrow">Bestsellers</span>
-                        <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Loved &amp; reordered</h2>
+                        <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Loved &amp; reordered</h2>
                     </div>
                     <a href="{{ route('products.index') }}" class="w3-btn w3-btn-ghost">View all products</a>
                 </div>
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                <div class="d-grid grid-cols-sm-2 grid-cols-lg-4 gap-6 mt-12">
                     @foreach ($products->take(4) as $i => $product)
                         @php $rating = (int) round((float) $product->rating); @endphp
-                        <a href="{{ route('products.show', $product) }}" class="w3-card reveal flex flex-col overflow-hidden" style="transition-delay: {{ ($i % 4) * 0.07 }}s">
-                            <div class="relative aspect-square w3-prod-img flex items-center justify-center overflow-hidden">
+                        <a href="{{ route('products.show', $product) }}" class="w3-card reveal d-flex flex-column overflow-hidden" style="transition-delay: {{ ($i % 4) * 0.07 }}s">
+                            <div class="position-relative aspect-square w3-prod-img d-flex align-items-center justify-content-center overflow-hidden">
                                 @if ($product->main_image)
-                                    <img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-6" loading="lazy">
+                                    <img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-100 h-100 object-fit-contain p-6" loading="lazy">
                                 @endif
                                 @if ($product->discountPercentage())
-                                    <span class="absolute top-3 left-3 text-xs font-bold text-white px-2 py-1 rounded-full bg-green-600">{{ $product->discountPercentage() }}% OFF</span>
+                                    <span class="position-absolute top-3 start-3 fs-xs fw-bold text-white px-2 py-1 rounded-pill bg-success">{{ $product->discountPercentage() }}% OFF</span>
                                 @endif
                             </div>
-                            <div class="p-5 flex flex-col flex-1">
+                            <div class="p-5 d-flex flex-column flex-grow-1">
                                 @if ($product->review_count > 0)
-                                    <div class="flex items-center gap-1 mb-1">
-                                        <div class="flex">@for ($s=1;$s<=5;$s++)<x-icon name="star" class="w-3.5 h-3.5 {{ $s <= $rating ? 'text-gold-500' : 'text-slate-300' }}" :filled="$s <= $rating" />@endfor</div>
-                                        <span class="text-xs w3-muted">({{ $product->review_count }})</span>
+                                    <div class="d-flex align-items-center gap-1 mb-1">
+                                        <div class="d-flex">@for ($s=1;$s<=5;$s++)<x-icon name="star" class="w-3.5 h-3.5 {{ $s <= $rating ? 'text-gold' : 'text-body-tertiary' }}" :filled="$s <= $rating" />@endfor</div>
+                                        <span class="fs-xs w3-muted">({{ $product->review_count }})</span>
                                     </div>
                                 @endif
-                                <h3 class="w3-head font-semibold text-brand-900 leading-tight line-clamp-2">{{ $product->name }}</h3>
-                                <div class="mt-auto pt-3 flex items-baseline gap-2">
+                                <h3 class="w3-head fw-semibold text-brand-emphasis lh-sm line-clamp-2">{{ $product->name }}</h3>
+                                <div class="mt-auto pt-3 d-flex align-items-baseline gap-2">
                                     @if ($product->hasPrice())
-                                        <span class="text-lg font-bold text-brand-900">{{ $money($product->sellingPrice()) }}</span>
-                                        @if ($product->hasDiscount())<span class="text-sm w3-muted line-through">{{ $money($product->mrp) }}</span>@endif
+                                        <span class="fs-lg fw-bold text-brand-emphasis">{{ $money($product->sellingPrice()) }}</span>
+                                        @if ($product->hasDiscount())<span class="fs-sm w3-muted text-decoration-line-through">{{ $money($product->mrp) }}</span>@endif
                                     @else
-                                        <span class="text-sm font-medium text-brand-700">Enquire for price</span>
+                                        <span class="fs-sm fw-medium text-brand">Enquire for price</span>
                                     @endif
                                 </div>
                             </div>
@@ -368,15 +368,15 @@
     @endif
 
     {{-- ============================ WHY OUR PRODUCTS ============================ --}}
-    <section id="why" class="py-20 md:py-28" style="background:var(--w3-mist);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
-            <div class="w3-img reveal rounded-[28px] aspect-[4/5] shadow-xl" data-reveal="left">
+    <section id="why" class="py-20 py-md-28" style="background:var(--w3-mist);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-grid grid-cols-lg-2 gap-14 align-items-center">
+            <div class="w3-img reveal rounded-4 aspect-square shadow-lg" data-reveal="left">
                 <img src="{{ $img['why'] }}" alt="Natural wellness ingredients" loading="lazy" onerror="this.style.display='none'">
             </div>
             <div class="reveal" data-reveal="right">
                 <span class="w3-eyebrow">Why our products</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Quality you can actually verify</h2>
-                <div class="grid sm:grid-cols-2 gap-x-8 gap-y-6 mt-8">
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Quality you can actually verify</h2>
+                <div class="d-grid grid-cols-sm-2 column-gap-8 row-gap-6 mt-8">
                     @foreach ([
                         ['leaf','Natural Ingredients','Named sources, no hidden fillers.'],
                         ['sparkles','Premium Quality','GMP-compliant, small-batch care.'],
@@ -385,11 +385,11 @@
                         ['check-circle','Money-Back','7-day easy returns, no questions.'],
                         ['chat-bubble','Customer Support','Real humans, every day.'],
                     ] as $b)
-                        <div class="flex items-start gap-3">
-                            <span class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#e6f2eb;"><x-icon name="{{ $b[0] }}" class="w-5 h-5 text-brand-600" /></span>
+                        <div class="d-flex align-items-start gap-3">
+                            <span class="w-10 h-10 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="background:#e6f2eb;"><x-icon name="{{ $b[0] }}" class="w-5 h-5 text-brand" /></span>
                             <div>
-                                <p class="w3-head font-semibold text-brand-900">{{ $b[1] }}</p>
-                                <p class="w3-muted text-sm">{!! $b[2] !!}</p>
+                                <p class="w3-head fw-semibold text-brand-emphasis">{{ $b[1] }}</p>
+                                <p class="w3-muted fs-sm">{!! $b[2] !!}</p>
                             </div>
                         </div>
                     @endforeach
@@ -399,35 +399,35 @@
     </section>
 
     {{-- ============================ SECTION 6 — REAL CUSTOMER STORIES ============================ --}}
-    <section id="reviews" class="relative py-20 md:py-28 overflow-hidden" style="background:linear-gradient(180deg,#fff,var(--w3-mist));">
-        <div class="pointer-events-none absolute -top-20 -left-24 w-96 h-96 rounded-full blur-3xl" style="background:rgba(36,90,63,.10);"></div>
-        <div class="pointer-events-none absolute bottom-0 right-0 w-[26rem] h-[26rem] rounded-full blur-3xl" style="background:rgba(212,175,55,.12);"></div>
+    <section id="reviews" class="position-relative py-20 py-md-28 overflow-hidden" style="background:linear-gradient(180deg,#fff,var(--w3-mist));">
+        <div class="position-absolute top-n20 start-n24 w-96 h-96 rounded-pill" style="background:rgba(36,90,63,.10);"></div>
+        <div class="position-absolute bottom-0 end-0 rounded-pill" style="background:rgba(212,175,55,.12);"></div>
 
-        <div class="relative max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal">
+        <div class="position-relative mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal">
                 <span class="w3-eyebrow">Real customer stories</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Real people. Real results.</h2>
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Real people. Real results.</h2>
             </div>
 
-            <div class="grid lg:grid-cols-[1.05fr_1fr] gap-8 mt-12 items-stretch">
+            <div class="d-grid grid-template-lg gap-8 mt-12 align-items-stretch" style="--cols-lg: minmax(0, 1.05fr) minmax(0, 1fr)">
                 {{-- LEFT: featured story + video --}}
                 <div class="reveal" data-reveal="left">
-                    <div class="relative rounded-[28px] overflow-hidden h-full min-h-[440px] shadow-xl w3-img">
-                        <img src="{{ $featuredStory['image'] }}" alt="{{ $featuredStory['name'] }}" class="absolute inset-0" loading="lazy" onerror="this.style.display='none'">
-                        <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(15,32,25,.92) 8%,rgba(15,32,25,.35) 55%,transparent);"></div>
+                    <div class="position-relative rounded-4 overflow-hidden h-100 shadow-lg w3-img">
+                        <img src="{{ $featuredStory['image'] }}" alt="{{ $featuredStory['name'] }}" class="position-absolute top-0 start-0 w-100 h-100" loading="lazy" onerror="this.style.display='none'">
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background:linear-gradient(to top,rgba(15,32,25,.92) 8%,rgba(15,32,25,.35) 55%,transparent);"></div>
                         <button type="button" data-modal-open="#w3-video-modal" data-video-open aria-label="Watch story"
-                                class="absolute top-6 right-6 w-16 h-16 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-xl hover:scale-105 transition animate-pulse-ring">
-                            <x-icon name="play" class="w-7 h-7 text-brand-700" />
+                                class="btn btn-link p-0 text-decoration-none position-absolute top-6 end-6 w-16 h-16 rounded-pill bg-white bg-opacity-100 d-flex align-items-center justify-content-center shadow-lg animate-pulse-ring">
+                            <x-icon name="play" class="w-7 h-7 text-brand" />
                         </button>
-                        <div class="absolute inset-x-0 bottom-0 p-7 text-white">
-                            <div class="flex text-gold-400 mb-2">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
-                            <p class="text-lg leading-relaxed max-w-md">“{{ $featuredStory['text'] }}”</p>
+                        <div class="position-absolute start-0 end-0 bottom-0 p-7 text-white">
+                            <div class="d-flex text-gold mb-2">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
+                            <p class="fs-lg lh-lg mw-md">“{{ $featuredStory['text'] }}”</p>
                             <div class="mt-5">
-                                <p class="w3-head font-bold">{{ $featuredStory['name'] }}</p>
-                                <p class="text-white/75 text-sm inline-flex items-center gap-1"><x-icon name="check-circle" class="w-3.5 h-3.5 text-green-400" /> Verified purchase · {{ $featuredStory['location'] }}</p>
+                                <p class="w3-head fw-bold">{{ $featuredStory['name'] }}</p>
+                                <p class="text-white text-opacity-75 fs-sm d-inline-flex align-items-center gap-1"><x-icon name="check-circle" class="w-3.5 h-3.5 text-success" /> Verified purchase · {{ $featuredStory['location'] }}</p>
                             </div>
                             <div class="mt-5">
-                                <button type="button" data-modal-open="#w3-video-modal" data-video-open class="w3-btn w3-btn-gold" style="padding:.7rem 1.3rem;"><x-icon name="play" class="w-4 h-4" /> Watch Story</button>
+                                <button type="button" data-modal-open="#w3-video-modal" data-video-open class="btn btn-link p-0 text-decoration-none w3-btn w3-btn-gold" style="padding:.7rem 1.3rem;"><x-icon name="play" class="w-4 h-4" /> Watch Story</button>
                             </div>
                         </div>
                     </div>
@@ -435,34 +435,34 @@
 
                 {{-- RIGHT: testimonial slider --}}
                 <div class="reveal" data-reveal="right">
-                    <div class="relative">
-                        <div id="w3-slider" class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-2" style="scrollbar-width:none;-ms-overflow-style:none;">
+                    <div class="position-relative">
+                        <div id="w3-slider" class="d-flex overflow-x-auto gap-4 pb-2" style="scrollbar-width:none;-ms-overflow-style:none;">
                             @foreach ($testimonials as $t)
-                                <article class="snap-center shrink-0 w-full rounded-[24px] p-6 border"
+                                <article class="flex-shrink-0 w-100 rounded-4 p-6 border"
                                          style="background:rgba(255,255,255,.65);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:rgba(255,255,255,.6);box-shadow:0 24px 50px -30px rgba(6,40,26,.35);">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w3-img w-14 h-14 rounded-full ring-2 ring-white overflow-hidden"><img src="{{ $avatars[$t[7]] }}" alt="{{ $t[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="w3-img w-14 h-14 rounded-pill overflow-hidden"><img src="{{ $avatars[$t[7]] }}" alt="{{ $t[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
                                         <div class="min-w-0">
-                                            <p class="w3-head font-bold text-brand-900">{{ $t[0] }}</p>
-                                            <p class="w3-muted text-xs">{{ $t[1] }} · {{ $t[2] }}</p>
+                                            <p class="w3-head fw-bold text-brand-emphasis">{{ $t[0] }}</p>
+                                            <p class="w3-muted fs-xs">{{ $t[1] }} · {{ $t[2] }}</p>
                                         </div>
-                                        <span class="ml-auto inline-flex items-center gap-1 text-[0.62rem] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full"><x-icon name="check-circle" class="w-3 h-3" /> Verified</span>
+                                        <span class="ms-auto d-inline-flex align-items-center gap-1 fw-semibold text-success bg-success-subtle px-2 py-1 rounded-pill"><x-icon name="check-circle" class="w-3 h-3" /> Verified</span>
                                     </div>
-                                    <div class="flex text-gold-500 mt-4">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
-                                    <h3 class="w3-head font-bold text-brand-900 mt-3">{{ $t[3] }}</h3>
-                                    <p class="text-brand-900/80 mt-1 leading-relaxed">“{{ $t[4] }}”</p>
-                                    <div class="flex items-center justify-between mt-5 pt-4 border-t text-xs w3-muted" style="border-color:rgba(20,35,27,.08);">
-                                        <span class="inline-flex items-center gap-1"><x-icon name="shopping-bag" class="w-3.5 h-3.5" /> {{ $t[5] }}</span>
+                                    <div class="d-flex text-gold mt-4">@for ($s=0;$s<5;$s++)<x-icon name="star" class="w-4 h-4" :filled="true" />@endfor</div>
+                                    <h3 class="w3-head fw-bold text-brand-emphasis mt-3">{{ $t[3] }}</h3>
+                                    <p class="mt-1 lh-lg">“{{ $t[4] }}”</p>
+                                    <div class="d-flex align-items-center justify-content-between mt-5 pt-4 border-top fs-xs w3-muted" style="border-color:rgba(20,35,27,.08);">
+                                        <span class="d-inline-flex align-items-center gap-1"><x-icon name="shopping-bag" class="w-3.5 h-3.5" /> {{ $t[5] }}</span>
                                         <span>{{ $t[6] }}</span>
                                     </div>
                                 </article>
                             @endforeach
                         </div>
-                        <div class="flex items-center justify-between mt-5">
-                            <div class="flex gap-1.5" id="w3-slider-dots"></div>
-                            <div class="flex gap-2">
-                                <button type="button" data-slider-prev class="w-10 h-10 rounded-full border flex items-center justify-center text-brand-700 hover:bg-white transition" style="border-color:var(--w3-line);" aria-label="Previous"><x-icon name="chevron-left" class="w-5 h-5" /></button>
-                                <button type="button" data-slider-next class="w-10 h-10 rounded-full border flex items-center justify-center text-brand-700 hover:bg-white transition" style="border-color:var(--w3-line);" aria-label="Next"><x-icon name="chevron-right" class="w-5 h-5" /></button>
+                        <div class="d-flex align-items-center justify-content-between mt-5">
+                            <div class="d-flex gap-2" id="w3-slider-dots"></div>
+                            <div class="d-flex gap-2">
+                                <button type="button" data-slider-prev class="btn btn-link p-0 text-decoration-none w-10 h-10 rounded-pill border d-flex align-items-center justify-content-center text-brand" style="border-color:var(--w3-line);" aria-label="Previous"><x-icon name="chevron-left" class="w-5 h-5" /></button>
+                                <button type="button" data-slider-next class="btn btn-link p-0 text-decoration-none w-10 h-10 rounded-pill border d-flex align-items-center justify-content-center text-brand" style="border-color:var(--w3-line);" aria-label="Next"><x-icon name="chevron-right" class="w-5 h-5" /></button>
                             </div>
                         </div>
                     </div>
@@ -470,11 +470,11 @@
             </div>
 
             {{-- STATS STRIP --}}
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-16">
+            <div class="d-grid grid-cols-2 grid-cols-md-4 gap-5 mt-16">
                 @foreach ([['10,000+','Happy Customers'],['25,000+','Products Delivered'],['4.9★','Average Rating'],['98%','Customer Satisfaction']] as $st)
-                    <div class="reveal text-center rounded-2xl py-7 px-4" style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border:1px solid var(--w3-line);">
-                        <p class="w3-head font-extrabold text-3xl md:text-4xl text-brand-800" data-countup="{{ $st[0] }}">{{ $st[0] }}</p>
-                        <p class="w3-muted text-sm mt-1">{{ $st[1] }}</p>
+                    <div class="reveal text-center rounded-4 py-7 px-4" style="background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border:1px solid var(--w3-line);">
+                        <p class="w3-head fw-bolder fs-3xl fs-4xl text-brand-emphasis" data-countup="{{ $st[0] }}">{{ $st[0] }}</p>
+                        <p class="w3-muted fs-sm mt-1">{{ $st[1] }}</p>
                     </div>
                 @endforeach
             </div>
@@ -482,40 +482,40 @@
     </section>
 
     {{-- ============================ BUILD YOUR DIGITAL BUSINESS ============================ --}}
-    <section id="business" class="py-20 md:py-28" style="background:var(--w3-brand-900);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
+    <section id="business" class="py-20 py-md-28" style="background:var(--w3-brand-900);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-grid grid-cols-lg-2 gap-14 align-items-center">
             <div class="text-white reveal" data-reveal="left">
                 <span class="w3-eyebrow" style="color:#e8c873;">Build your digital business</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Your own storefront, live in minutes</h2>
-                <p class="mt-5 text-white/80 text-lg max-w-lg">Not another catalogue to memorise. Get a premium microsite, enable the products you love, and start earning — all from one link.</p>
-                <div class="grid sm:grid-cols-2 gap-4 mt-8">
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Your own storefront, live in minutes</h2>
+                <p class="mt-5 text-white text-opacity-75 fs-lg mw-lg">Not another catalogue to memorise. Get a premium microsite, enable the products you love, and start earning — all from one link.</p>
+                <div class="d-grid grid-cols-sm-2 gap-4 mt-8">
                     @foreach ([['sparkles','VIP Membership'],['photo','Digital Microsite'],['eye','SEO &amp; Visibility'],['inbox','Lead Generation'],['tag','Referral Income'],['users','Community &amp; Training']] as $f)
-                        <div class="flex items-center gap-3">
-                            <span class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(232,200,115,.14);"><x-icon name="{{ $f[0] }}" class="w-5 h-5" style="color:#e8c873;" /></span>
-                            <span class="text-white/90 text-[0.95rem]">{!! $f[1] !!}</span>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="w-9 h-9 rounded-2 d-flex align-items-center justify-content-center flex-shrink-0" style="background:rgba(232,200,115,.14);"><x-icon name="{{ $f[0] }}" class="w-5 h-5" style="color:#e8c873;" /></span>
+                            <span class="text-white text-opacity-100">{!! $f[1] !!}</span>
                         </div>
                     @endforeach
                 </div>
-                <div class="mt-9 flex flex-wrap gap-3">
+                <div class="mt-9 d-flex flex-wrap gap-3">
                     <a href="{{ route('vip-plans.index') }}" class="w3-btn w3-btn-gold">Start your business</a>
                     <a href="{{ $demoUrl }}" target="_blank" class="w3-btn w3-btn-light">See a live microsite</a>
                 </div>
             </div>
-            <div class="w3-img reveal rounded-[28px] aspect-[4/3] shadow-2xl" data-reveal="right">
+            <div class="w3-img reveal rounded-4 aspect-video shadow-lg" data-reveal="right">
                 <img src="{{ $img['business'] }}" alt="Business owner building strategy" loading="lazy" onerror="this.style.display='none'">
             </div>
         </div>
     </section>
 
     {{-- ============================ EARN WITH US (TIMELINE) ============================ --}}
-    <section id="earn" class="py-20 md:py-28">
-        <div class="max-w-3xl mx-auto px-5 sm:px-8">
+    <section id="earn" class="py-20 py-md-28">
+        <div class="mw-3xl mx-auto px-5 px-sm-8">
             <div class="text-center reveal">
                 <span class="w3-eyebrow">Earn with us</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">How the income works</h2>
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">How the income works</h2>
                 <p class="w3-muted mt-4">Transparent, tracked, and paid after delivery — no black boxes.</p>
             </div>
-            <div class="mt-14 space-y-8">
+            <div class="mt-14 d-flex flex-column gap-8">
                 @foreach ([
                     ['Become a VIP','Join and unlock your storefront and dashboard.'],
                     ['Enable Products','Switch on the catalog products you want to sell.'],
@@ -524,11 +524,11 @@
                     ['Company Delivers','We handle fulfilment and tracked shipping.'],
                     ['Commission Credited','Your share lands in your wallet after delivery.'],
                 ] as $i => $step)
-                    <div class="w3-step flex gap-5 reveal" style="transition-delay: {{ $i * 0.06 }}s">
-                        <div class="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center w3-head font-extrabold text-white text-lg" style="background:linear-gradient(135deg,var(--w3-brand-600),var(--w3-brand-700));">{{ $i + 1 }}</div>
-                        <div class="pt-1.5">
-                            <h3 class="w3-head font-bold text-brand-900 text-lg">{{ $step[0] }}</h3>
-                            <p class="w3-muted mt-0.5">{{ $step[1] }}</p>
+                    <div class="w3-step d-flex gap-5 reveal" style="transition-delay: {{ $i * 0.06 }}s">
+                        <div class="flex-shrink-0 w-14 h-14 rounded-4 d-flex align-items-center justify-content-center w3-head fw-bolder text-white fs-lg" style="background:linear-gradient(135deg,var(--w3-brand-600),var(--w3-brand-700));">{{ $i + 1 }}</div>
+                        <div class="pt-2">
+                            <h3 class="w3-head fw-bold text-brand-emphasis fs-lg">{{ $step[0] }}</h3>
+                            <p class="w3-muted mt-1">{{ $step[1] }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -537,32 +537,32 @@
     </section>
 
     {{-- ============================ BUSINESS OWNER + CATEGORY GRID ============================ --}}
-    <section class="py-20 md:py-28" style="background:var(--w3-cream);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal">
+    <section class="py-20 py-md-28" style="background:var(--w3-cream);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal">
                 <span class="w3-eyebrow">Built for every business</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">A professional presence for any business</h2>
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">A professional presence for any business</h2>
                 <p class="w3-muted mt-4">Microsite, gallery, reviews, products, SEO, lead capture, appointments &amp; contact — all in one.</p>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-5 mt-12">
                 @foreach ([
                     ['Doctors','biz_doctor'],['Restaurants','biz_restaurant'],['Gyms','biz_gym'],
                     ['Salons','biz_salon'],['Retail Shops','biz_retail'],['Manufacturers','biz_maker'],
                 ] as $i => $b)
                     <a href="{{ $demoUrl }}" target="_blank" class="w3-cat reveal h-56" style="transition-delay: {{ ($i % 3) * 0.07 }}s">
-                        <div class="w3-img absolute inset-0"><img src="{{ $img[$b[1]] }}" alt="{{ $b[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
-                        <div class="absolute inset-0 z-10 flex items-end p-6">
+                        <div class="w3-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $img[$b[1]] }}" alt="{{ $b[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 z-1 d-flex align-items-end p-6">
                             <div>
-                                <h3 class="w3-head text-white font-bold text-lg">{{ $b[0] }}</h3>
-                                <span class="text-white/80 text-sm inline-flex items-center gap-1 mt-0.5">View demo microsite <x-icon name="arrow-right" class="w-4 h-4" /></span>
+                                <h3 class="w3-head text-white fw-bold fs-lg">{{ $b[0] }}</h3>
+                                <span class="text-white text-opacity-75 fs-sm d-inline-flex align-items-center gap-1 mt-1">View demo microsite <x-icon name="arrow-right" class="w-4 h-4" /></span>
                             </div>
                         </div>
                     </a>
                 @endforeach
             </div>
-            <div class="flex flex-wrap justify-center gap-2 mt-8">
+            <div class="d-flex flex-wrap justify-content-center gap-2 mt-8">
                 @foreach (['Consultant','Influencer','Freelancer','Student','Housewife','Coach','Photographer','Real Estate'] as $tag)
-                    <span class="text-sm px-4 py-2 rounded-full bg-white border" style="border-color:var(--w3-line);color:var(--w3-muted);">{{ $tag }}</span>
+                    <span class="fs-sm px-4 py-2 rounded-pill bg-body border" style="border-color:var(--w3-line);color:var(--w3-muted);">{{ $tag }}</span>
                 @endforeach
             </div>
         </div>
@@ -570,25 +570,25 @@
 
     {{-- ============================ BLOG ============================ --}}
     @if ($posts->isNotEmpty())
-        <section class="py-20 md:py-28">
-            <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <div class="flex flex-wrap items-end justify-between gap-4 reveal">
-                    <div><span class="w3-eyebrow">From the journal</span><h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3">Ideas &amp; insights</h2></div>
+        <section class="py-20 py-md-28">
+            <div class="mw-7xl mx-auto px-5 px-sm-8">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-4 reveal">
+                    <div><span class="w3-eyebrow">From the journal</span><h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3">Ideas &amp; insights</h2></div>
                     <a href="{{ route('blog.index') }}" class="w3-btn w3-btn-ghost">Read the blog</a>
                 </div>
-                <div class="grid md:grid-cols-3 gap-6 mt-12">
+                <div class="d-grid grid-cols-md-3 gap-6 mt-12">
                     @foreach ($posts as $i => $post)
-                        <a href="{{ route('blog.show', $post) }}" class="w3-card reveal overflow-hidden flex flex-col" style="transition-delay: {{ $i * 0.08 }}s">
-                            <div class="w3-img aspect-[16/10]">
+                        <a href="{{ route('blog.show', $post) }}" class="w3-card reveal overflow-hidden d-flex flex-column" style="transition-delay: {{ $i * 0.08 }}s">
+                            <div class="w3-img aspect-video">
                                 @if ($post->featured_image)
                                     <img src="{{ asset('storage/'.$post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" onerror="this.style.display='none'">
                                 @endif
                             </div>
-                            <div class="p-5 flex flex-col flex-1">
+                            <div class="p-5 d-flex flex-column flex-grow-1">
                                 @if ($post->category)<span class="w3-eyebrow" style="font-size:0.62rem;">{{ $post->category }}</span>@endif
-                                <h3 class="w3-head font-semibold text-brand-900 mt-1 leading-snug line-clamp-2">{{ $post->title }}</h3>
-                                <p class="w3-muted text-sm mt-2 line-clamp-2">{{ $post->excerpt }}</p>
-                                <span class="text-brand-700 text-sm font-medium mt-auto pt-3 inline-flex items-center gap-1">Read more <x-icon name="arrow-right" class="w-4 h-4" /></span>
+                                <h3 class="w3-head fw-semibold text-brand-emphasis mt-1 lh-sm line-clamp-2">{{ $post->title }}</h3>
+                                <p class="w3-muted fs-sm mt-2 line-clamp-2">{{ $post->excerpt }}</p>
+                                <span class="text-brand fs-sm fw-medium mt-auto pt-3 d-inline-flex align-items-center gap-1">Read more <x-icon name="arrow-right" class="w-4 h-4" /></span>
                             </div>
                         </a>
                     @endforeach
@@ -598,18 +598,18 @@
     @endif
 
     {{-- ============================ FAQ ============================ --}}
-    <section class="py-20 md:py-28" style="background:var(--w3-mist);">
-        <div class="max-w-3xl mx-auto px-5 sm:px-8">
-            <div class="text-center reveal"><span class="w3-eyebrow">FAQ</span><h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3">Good questions, clear answers</h2></div>
-            <div class="mt-10 space-y-3">
+    <section class="py-20 py-md-28" style="background:var(--w3-mist);">
+        <div class="mw-3xl mx-auto px-5 px-sm-8">
+            <div class="text-center reveal"><span class="w3-eyebrow">FAQ</span><h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3">Good questions, clear answers</h2></div>
+            <div class="mt-10 d-flex flex-column gap-3">
                 @foreach ($faqs as $f)
-                    <details class="group bg-white rounded-2xl border reveal" style="border-color:var(--w3-line);">
-                        <summary class="flex items-center justify-between gap-4 cursor-pointer list-none p-5 w3-head font-semibold text-brand-900">
+                    <details class="bg-body rounded-4 border reveal" style="border-color:var(--w3-line);">
+                        <summary class="d-flex align-items-center justify-content-between gap-4 list-unstyled p-5 w3-head fw-semibold text-brand-emphasis">
                             {{ $f[0] }}
-                            <x-icon name="plus" class="w-5 h-5 text-brand-600 flex-shrink-0 group-open:hidden" />
-                            <x-icon name="minus" class="w-5 h-5 text-brand-600 flex-shrink-0 hidden group-open:block" />
+                            <x-icon name="plus" class="w-5 h-5 text-brand flex-shrink-0 open-hide" />
+                            <x-icon name="minus" class="w-5 h-5 text-brand flex-shrink-0 d-none open-show" />
                         </summary>
-                        <p class="w3-muted px-5 pb-5 -mt-1">{{ $f[1] }}</p>
+                        <p class="w3-muted px-5 pb-5 -n">{{ $f[1] }}</p>
                     </details>
                 @endforeach
             </div>
@@ -617,50 +617,50 @@
     </section>
 
     {{-- ============================ CAREER ============================ --}}
-    <section class="relative py-24 md:py-32 overflow-hidden">
-        <div class="w3-img absolute inset-0"><img src="{{ $img['career'] }}" alt="Modern office team" loading="lazy" onerror="this.style.display='none'"></div>
-        <div class="absolute inset-0" style="background:linear-gradient(100deg,rgba(15,32,25,.9),rgba(15,32,25,.55));"></div>
-        <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 text-white reveal">
+    <section class="position-relative py-24 py-md-32 overflow-hidden">
+        <div class="w3-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $img['career'] }}" alt="Modern office team" loading="lazy" onerror="this.style.display='none'"></div>
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background:linear-gradient(100deg,rgba(15,32,25,.9),rgba(15,32,25,.55));"></div>
+        <div class="position-relative z-1 mw-7xl mx-auto px-5 px-sm-8 text-white reveal">
             <span class="w3-eyebrow" style="color:#e8c873;">Careers</span>
-            <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 max-w-xl leading-tight">Join a team building India's wellness ecosystem</h2>
-            <p class="mt-4 text-white/80 max-w-lg">We're hiring across product, technology, operations and partner success.</p>
+            <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 mw-xl lh-sm">Join a team building India's wellness ecosystem</h2>
+            <p class="mt-4 text-white text-opacity-75 mw-lg">We're hiring across product, technology, operations and partner success.</p>
             <a href="{{ route('contact') }}" class="w3-btn w3-btn-gold mt-8">View open positions</a>
         </div>
     </section>
 
     {{-- ============================ SECTION 7 — CHOOSE YOUR JOURNEY ============================ --}}
-    <section class="relative py-20 md:py-28 overflow-hidden" style="background:var(--w3-cream);">
-        <div class="pointer-events-none absolute top-10 -right-24 w-96 h-96 rounded-full blur-3xl" style="background:rgba(36,90,63,.08);"></div>
-        <div class="pointer-events-none absolute -bottom-24 -left-20 w-[26rem] h-[26rem] rounded-full blur-3xl" style="background:rgba(212,175,55,.10);"></div>
+    <section class="position-relative py-20 py-md-28 overflow-hidden" style="background:var(--w3-cream);">
+        <div class="position-absolute top-10 end-n24 w-96 h-96 rounded-pill" style="background:rgba(36,90,63,.08);"></div>
+        <div class="position-absolute bottom-n24 start-n20 rounded-pill" style="background:rgba(212,175,55,.10);"></div>
 
-        <div class="relative max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal">
+        <div class="position-relative mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal">
                 <span class="w3-eyebrow">Choose your journey</span>
-                <h2 class="w3-head font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Choose Your Journey</h2>
+                <h2 class="w3-head fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Choose Your Journey</h2>
                 <p class="w3-muted mt-4">Whether you want to improve your health, grow your business, earn additional income, or build your career — there's a path here designed for someone exactly like you.</p>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-4 gap-6 mt-12">
                 @foreach ([
                     ['Shop Premium Products','shop','Discover premium wellness, health, nutrition and personal care products for a healthier lifestyle.',['Premium Quality','Genuine Products','Fast Delivery','Secure Payments'],'Explore Products', route('products.index')],
                     ['Become a VIP Partner','vip','Build your own digital business page, recommend official products, and earn commission on every successful sale.',['Personal Microsite','Official Product Store','Referral Income','Digital Business Tools'],'Become VIP', route('vip-plans.index')],
                     ['Grow Your Business','grow','Promote your business with an SEO-ready microsite, reviews, gallery, booking and lead-generation tools.',['Business Profile','Google Visibility','Reviews & WhatsApp','Lead Generation'],'Explore Solutions', $demoUrl],
                     ['Join Our Team','team','Join our growing team and help build the future of wellness, technology and digital business.',['Flexible Career','Professional Growth','Training','Modern Work Culture'],'View Careers', route('contact')],
                 ] as $i => $c)
-                    <div class="w3-journey reveal group bg-white rounded-[24px] overflow-hidden border flex flex-col" style="border-color:var(--w3-line);transition-delay: {{ $i * 0.09 }}s;">
-                        <div class="relative aspect-[4/3] overflow-hidden w3-img">
-                            <img src="{{ $journeyImg[$c[1]] }}" alt="{{ $c[0] }}" class="absolute inset-0 group-hover:scale-110 transition duration-700" loading="lazy" onerror="this.style.display='none'">
-                            <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(15,32,25,.5),transparent 60%);"></div>
+                    <div class="w3-journey reveal bg-body rounded-4 overflow-hidden border d-flex flex-column" style="border-color:var(--w3-line);transition-delay: {{ $i * 0.09 }}s;">
+                        <div class="position-relative aspect-video overflow-hidden w3-img">
+                            <img src="{{ $journeyImg[$c[1]] }}" alt="{{ $c[0] }}" class="position-absolute top-0 start-0 w-100 h-100" loading="lazy" onerror="this.style.display='none'">
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background:linear-gradient(to top,rgba(15,32,25,.5),transparent 60%);"></div>
                         </div>
-                        <div class="p-6 flex flex-col flex-1">
-                            <h3 class="w3-head font-bold text-brand-900 text-lg">{{ $c[0] }}</h3>
-                            <p class="w3-muted text-sm mt-2">{{ $c[2] }}</p>
-                            <ul class="mt-4 space-y-2">
+                        <div class="p-6 d-flex flex-column flex-grow-1">
+                            <h3 class="w3-head fw-bold text-brand-emphasis fs-lg">{{ $c[0] }}</h3>
+                            <p class="w3-muted fs-sm mt-2">{{ $c[2] }}</p>
+                            <ul class="mt-4 d-flex flex-column gap-2">
                                 @foreach ($c[3] as $feat)
-                                    <li class="flex items-center gap-2 text-sm text-brand-900/80"><x-icon name="check-circle" class="w-4 h-4 text-brand-600 flex-shrink-0" /> {{ $feat }}</li>
+                                    <li class="d-flex align-items-center gap-2 fs-sm"><x-icon name="check-circle" class="w-4 h-4 text-brand flex-shrink-0" /> {{ $feat }}</li>
                                 @endforeach
                             </ul>
-                            <a href="{{ $c[5] }}" class="w3-btn w3-btn-primary mt-6 w-full">{{ $c[4] }} <x-icon name="arrow-right" class="w-4 h-4" /></a>
+                            <a href="{{ $c[5] }}" class="w3-btn w3-btn-primary mt-6 w-100">{{ $c[4] }} <x-icon name="arrow-right" class="w-4 h-4" /></a>
                         </div>
                     </div>
                 @endforeach
@@ -668,14 +668,14 @@
         </div>
 
         {{-- BOTTOM CTA --}}
-        <div class="relative max-w-7xl mx-auto px-5 sm:px-8 mt-16">
-            <div class="relative rounded-[32px] overflow-hidden shadow-2xl">
-                <div class="w3-img absolute inset-0"><img src="{{ $journeyImg['cta'] }}" alt="One platform, multiple opportunities" loading="lazy" onerror="this.style.display='none'"></div>
-                <div class="absolute inset-0" style="background:linear-gradient(110deg,rgba(15,32,25,.92),rgba(31,72,52,.7) 55%,rgba(36,90,63,.4));"></div>
-                <div class="relative z-10 px-6 py-16 md:px-16 md:py-20 text-white text-center max-w-3xl mx-auto reveal">
-                    <h2 class="w3-head font-extrabold text-3xl md:text-5xl leading-tight">One Platform. Multiple Opportunities.</h2>
-                    <p class="mt-5 text-white/85 text-lg">Whether you're a customer, entrepreneur, business owner or job seeker — grow with premium products, digital business solutions and real earning opportunities.</p>
-                    <div class="mt-9 flex flex-wrap justify-center gap-3">
+        <div class="position-relative mw-7xl mx-auto px-5 px-sm-8 mt-16">
+            <div class="position-relative rounded-4 overflow-hidden shadow-lg">
+                <div class="w3-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $journeyImg['cta'] }}" alt="One platform, multiple opportunities" loading="lazy" onerror="this.style.display='none'"></div>
+                <div class="position-absolute top-0 start-0 w-100 h-100" style="background:linear-gradient(110deg,rgba(15,32,25,.92),rgba(31,72,52,.7) 55%,rgba(36,90,63,.4));"></div>
+                <div class="position-relative z-1 px-6 py-16 px-md-16 py-md-20 text-white text-center mw-3xl mx-auto reveal">
+                    <h2 class="w3-head fw-bolder fs-3xl fs-5xl lh-sm">One Platform. Multiple Opportunities.</h2>
+                    <p class="mt-5 text-white text-opacity-75 fs-lg">Whether you're a customer, entrepreneur, business owner or job seeker — grow with premium products, digital business solutions and real earning opportunities.</p>
+                    <div class="mt-9 d-flex flex-wrap justify-content-center gap-3">
                         <a href="#shop" class="w3-btn w3-btn-gold">Explore Products</a>
                         <a href="{{ route('vip-plans.index') }}" class="w3-btn w3-btn-light">Become a VIP Partner</a>
                         <a href="{{ route('contact') }}" class="w3-btn w3-btn-light">Contact Us</a>
@@ -686,18 +686,18 @@
     </section>
 
     {{-- ============================ FOOTER ============================ --}}
-    <footer class="bg-white border-t" style="border-color:var(--w3-line);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 py-16">
-            <div class="grid md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr] gap-10">
+    <footer class="bg-body border-top" style="border-color:var(--w3-line);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 py-16">
+            <div class="d-grid grid-template-md gap-10" style="--cols-md: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)">
                 <div>
-                    <p class="w3-head text-xl font-extrabold text-brand-800">{{ $siteName }}</p>
-                    <p class="w3-muted text-sm mt-3 max-w-xs">Premium wellness products and a digital business platform — one powerful ecosystem.</p>
-                    <form method="POST" action="{{ route('enquiry.store') }}" class="mt-5 flex gap-2 max-w-xs">
+                    <p class="w3-head fs-xl fw-bolder text-brand-emphasis">{{ $siteName }}</p>
+                    <p class="w3-muted fs-sm mt-3 mw-xs">Premium wellness products and a digital business platform — one powerful ecosystem.</p>
+                    <form method="POST" action="{{ route('enquiry.store') }}" class="mt-5 d-flex gap-2 mw-xs">
                         @csrf
                         <input type="hidden" name="source" value="homepage">
                         <input type="hidden" name="name" value="Newsletter subscriber">
-                        <input type="email" name="email" required placeholder="Your email" class="flex-1 rounded-full border-slate-200 text-sm focus:border-brand-500 focus:ring-brand-500">
-                        <button type="submit" class="w3-btn w3-btn-primary" style="padding:.6rem 1.1rem;font-size:.85rem;">Join</button>
+                        <input type="email" name="email" required placeholder="Your email" class="flex-grow-1 rounded-pill fs-sm">
+                        <button type="submit" class="btn btn-link p-0 text-decoration-none w3-btn w3-btn-primary" style="padding:.6rem 1.1rem;font-size:.85rem;">Join</button>
                     </form>
                 </div>
                 @foreach ([
@@ -708,13 +708,13 @@
                 ] as $col => $links)
                     <div>
                         <p class="w3-eyebrow" style="color:var(--w3-muted);">{{ $col }}</p>
-                        <ul class="mt-4 space-y-2.5 text-sm">
-                            @foreach ($links as $l)<li><a href="{{ $l[1] }}" class="w3-muted hover:text-brand-700">{{ $l[0] }}</a></li>@endforeach
+                        <ul class="mt-4 d-flex flex-column gap-3 fs-sm">
+                            @foreach ($links as $l)<li><a href="{{ $l[1] }}" class="w3-muted">{{ $l[0] }}</a></li>@endforeach
                         </ul>
                     </div>
                 @endforeach
             </div>
-            <div class="mt-12 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs w3-muted" style="border-color:var(--w3-line);">
+            <div class="mt-12 pt-6 border-top d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 fs-xs w3-muted" style="border-color:var(--w3-line);">
                 <p>© {{ date('Y') }} {{ $siteName }}. All rights reserved.</p>
                 <p>Made in India 🇮🇳</p>
             </div>
@@ -722,15 +722,15 @@
     </footer>
 
     {{-- Video testimonial modal (reuses the global modal system) --}}
-    <div id="w3-video-modal" data-modal class="hidden fixed inset-0 z-[60] items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-        <div class="relative w-full max-w-3xl">
-            <button type="button" data-modal-close class="absolute -top-10 right-0 text-white/85 hover:text-white inline-flex items-center gap-1 text-sm"><x-icon name="x-mark" class="w-5 h-5" /> Close</button>
-            <div class="rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video">
-                <video id="w3-video" class="w-full h-full" controls playsinline preload="none" poster="{{ $featuredStory['image'] }}">
+    <div id="w3-video-modal" data-modal class="d-none position-fixed top-0 start-0 w-100 h-100 z-3 align-items-center justify-content-center bg-black bg-opacity-75 p-4">
+        <div class="position-relative w-100 mw-3xl">
+            <button type="button" data-modal-close class="btn btn-link p-0 text-decoration-none position-absolute top-n10 end-0 text-white text-opacity-75 d-inline-flex align-items-center gap-1 fs-sm"><x-icon name="x-mark" class="w-5 h-5" /> Close</button>
+            <div class="rounded-4 overflow-hidden shadow-lg bg-black aspect-video">
+                <video id="w3-video" class="w-100 h-100" controls playsinline preload="none" poster="{{ $featuredStory['image'] }}">
                     <source src="{{ $videoSrc }}" type="video/mp4">
                 </video>
             </div>
-            <p class="text-center text-white/60 text-xs mt-3">Sample clip — replace with your real customer testimonial video.</p>
+            <p class="text-center text-white text-opacity-50 fs-xs mt-3">Sample clip — replace with your real customer testimonial video.</p>
         </div>
     </div>
 

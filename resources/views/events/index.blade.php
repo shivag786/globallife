@@ -1,30 +1,30 @@
 <x-layouts.public title="Events" :metaDescription="'Upcoming training and community events from Global Life.'">
-    <div class="max-w-5xl mx-auto px-6 py-16">
+    <div class="mw-5xl mx-auto px-6 py-16">
         <div class="text-center mb-12">
-            <h1 class="font-display text-4xl font-bold text-brand-900 mb-3">Events</h1>
-            <p class="text-slate-500">Training sessions and community events, online and in person.</p>
+            <h1 class="font-display fs-4xl fw-bold text-brand-emphasis mb-3">Events</h1>
+            <p class="text-secondary">Training sessions and community events, online and in person.</p>
         </div>
 
-        <div class="grid sm:grid-cols-2 gap-8">
+        <div class="d-grid grid-cols-sm-2 gap-8">
             @forelse ($events as $event)
-                <a href="{{ route('events.show', $event) }}" class="reveal group block bg-white border border-slate-100 rounded-2xl overflow-hidden premium-shadow hover:-translate-y-1 transition">
-                    <div class="aspect-[16/9] bg-brand-50 overflow-hidden">
+                <a href="{{ route('events.show', $event) }}" class="reveal d-block bg-body border rounded-4 overflow-hidden premium-shadow">
+                    <div class="aspect-video bg-brand-subtle overflow-hidden">
                         @if ($event->image)
-                            <img src="{{ asset('storage/'.$event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <img src="{{ asset('storage/'.$event->image) }}" alt="{{ $event->title }}" class="w-100 h-100 object-fit-cover">
                         @endif
                     </div>
                     <div class="p-6">
-                        <p class="text-xs font-semibold text-brand-600 uppercase tracking-wide flex items-center gap-1">
+                        <p class="fs-xs fw-semibold text-brand text-uppercase tracking-wide d-flex align-items-center gap-1">
                             <x-icon name="calendar" class="w-4 h-4" /> {{ $event->event_date->format('M j, Y · g:i A') }}
                         </p>
-                        <h2 class="font-display text-lg font-semibold text-brand-900 mt-2 mb-1">{{ $event->title }}</h2>
+                        <h2 class="font-display fs-lg fw-semibold text-brand-emphasis mt-2 mb-1">{{ $event->title }}</h2>
                         @if ($event->location)
-                            <p class="text-sm text-slate-500 flex items-center gap-1"><x-icon name="map-pin" class="w-4 h-4" /> {{ $event->location }}</p>
+                            <p class="fs-sm text-secondary d-flex align-items-center gap-1"><x-icon name="map-pin" class="w-4 h-4" /> {{ $event->location }}</p>
                         @endif
                     </div>
                 </a>
             @empty
-                <p class="col-span-full text-center text-slate-400 py-16">No events scheduled right now.</p>
+                <p class="col-span-full text-center text-secondary py-16">No events scheduled right now.</p>
             @endforelse
         </div>
 

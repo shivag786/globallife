@@ -1,10 +1,10 @@
 @csrf
 @isset($subAdmin) @method('PUT') @endisset
 
-<div class="bootstrap-scope" style="max-width: 48rem">
+<div class="" style="max-width: 48rem">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Sub Admin Details</h2>
                 <p class="small text-muted mb-0">
                     What they can actually reach is set separately, on the Permissions screen.

@@ -382,9 +382,9 @@
       <p>This is the same render our design team uses to sign off proportions before a scooter ever reaches tooling. Switch models to see how the platform stretches across the lineup.</p>
 
       <div class="showcase-tabs" id="showcase-tabs">
-        <button type="button" class="showcase-tab active" data-model="s1">S1</button>
-        <button type="button" class="showcase-tab" data-model="r1">R1</button>
-        <button type="button" class="showcase-tab" data-model="x1">X1</button>
+        <button type="button" class="btn btn-link p-0 text-decoration-none showcase-tab active" data-model="s1">S1</button>
+        <button type="button" class="btn btn-link p-0 text-decoration-none showcase-tab" data-model="r1">R1</button>
+        <button type="button" class="btn btn-link p-0 text-decoration-none showcase-tab" data-model="x1">X1</button>
       </div>
 
       <div class="showcase-specs" id="showcase-specs">

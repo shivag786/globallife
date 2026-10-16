@@ -6,11 +6,11 @@
 @endphp
 @if ($links->isNotEmpty())
     <section class="pb-20 text-center reveal">
-        <p class="text-sm text-slate-400 mb-4">Follow {{ $microsite->business_name }}</p>
-        <div class="flex justify-center gap-3">
+        <p class="fs-sm text-secondary mb-4">Follow {{ $microsite->business_name }}</p>
+        <div class="d-flex justify-content-center gap-3">
             @foreach ($links as $field => $label)
                 <a href="{{ $microsite->{$field} }}" target="_blank"
-                   class="w-11 h-11 rounded-full bg-white border border-slate-100 text-brand-700 flex items-center justify-center text-xs font-bold shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                   class="w-11 h-11 rounded-pill bg-body border text-brand d-flex align-items-center justify-content-center fs-xs fw-bold shadow-sm">
                     {{ $label }}
                 </a>
             @endforeach

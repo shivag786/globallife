@@ -10,99 +10,99 @@
     $cartKey = $cart->keyFor($product->id, $sellerId);
 @endphp
 
-<div data-product-card class="group bg-white border border-slate-100 rounded-2xl overflow-hidden premium-shadow hover:-translate-y-1 transition flex flex-col h-full">
-    <div class="relative aspect-square bg-gradient-to-b from-white to-brand-50/50 overflow-hidden">
+<div data-product-card class="bg-body border rounded-4 overflow-hidden premium-shadow d-flex flex-column h-100">
+    <div class="position-relative aspect-square overflow-hidden" style="background: linear-gradient(to bottom, var(--bs-body-bg), color-mix(in srgb, var(--color-brand-50) 50%, transparent))">
         <a href="{{ $detailUrl }}" aria-label="{{ $product->name }}">
             @if ($product->main_image)
                 <img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}"
-                     class="w-full h-full object-contain p-5 group-hover:scale-105 transition duration-500">
+                     class="w-100 h-100 object-fit-contain p-5">
             @endif
         </a>
         @if ($product->discountPercentage())
-            <span class="absolute top-3 left-3 text-xs font-bold text-white px-2 py-1 rounded-full bg-green-600 shadow-sm">{{ $product->discountPercentage() }}% OFF</span>
+            <span class="position-absolute top-3 start-3 fs-xs fw-bold text-white px-2 py-1 rounded-pill bg-success shadow-sm">{{ $product->discountPercentage() }}% OFF</span>
         @endif
-        <form method="POST" action="{{ route('wishlist.add') }}" class="absolute top-3 right-3">
+        <form method="POST" action="{{ route('wishlist.add') }}" class="position-absolute top-3 end-3">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
-            <button type="submit" class="w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow flex items-center justify-center text-slate-500 hover:text-rose-500 transition" aria-label="Save to wishlist">
+            <button type="submit" class="btn btn-link p-0 text-decoration-none w-9 h-9 rounded-pill bg-white bg-opacity-100 shadow-sm d-flex align-items-center justify-content-center text-secondary" aria-label="Save to wishlist">
                 <x-icon name="heart" class="w-4 h-4" />
             </button>
         </form>
     </div>
 
-    <div class="p-4 flex flex-col flex-1">
+    <div class="p-4 d-flex flex-column flex-grow-1">
         @if ($product->category)
-            <p class="text-[0.68rem] uppercase tracking-wide text-slate-400 mb-0.5">{{ $product->category }}</p>
+            <p class="text-uppercase tracking-wide text-secondary mb-1">{{ $product->category }}</p>
         @endif
-        <a href="{{ $detailUrl }}" class="font-display font-semibold text-brand-900 leading-tight hover:text-brand-700 line-clamp-2">{{ $product->name }}</a>
+        <a href="{{ $detailUrl }}" class="font-display fw-semibold text-brand-emphasis lh-sm line-clamp-2">{{ $product->name }}</a>
 
         @if ($product->review_count > 0)
-            <div class="flex items-center gap-1 mt-1.5">
-                <div class="flex">
+            <div class="d-flex align-items-center gap-1 mt-2">
+                <div class="d-flex">
                     @for ($i = 1; $i <= 5; $i++)
-                        <x-icon name="star" class="w-3.5 h-3.5 {{ $i <= $rating ? 'text-gold-500' : 'text-slate-300' }}" :filled="$i <= $rating" />
+                        <x-icon name="star" class="w-3.5 h-3.5 {{ $i <= $rating ? 'text-gold' : 'text-body-tertiary' }}" :filled="$i <= $rating" />
                     @endfor
                 </div>
-                <span class="text-xs text-slate-400">({{ $product->review_count }})</span>
+                <span class="fs-xs text-secondary">({{ $product->review_count }})</span>
             </div>
         @endif
 
-        <div class="mt-2 flex items-baseline gap-2">
+        <div class="mt-2 d-flex align-items-baseline gap-2">
             @if ($product->hasPrice())
-                <span class="text-lg font-bold text-brand-900">{{ $money($product->sellingPrice()) }}</span>
+                <span class="fs-lg fw-bold text-brand-emphasis">{{ $money($product->sellingPrice()) }}</span>
                 @if ($product->hasDiscount())
-                    <span class="text-sm text-slate-400 line-through">{{ $money($product->mrp) }}</span>
+                    <span class="fs-sm text-secondary text-decoration-line-through">{{ $money($product->mrp) }}</span>
                 @endif
             @else
-                <span class="text-sm text-brand-700 font-medium">Enquire for price</span>
+                <span class="fs-sm text-brand fw-medium">Enquire for price</span>
             @endif
         </div>
 
-        <div class="mt-auto pt-3 space-y-2">
+        <div class="mt-auto pt-3 d-flex flex-column gap-2">
             @if ($product->hasPrice())
-                <div class="flex gap-2" data-cart-controls data-key="{{ $cartKey }}">
+                <div class="d-flex gap-2" data-cart-controls data-key="{{ $cartKey }}">
                     {{-- Add button (shown when not in cart) --}}
-                    <form method="POST" action="{{ route('cart.add') }}" class="flex-1 {{ $inCartQty > 0 ? 'hidden' : '' }}" data-cart-ajax data-role="add">
+                    <form method="POST" action="{{ route('cart.add') }}" class="flex-grow-1 {{ $inCartQty > 0 ? 'd-none' : '' }}" data-cart-ajax data-role="add">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         @if ($sellerId) <input type="hidden" name="seller_id" value="{{ $sellerId }}"> @endif
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 bg-brand-700 text-white text-sm py-2 rounded-full hover:bg-brand-800 transition">
+                        <button type="submit" class="btn btn-brand btn-sm rounded-pill w-100 d-inline-flex align-items-center justify-content-center gap-2">
                             <x-icon name="shopping-bag" class="w-4 h-4" /> Add
                         </button>
                     </form>
                     {{-- Quantity stepper (shown when in cart) --}}
-                    <div class="flex-1 inline-flex items-center justify-between border border-brand-600 rounded-full overflow-hidden {{ $inCartQty > 0 ? '' : 'hidden' }}" data-role="stepper">
+                    <div class="flex-grow-1 d-inline-flex align-items-center justify-content-between border border-brand rounded-pill overflow-hidden {{ $inCartQty > 0 ? '' : 'd-none' }}" data-role="stepper">
                         <form method="POST" action="{{ route('cart.update') }}" data-cart-ajax data-role="dec">
                             @csrf @method('PATCH')
                             <input type="hidden" name="key" value="{{ $cartKey }}">
                             <input type="hidden" name="quantity" value="{{ $inCartQty - 1 }}">
-                            <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Decrease">
+                            <button type="submit" class="btn btn-link p-0 text-decoration-none w-9 h-9 d-flex align-items-center justify-content-center text-brand" aria-label="Decrease">
                                 <x-icon name="minus" class="w-4 h-4" />
                             </button>
                         </form>
-                        <span data-qty class="text-sm font-semibold text-brand-700 tabular-nums">{{ max($inCartQty, 1) }}</span>
+                        <span data-qty class="fs-sm fw-semibold text-brand font-monospace">{{ max($inCartQty, 1) }}</span>
                         <form method="POST" action="{{ route('cart.update') }}" data-cart-ajax data-role="inc">
                             @csrf @method('PATCH')
                             <input type="hidden" name="key" value="{{ $cartKey }}">
                             <input type="hidden" name="quantity" value="{{ $inCartQty + 1 }}">
-                            <button type="submit" class="w-9 h-9 flex items-center justify-center text-brand-700 hover:bg-brand-50" aria-label="Increase">
+                            <button type="submit" class="btn btn-link p-0 text-decoration-none w-9 h-9 d-flex align-items-center justify-content-center text-brand" aria-label="Increase">
                                 <x-icon name="plus" class="w-4 h-4" />
                             </button>
                         </form>
                     </div>
                     {{-- Buy Now (navigates to checkout — intentionally not AJAX) --}}
-                    <form method="POST" action="{{ route('cart.add') }}" class="flex-1">
+                    <form method="POST" action="{{ route('cart.add') }}" class="flex-grow-1">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="buy_now" value="1">
                         @if ($sellerId) <input type="hidden" name="seller_id" value="{{ $sellerId }}"> @endif
-                        <button type="submit" class="w-full border border-brand-600 text-brand-700 text-sm py-2 rounded-full hover:bg-brand-50 transition">Buy Now</button>
+                        <button type="submit" class="btn btn-link p-0 text-decoration-none w-100 border border-brand text-brand fs-sm py-2 rounded-pill">Buy Now</button>
                     </form>
                 </div>
             @endif
-            <div class="flex items-center justify-between text-xs text-slate-400">
-                <x-product-benefits :product="$product" class="!px-3 !py-1.5 !text-xs !rounded-full" />
-                <button type="button" data-copy-link="{{ url($detailUrl) }}" class="inline-flex items-center gap-1 hover:text-brand-600 transition" aria-label="Share">
+            <div class="d-flex align-items-center justify-content-between fs-xs text-secondary">
+                <x-product-benefits :product="$product" class="px-3 py-2 fs-xs rounded-pill" />
+                <button type="button" data-copy-link="{{ url($detailUrl) }}" class="btn btn-link p-0 text-decoration-none d-inline-flex align-items-center gap-1" aria-label="Share">
                     <x-icon name="share" class="w-4 h-4" /> Share
                 </button>
             </div>

@@ -1,14 +1,14 @@
 <x-layouts.app title="Branch Managers" heading="Branch Managers">
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('admin.branch-managers.create') }}" class="bg-brand-700 text-white text-sm px-4 py-2 rounded-md hover:bg-brand-800">
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{{ route('admin.branch-managers.create') }}" class="btn btn-brand btn-sm">
             + Add Branch Manager
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Email</th>
@@ -24,8 +24,8 @@
             </thead>
             <tbody>
                 @forelse ($managers as $manager)
-                    <tr class="border-t border-slate-100">
-                        <td class="px-4 py-3 font-medium">{{ $manager->name }}</td>
+                    <tr class="border-top">
+                        <td class="px-4 py-3 fw-medium">{{ $manager->name }}</td>
                         <td class="px-4 py-3">{{ $manager->email }}</td>
                         <td class="px-4 py-3">{{ $manager->branchCities->pluck('name')->implode(', ') }}</td>
                         <td class="px-4 py-3">{{ $manager->commission_percentage }}%</td>
@@ -35,22 +35,22 @@
                                 @if ($manager->creator)
                                     {{ $manager->creator->name }}
                                 @else
-                                    <span class="text-slate-400">Super Admin</span>
+                                    <span class="text-secondary">Super Admin</span>
                                 @endif
                             </td>
                         @endif
                         <td class="px-4 py-3">
-                            <span class="px-2 py-0.5 rounded text-xs {{ $manager->status === 'active' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600' }}">
+                            <span class="px-2 py-1 rounded fs-xs {{ $manager->status === 'active' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
                                 {{ $manager->status }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-right space-x-3">
-                            <a href="{{ route('admin.branch-managers.permissions.edit', $manager) }}" class="text-indigo-600 hover:underline">Permissions</a>
-                            <a href="{{ route('admin.branch-managers.edit', $manager) }}" class="text-indigo-600 hover:underline">Edit</a>
-                            <form action="{{ route('admin.branch-managers.toggle-status', $manager) }}" method="POST" class="inline">
+                        <td class="px-4 py-3 text-end d-flex align-items-center gap-3">
+                            <a href="{{ route('admin.branch-managers.permissions.edit', $manager) }}" class="text-primary hover-underline">Permissions</a>
+                            <a href="{{ route('admin.branch-managers.edit', $manager) }}" class="text-primary hover-underline">Edit</a>
+                            <form action="{{ route('admin.branch-managers.toggle-status', $manager) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" class="text-amber-600 hover:underline">
+                                <button type="submit" class="btn btn-link p-0 text-decoration-none text-warning hover-underline">
                                     {{ $manager->status === 'active' ? 'Suspend' : 'Activate' }}
                                 </button>
                             </form>
@@ -58,7 +58,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ $seesAll ? 8 : 7 }}" class="px-4 py-6 text-center text-slate-400">
+                        <td colspan="{{ $seesAll ? 8 : 7 }}" class="px-4 py-6 text-center text-secondary">
                             {{ $seesAll ? 'No branch managers yet.' : "You haven't added any Branch Managers yet." }}
                         </td>
                     </tr>

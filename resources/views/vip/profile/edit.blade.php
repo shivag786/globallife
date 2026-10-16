@@ -4,32 +4,32 @@
     $hours = $microsite->business_hours ?? [];
 @endphp
 <x-layouts.app title="Edit Profile" heading="Business Profile">
-    <form method="POST" action="{{ route('vip.profile.update') }}" enctype="multipart/form-data" class="bootstrap-scope max-w-4xl">
+    <form method="POST" action="{{ route('vip.profile.update') }}" enctype="multipart/form-data" class="mw-4xl">
         @csrf
         @method('PUT')
 
         <div class="d-flex flex-column gap-4">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Business Name &amp; City</h2>
                     <p class="small text-muted mb-0">Permanent &mdash; part of your public page URL. Contact your Commission Partner to change these.</p>
                 </div>
                 <div class="card-body">
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="block text-sm font-medium text-slate-700">Business Name</label>
-                            <p class="mt-[0.25rem] text-slate-800">{{ $microsite->business_name }}</p>
+                            <label class="d-block fs-sm fw-medium text-body-secondary">Business Name</label>
+                            <p class="text-body">{{ $microsite->business_name }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="block text-sm font-medium text-slate-700">City</label>
-                            <p class="mt-[0.25rem] text-slate-800">{{ $microsite->city->name }}, {{ $microsite->city->state }}</p>
+                            <label class="d-block fs-sm fw-medium text-body-secondary">City</label>
+                            <p class="text-body">{{ $microsite->city->name }}, {{ $microsite->city->state }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Basic Information</h2>
                 </div>
                 <div class="card-body">
@@ -78,7 +78,7 @@
             </div>
 
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Contact Details</h2>
                 </div>
                 <div class="card-body">
@@ -109,7 +109,7 @@
             </div>
 
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Business Hours</h2>
                 </div>
                 <div class="card-body">
@@ -139,7 +139,7 @@
             </div>
 
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Social Media</h2>
                 </div>
                 <div class="card-body">
@@ -154,10 +154,10 @@
             </div>
 
             <div>
-                <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+                <button type="submit" class="btn btn-brand btn-sm">
                     Save Profile
                 </button>
-                <a href="{{ route('vip.modules.edit') }}" class="ms-3 text-sm text-brand-700 hover:underline">Manage Section Visibility &rarr;</a>
+                <a href="{{ route('vip.modules.edit') }}" class="ms-3 fs-sm text-brand hover-underline">Manage Section Visibility &rarr;</a>
             </div>
         </div>
     </form>

@@ -1,9 +1,9 @@
 <x-layouts.guest title="Two-Factor Authentication">
-    <h1 class="text-lg font-semibold text-slate-800 mb-2">Two-Factor Authentication</h1>
-    <p class="text-sm text-slate-500 mb-6">Enter the authentication code from your app, or one of your recovery codes.</p>
+    <h1 class="fs-lg fw-semibold text-body mb-2">Two-Factor Authentication</h1>
+    <p class="fs-sm text-secondary mb-6">Enter the authentication code from your app, or one of your recovery codes.</p>
 
     @if ($errors->any())
-        <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
+        <div class="mb-4 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded p-3">
             <ul class="list-disc list-inside">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -12,24 +12,24 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('two-factor.login.store') }}" class="space-y-4">
+    <form method="POST" action="{{ route('two-factor.login.store') }}" class="d-flex flex-column gap-4">
         @csrf
 
         <div>
-            <label for="code" class="block text-sm font-medium text-slate-700">Authentication code</label>
+            <label for="code" class="d-block fs-sm fw-medium text-body-secondary">Authentication code</label>
             <input id="code" type="text" name="code" inputmode="numeric" autofocus
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
         </div>
 
-        <p class="text-xs text-slate-400 text-center">— or, if you've lost access to your device —</p>
+        <p class="fs-xs text-secondary text-center">— or, if you've lost access to your device —</p>
 
         <div>
-            <label for="recovery_code" class="block text-sm font-medium text-slate-700">Recovery code</label>
+            <label for="recovery_code" class="d-block fs-sm fw-medium text-body-secondary">Recovery code</label>
             <input id="recovery_code" type="text" name="recovery_code"
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
         </div>
 
-        <button type="submit" class="w-full bg-indigo-600 text-white rounded-md py-2 font-medium hover:bg-indigo-700">
+        <button type="submit" class="btn btn-primary w-100">
             Verify
         </button>
     </form>

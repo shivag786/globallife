@@ -6,9 +6,9 @@
     {{-- Its own form, a sibling of the one above: nesting forms is invalid HTML,
          and a password reset should be a deliberate action rather than something
          that rides along with a profile save. --}}
-    <div class="bootstrap-scope mt-4" style="max-width: 48rem">
+    <div class="mt-4" style="max-width: 48rem">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Change Password</h2>
                 <p class="small text-muted mb-0">
                     Sets a new password for <strong>{{ $subAdmin->name }}</strong>. They are signed out

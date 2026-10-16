@@ -151,7 +151,7 @@
                             </span>
                         </button>
 
-                        <div class="dropdown-menu dropdown-menu-end shadow">
+                        <div class="dropdown-menu dropdown-menu-end shadow-sm">
                             <div class="px-3 py-2">
                                 <p class="fw-semibold mb-0 text-truncate">{{ $authUser->name }}</p>
                                 @if (! empty($authUser->email))
@@ -219,7 +219,7 @@
                     </div>
                     <div class="col-md-6">
                         @if (session('status'))
-                            <div class="alert alert-light bg-white bg-opacity-10 border-white border-opacity-25 text-white small py-2">
+                            <div class="alert alert-light bg-body bg-opacity-10 border-white border-opacity-25 text-white small py-2">
                                 {{ session('status') }}
                             </div>
                         @endif
@@ -336,7 +336,7 @@
 
     @if ($settings['contact_whatsapp'] ?? null)
         <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}"
-           class="position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow animate-pulse-ring text-decoration-none"
+           class="position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm animate-pulse-ring text-decoration-none"
            style="bottom: 1.5rem; right: 1.5rem; z-index: 1030; width: 3.5rem; height: 3.5rem; background: #25d366"
            title="Chat on WhatsApp">
             <x-icon name="chat-bubble" class="w-7 h-7" />

@@ -7,12 +7,12 @@
     @endphp
 
     {{-- Who and why, with the lapse stated plainly up top. --}}
-    <div class="rounded-2xl overflow-hidden premium-shadow mb-6" style="background: linear-gradient(135deg,#1b3c2c,#0d2118);">
-        <div class="px-6 py-5 sm:px-8 sm:py-6 flex flex-wrap items-start justify-between gap-5">
+    <div class="rounded-4 overflow-hidden premium-shadow mb-6" style="background: linear-gradient(135deg,#1b3c2c,#0d2118);">
+        <div class="px-6 py-5 px-sm-8 py-sm-6 d-flex flex-wrap align-items-start justify-content-between gap-5">
             <div class="min-w-0">
-                <p class="text-xs uppercase tracking-widest text-gold-400 font-semibold">Membership Renewal</p>
-                <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mt-1 truncate">{{ $member->name }}</h2>
-                <p class="text-sm text-brand-200 mt-1 truncate">
+                <p class="fs-xs text-uppercase tracking-widest text-gold fw-semibold">Membership Renewal</p>
+                <h2 class="font-display fs-2xl fs-3xl fw-bold text-white mt-1 text-truncate">{{ $member->name }}</h2>
+                <p class="fs-sm text-brand mt-1 text-truncate">
                     {{ $microsite->business_name }}
                     @if ($microsite->city) &middot; {{ $microsite->city->name }} @endif
                     &middot; {{ $member->email }}
@@ -20,23 +20,22 @@
             </div>
 
             {{-- Two states: still live but due, or already lapsed and offline. --}}
-            <div class="flex items-center gap-2 rounded-xl px-4 py-3 border
-                        {{ $expired ? 'bg-red-500/15 border-red-400/30' : 'bg-gold-500/15 border-gold-400/30' }}">
+            <div class="d-flex align-items-center gap-2 rounded-3 px-4 py-3 border {{ $expired ? 'bg-danger-subtle border' : 'bg-gold-subtle border-gold-subtle' }}">
                 <x-icon name="{{ $expired ? 'x-mark' : 'calendar' }}"
-                        class="w-5 h-5 flex-shrink-0 {{ $expired ? 'text-red-300' : 'text-gold-400' }}" />
+                        class="w-5 h-5 flex-shrink-0 {{ $expired ? 'text-danger' : 'text-gold' }}" />
                 <div>
                     @if ($expired)
-                        <p class="text-sm font-semibold text-red-200">
+                        <p class="fs-sm fw-semibold text-danger">
                             Expired {{ $microsite->plan_expires_at->format('d M Y') }}
                         </p>
-                        <p class="text-xs text-red-300/80">
+                        <p class="fs-xs">
                             {{ abs($daysLeft) }} day{{ abs($daysLeft) === 1 ? '' : 's' }} ago &middot; page showing maintenance notice
                         </p>
                     @else
-                        <p class="text-sm font-semibold text-gold-400">
+                        <p class="fs-sm fw-semibold text-gold">
                             Expires {{ $microsite->plan_expires_at->format('d M Y') }}
                         </p>
-                        <p class="text-xs text-brand-200">
+                        <p class="fs-xs text-brand">
                             in {{ $daysLeft }} day{{ $daysLeft === 1 ? '' : 's' }} &middot; page still live
                         </p>
                     @endif
@@ -45,32 +44,32 @@
         </div>
 
         {{-- Usage strip: the numbers that decide which package actually fits. --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 border-t border-white/10 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+        <div class="d-grid grid-cols-1 grid-cols-sm-3 border-top border-white border-opacity-10 divide-y divide-x">
             <div class="px-6 py-4">
-                <p class="text-[11px] uppercase tracking-wider text-brand-300">Previous package</p>
-                <p class="text-white font-semibold mt-0.5 truncate">{{ $current->name ?? '—' }}</p>
+                <p class="text-uppercase tracking-wider text-brand">Previous package</p>
+                <p class="text-white fw-semibold mt-1 text-truncate">{{ $current->name ?? '—' }}</p>
             </div>
             <div class="px-6 py-4">
-                <p class="text-[11px] uppercase tracking-wider text-brand-300">Products in use</p>
-                <p class="text-white font-semibold mt-0.5">
+                <p class="text-uppercase tracking-wider text-brand">Products in use</p>
+                <p class="text-white fw-semibold mt-1">
                     {{ $productQuota['used'] }}
-                    <span class="text-brand-300 font-normal text-sm">/ {{ $productQuota['limit'] }}</span>
+                    <span class="text-brand fw-normal fs-sm">/ {{ $productQuota['limit'] }}</span>
                 </p>
             </div>
             <div class="px-6 py-4">
-                <p class="text-[11px] uppercase tracking-wider text-brand-300">Services in use</p>
-                <p class="text-white font-semibold mt-0.5">
+                <p class="text-uppercase tracking-wider text-brand">Services in use</p>
+                <p class="text-white fw-semibold mt-1">
                     {{ $serviceQuota['used'] }}
-                    <span class="text-brand-300 font-normal text-sm">/ {{ $serviceQuota['limit'] }}</span>
+                    <span class="text-brand fw-normal fs-sm">/ {{ $serviceQuota['limit'] }}</span>
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
         <div>
-            <h3 class="font-display text-xl font-bold text-brand-900">Choose the package they paid for</h3>
-            <p class="text-sm text-slate-500 mt-1 max-w-2xl">
+            <h3 class="font-display fs-xl fw-bold text-brand-emphasis">Choose the package they paid for</h3>
+            <p class="fs-sm text-secondary mt-1 mw-2xl">
                 Payment is collected offline &mdash; approving simply records it.
                 The package sets how long the page stays live and the total products and services they may
                 have; anything already added counts towards it.
@@ -82,14 +81,14 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('manager.vip-members.index') }}" class="text-sm text-brand-700 hover:underline whitespace-nowrap">
+        <a href="{{ route('manager.vip-members.index') }}" class="fs-sm text-brand hover-underline text-nowrap">
             &larr; Back to VIP Members
         </a>
     </div>
 
     {{-- Each card is its own form, so the confirmation dialog can name the exact
          package, price, validity and caps being approved. --}}
-    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10 items-stretch">
+    <div class="d-grid grid-cols-sm-2 grid-cols-xl-4 gap-6 mb-10 align-items-stretch">
         @foreach ($packages as $package)
             <x-package-card :package="$package"
                             :products-used="$productQuota['used']"
@@ -103,10 +102,9 @@
                     @method('PATCH')
                     <input type="hidden" name="vip_plan_id" value="{{ $package->id }}">
                     <button type="submit"
-                            class="w-full py-3 rounded-full font-semibold text-sm transition
-                                   {{ $package->isMostPopular()
-                                        ? 'bg-gold-500 text-brand-950 hover:bg-gold-400'
-                                        : 'bg-brand-700 text-white hover:bg-brand-800' }}">
+                            class="w-100 py-3 rounded-pill fw-semibold fs-sm {{ $package->isMostPopular()
+                                        ? 'bg-gold text-brand-emphasis'
+                                        : 'bg-brand text-white' }}">
                         Approve &amp; Renew
                     </button>
                 </form>
@@ -115,42 +113,42 @@
     </div>
 
     {{-- At-a-glance comparison, the same shape as the printed package sheet. --}}
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-10">
-        <div class="px-6 py-4 border-b border-slate-100">
-            <h3 class="font-display text-lg font-bold text-brand-900">Compare packages</h3>
+    <div class="bg-body rounded-4 border overflow-hidden mb-10">
+        <div class="px-6 py-4 border-bottom">
+            <h3 class="font-display fs-lg fw-bold text-brand-emphasis">Compare packages</h3>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-100 fs-sm">
                 <thead>
-                    <tr class="bg-brand-900 text-white text-left">
-                        <th class="px-5 py-3 font-semibold">Feature</th>
+                    <tr class="bg-brand text-white text-start">
+                        <th class="px-5 py-3 fw-semibold">Feature</th>
                         @foreach ($packages as $package)
-                            <th class="px-5 py-3 font-semibold text-center whitespace-nowrap">
+                            <th class="px-5 py-3 fw-semibold text-center text-nowrap">
                                 {{ strtoupper($package->name) }}
-                                <span class="block font-normal text-gold-400 text-xs mt-0.5">{{ $money($package->renewal_price) }}</span>
+                                <span class="d-block fw-normal text-gold fs-xs mt-1">{{ $money($package->renewal_price) }}</span>
                             </th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-slate-100">
-                        <th class="px-5 py-3 text-left font-semibold text-slate-700 bg-slate-50">Validity</th>
+                    <tr class="border-bottom">
+                        <th class="px-5 py-3 text-start fw-semibold text-body-secondary bg-body-tertiary">Validity</th>
                         @foreach ($packages as $package)
-                            <td class="px-5 py-3 text-center text-slate-600">{{ $package->validityLabel() }}</td>
+                            <td class="px-5 py-3 text-center text-body-secondary">{{ $package->validityLabel() }}</td>
                         @endforeach
                     </tr>
-                    <tr class="border-b border-slate-100">
-                        <th class="px-5 py-3 text-left font-semibold text-slate-700 bg-slate-50">Product catalogue</th>
+                    <tr class="border-bottom">
+                        <th class="px-5 py-3 text-start fw-semibold text-body-secondary bg-body-tertiary">Product catalogue</th>
                         @foreach ($packages as $package)
-                            <td class="px-5 py-3 text-center font-semibold {{ $productQuota['used'] <= $package->productLimit() ? 'text-brand-800' : 'text-red-600' }}">
+                            <td class="px-5 py-3 text-center fw-semibold {{ $productQuota['used'] <= $package->productLimit() ? 'text-brand-emphasis' : 'text-danger' }}">
                                 {{ $package->productLimit() }}
                             </td>
                         @endforeach
                     </tr>
                     <tr>
-                        <th class="px-5 py-3 text-left font-semibold text-slate-700 bg-slate-50">Services</th>
+                        <th class="px-5 py-3 text-start fw-semibold text-body-secondary bg-body-tertiary">Services</th>
                         @foreach ($packages as $package)
-                            <td class="px-5 py-3 text-center font-semibold {{ $serviceQuota['used'] <= $package->serviceLimit() ? 'text-brand-800' : 'text-red-600' }}">
+                            <td class="px-5 py-3 text-center fw-semibold {{ $serviceQuota['used'] <= $package->serviceLimit() ? 'text-brand-emphasis' : 'text-danger' }}">
                                 {{ $package->serviceLimit() }}
                             </td>
                         @endforeach
@@ -158,7 +156,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="px-5 py-3 text-xs text-slate-400 border-t border-slate-100">
+        <p class="px-5 py-3 fs-xs text-secondary border-top">
             Figures in red sit below this member's current usage of
             {{ $productQuota['used'] }} product{{ $productQuota['used'] === 1 ? '' : 's' }} and
             {{ $serviceQuota['used'] }} service{{ $serviceQuota['used'] === 1 ? '' : 's' }}.
@@ -166,11 +164,11 @@
     </div>
 
     {{-- Reject, kept visually quiet and well away from the approve buttons. --}}
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-10">
-        <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="bg-body rounded-4 border p-6 mb-10">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
             <div>
-                <h3 class="font-semibold text-slate-800">Not renewing?</h3>
-                <p class="text-sm text-slate-500 mt-1 max-w-xl">
+                <h3 class="fw-semibold text-body">Not renewing?</h3>
+                <p class="fs-sm text-secondary mt-1 mw-xl">
                     Records the refusal and leaves the page on the maintenance notice. Their content, leads and
                     reviews are all kept, and you can approve a package here whenever they pay.
                 </p>
@@ -180,7 +178,7 @@
                   data-confirm-title="Reject renewal" data-confirm-button="Yes, reject" data-confirm-danger>
                 @csrf
                 @method('PATCH')
-                <button type="submit" class="border border-red-300 text-red-600 text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-red-50 transition whitespace-nowrap">
+                <button type="submit" class="btn btn-link p-0 text-decoration-none border border-danger-subtle text-danger fs-sm fw-semibold px-5 py-2 rounded-pill text-nowrap">
                     Reject renewal
                 </button>
             </form>
@@ -188,36 +186,36 @@
     </div>
 
     @if ($history->isNotEmpty())
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100">
-                <h3 class="font-display text-lg font-bold text-brand-900">Renewal history</h3>
+        <div class="bg-body rounded-4 border overflow-hidden">
+            <div class="px-6 py-4 border-bottom">
+                <h3 class="font-display fs-lg fw-bold text-brand-emphasis">Renewal history</h3>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-slate-50 text-left text-slate-500">
+                <table class="w-100 fs-sm">
+                    <thead class="bg-body-tertiary text-start text-secondary">
                         <tr>
-                            <th class="px-5 py-3 font-medium">Date</th>
-                            <th class="px-5 py-3 font-medium">Decision</th>
-                            <th class="px-5 py-3 font-medium">Package</th>
-                            <th class="px-5 py-3 font-medium text-right">Amount</th>
-                            <th class="px-5 py-3 font-medium">Valid until</th>
-                            <th class="px-5 py-3 font-medium">By</th>
+                            <th class="px-5 py-3 fw-medium">Date</th>
+                            <th class="px-5 py-3 fw-medium">Decision</th>
+                            <th class="px-5 py-3 fw-medium">Package</th>
+                            <th class="px-5 py-3 fw-medium text-end">Amount</th>
+                            <th class="px-5 py-3 fw-medium">Valid until</th>
+                            <th class="px-5 py-3 fw-medium">By</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($history as $row)
-                            <tr class="border-t border-slate-100">
-                                <td class="px-5 py-3 text-slate-500 whitespace-nowrap">{{ $row->decided_at->format('d M Y') }}</td>
+                            <tr class="border-top">
+                                <td class="px-5 py-3 text-secondary text-nowrap">{{ $row->decided_at->format('d M Y') }}</td>
                                 <td class="px-5 py-3">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium {{ $row->isApproved() ? 'bg-brand-50 text-brand-700' : 'bg-red-50 text-red-600' }}">
+                                    <span class="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill fs-xs fw-medium {{ $row->isApproved() ? 'bg-brand-subtle text-brand' : 'bg-danger-subtle text-danger' }}">
                                         <x-icon name="{{ $row->isApproved() ? 'check' : 'x-mark' }}" class="w-3 h-3" />
                                         {{ ucfirst($row->decision) }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3 font-medium text-slate-700">{{ $row->vipPlan?->name ?? '—' }}</td>
-                                <td class="px-5 py-3 text-right tabular-nums text-slate-700">{{ $money($row->amount) }}</td>
-                                <td class="px-5 py-3 text-slate-500">{{ $row->new_expires_at?->format('d M Y') ?? '—' }}</td>
-                                <td class="px-5 py-3 text-slate-500">{{ $row->decider?->name ?? '—' }}</td>
+                                <td class="px-5 py-3 fw-medium text-body-secondary">{{ $row->vipPlan?->name ?? '—' }}</td>
+                                <td class="px-5 py-3 text-end font-monospace text-body-secondary">{{ $money($row->amount) }}</td>
+                                <td class="px-5 py-3 text-secondary">{{ $row->new_expires_at?->format('d M Y') ?? '—' }}</td>
+                                <td class="px-5 py-3 text-secondary">{{ $row->decider?->name ?? '—' }}</td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -1,37 +1,37 @@
 <x-layouts.app title="Services" heading="Services">
     {{-- Plan quota. The cap is on the total, so items added under a bigger
          package still count after a downgrade. --}}
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div class="text-sm">
-            <span class="text-slate-500">Plan usage:</span>
-            <span class="font-semibold {{ $quota['can_add'] ? 'text-slate-800' : 'text-red-600' }}">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="fs-sm">
+            <span class="text-secondary">Plan usage:</span>
+            <span class="fw-semibold {{ $quota['can_add'] ? 'text-body' : 'text-danger' }}">
                 {{ $quota['used'] }} / {{ $quota['limit'] }} services
             </span>
             @if ($quota['over'])
-                <span class="ml-2 text-xs text-red-600">over your plan limit &mdash; nothing removed, but you cannot add more</span>
+                <span class="ms-2 fs-xs text-danger">over your plan limit &mdash; nothing removed, but you cannot add more</span>
             @elseif (! $quota['can_add'])
-                <span class="ml-2 text-xs text-red-600">limit reached</span>
+                <span class="ms-2 fs-xs text-danger">limit reached</span>
             @else
-                <span class="ml-2 text-xs text-slate-400">{{ $quota['remaining'] }} left</span>
+                <span class="ms-2 fs-xs text-secondary">{{ $quota['remaining'] }} left</span>
             @endif
         </div>
 
         @if ($quota['can_add'])
-            <a href="{{ route('vip.services.create') }}" class="bg-brand-700 text-white text-sm px-4 py-2 rounded-md hover:bg-brand-800">
+            <a href="{{ route('vip.services.create') }}" class="btn btn-brand btn-sm">
                 + Add Service
             </a>
         @else
-            <span class="bg-slate-100 text-slate-400 text-sm px-4 py-2 rounded-md cursor-not-allowed"
+            <span class="bg-body-secondary text-secondary fs-sm px-4 py-2 rounded-2"
                   title="Ask your Commission Partner to renew you onto a larger package.">
                 + Add Service
             </span>
         @endif
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Category</th>
@@ -43,37 +43,37 @@
             </thead>
             <tbody>
                 @forelse ($services as $service)
-                    <tr class="border-t border-slate-100">
-                        <td class="px-4 py-3 font-medium">{{ $service->name }} @if($service->is_featured) <span class="text-xs bg-gold-400/20 text-gold-600 px-2 py-0.5 rounded">Featured</span> @endif</td>
+                    <tr class="border-top">
+                        <td class="px-4 py-3 fw-medium">{{ $service->name }} @if($service->is_featured) <span class="fs-xs bg-gold-subtle text-gold px-2 py-1 rounded">Featured</span> @endif</td>
                         <td class="px-4 py-3">{{ $service->category ?? '—' }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                        <td class="px-4 py-3 text-nowrap">
                             @if ($service->hasPrice())
-                                <span class="font-medium">₹{{ number_format($service->sellingPrice(), 2) }}</span>
+                                <span class="fw-medium">₹{{ number_format($service->sellingPrice(), 2) }}</span>
                                 @if ($service->strikeThroughPrice())
-                                    <span class="text-xs text-slate-400 line-through ml-1">₹{{ number_format($service->strikeThroughPrice(), 2) }}</span>
-                                    <span class="text-xs font-semibold text-emerald-600 ml-1">{{ $service->discountPercentage() }}% off</span>
+                                    <span class="fs-xs text-secondary text-decoration-line-through ms-1">₹{{ number_format($service->strikeThroughPrice(), 2) }}</span>
+                                    <span class="fs-xs fw-semibold text-success ms-1">{{ $service->discountPercentage() }}% off</span>
                                 @endif
                             @else
-                                <span class="text-slate-400">—</span>
+                                <span class="text-secondary">—</span>
                             @endif
                         </td>
                         <td class="px-4 py-3">
-                            <span class="px-2 py-0.5 rounded text-xs {{ $service->status === 'published' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-600' }}">
+                            <span class="px-2 py-1 rounded fs-xs {{ $service->status === 'published' ? 'bg-success-subtle text-success' : 'bg-body-secondary text-body-secondary' }}">
                                 {{ ucfirst($service->status) }}
                             </span>
                         </td>
                         <td class="px-4 py-3">{{ $service->sort_order }}</td>
-                        <td class="px-4 py-3 text-right space-x-3">
-                            <a href="{{ route('vip.services.edit', $service) }}" class="text-indigo-600 hover:underline">Edit</a>
-                            <form action="{{ route('vip.services.destroy', $service) }}" method="POST" class="inline" data-confirm="Delete this service?" data-confirm-danger>
+                        <td class="px-4 py-3 text-end d-flex align-items-center gap-3">
+                            <a href="{{ route('vip.services.edit', $service) }}" class="text-primary hover-underline">Edit</a>
+                            <form action="{{ route('vip.services.destroy', $service) }}" method="POST" class="d-inline" data-confirm="Delete this service?" data-confirm-danger>
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger hover-underline">Delete</button>
                             </form>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-6 text-center text-slate-400">No services yet.</td></tr>
+                    <tr><td colspan="6" class="px-4 py-6 text-center text-secondary">No services yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

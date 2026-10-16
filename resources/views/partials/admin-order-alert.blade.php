@@ -4,7 +4,7 @@
      data-poll-url="{{ route('admin.orders.poll') }}"
      data-orders-url="{{ route('admin.orders.index') }}"
      data-latest-id="{{ $latestOrderId }}"
-     class="hidden"></div>
+     class="d-none"></div>
 <script>
 (function () {
     var root = document.querySelector('[data-order-alert]');

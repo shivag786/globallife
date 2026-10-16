@@ -84,6 +84,10 @@ $form-switch-focus-color: $brand-500;
 
 $table-th-font-weight: 600;
 
+// Generates mt-n1, me-n2 and friends. Off by default in Bootstrap; the markup
+// uses pull-ups on a few overlapping cards.
+$enable-negative-margins: true;
+
 // ------------------------------------------------------------ bootstrap
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
@@ -104,7 +108,100 @@ $custom-colors: (
 );
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
+// The project's spacing scale, in 0.25rem steps. Bootstrap's default stops at
+// five coarse steps (.25/.5/1/1.5/3rem), which cannot express the spacing this
+// design uses; $spacers is the supported hook for exactly this, and every
+// spacing utility -- p-, m-, gap- and the row gutters g- -- is generated from
+// it, at every breakpoint.
+$spacers: (
+    0: 0,
+    1: 0.25rem,
+    2: 0.5rem,
+    3: 0.75rem,
+    4: 1rem,
+    5: 1.25rem,
+    6: 1.5rem,
+    7: 1.75rem,
+    8: 2rem,
+    9: 2.25rem,
+    10: 2.5rem,
+    11: 2.75rem,
+    12: 3rem,
+    14: 3.5rem,
+    16: 4rem,
+    20: 5rem,
+    24: 6rem,
+    28: 7rem,
+    32: 8rem,
+);
+
+// $gutters is captured from $spacers back in variables.scss, i.e. before the
+// map above, so the row-gutter utilities (g-*, gx-*, gy-*) need it restated or
+// they would keep generating from Bootstrap's five default steps.
+$gutters: $spacers;
+
+// Absolute offsets (top-3, start-6, end-n24 ...). Bootstrap's position
+// utilities take their values from $position-values, which ships only
+// 0 / 50% / 100%; the spacing scale and its negatives are added so floating
+// buttons and corner badges keep their exact distance from the edge.
+$position-negatives: ();
+@each $key, $value in $spacers {
+    @if $key != 0 {
+        $position-negatives: map-merge($position-negatives, ('n#{$key}': -$value));
+    }
+}
+$position-values: map-merge(map-merge($position-values, $spacers), $position-negatives);
+
+
+// Named font sizes beside Bootstrap's heading-derived fs-1..fs-6, so body copy
+// can be sized without reaching for a heading step.
+$font-sizes: map-merge(
+    $font-sizes,
+    (
+        'xs': 0.75rem,
+        'sm': 0.875rem,
+        'base': 1rem,
+        'lg': 1.125rem,
+        'xl': 1.25rem,
+        '2xl': 1.5rem,
+        '3xl': 1.875rem,
+        '4xl': 2.25rem,
+        '5xl': 3rem,
+    )
+);
+
 @import 'bootstrap/scss/maps';
+
+// Subtle / emphasis variants for the custom theme colours.
+//
+// bg-*-subtle, text-*-emphasis and border-*-subtle are generated from the
+// $utilities-* maps, which `maps` assembles from its own hand-written colour
+// lists rather than from $theme-colors. So a colour added to $theme-colors gets
+// the solid utilities and none of the soft ones unless it is registered in
+// these maps too -- after `maps`, which builds them, and before `utilities`,
+// which reads them. The pale brand greens are what this design uses most.
+$utilities-text-emphasis-colors: map-merge(
+    $utilities-text-emphasis-colors,
+    (
+        'brand-emphasis': var(--gl-brand-text-emphasis),
+        'gold-emphasis': var(--gl-gold-text-emphasis),
+    )
+);
+$utilities-bg-subtle: map-merge(
+    $utilities-bg-subtle,
+    (
+        'brand-subtle': var(--gl-brand-bg-subtle),
+        'gold-subtle': var(--gl-gold-bg-subtle),
+    )
+);
+$utilities-border-subtle: map-merge(
+    $utilities-border-subtle,
+    (
+        'brand-subtle': var(--gl-brand-border-subtle),
+        'gold-subtle': var(--gl-gold-border-subtle),
+    )
+);
+
 @import 'bootstrap/scss/mixins';
 @import 'bootstrap/scss/utilities';
 
@@ -143,6 +240,81 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 @import 'bootstrap/scss/utilities/api';
 
 // =====================================================================
+// Element base.
+//
+// Every view in this app was written against a "blank slate" base: headings
+// with no size or weight of their own, paragraphs and lists with no margins or
+// bullets, links that take their colour from their context. Spacing and type
+// are then set explicitly on each element with utilities. Bootstrap's Reboot
+// assumes the opposite -- big margined headings, spaced paragraphs, bulleted
+// lists, blue underlined links -- which is what made headings balloon and gaps
+// appear and vanish in the wrong places after the switch.
+//
+// These are plain element selectors, so any class still wins: .h5, .lead,
+// .list-group, .nav, .dropdown-menu, .pagination, .btn-link, .editor-content
+// and the utilities all keep their own rules.
+// =====================================================================
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+p, blockquote, figure, dl, dd, pre {
+    margin: 0;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+img, svg, video, canvas, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+}
+
+img, video {
+    max-width: 100%;
+    height: auto;
+}
+
+// Readable-width containers (mw-*), for content columns centred with mx-auto.
+// Bootstrap's own container-* carry gutters and breakpoints; these are just a
+// width cap, which is what a centred text block or form wants.
+$max-widths: (xs: 20rem, sm: 24rem, md: 28rem, lg: 32rem, xl: 36rem, 2xl: 42rem,
+              3xl: 48rem, 4xl: 56rem, 5xl: 64rem, 6xl: 72rem, 7xl: 80rem, prose: 65ch);
+
+@each $name, $width in $max-widths {
+    .mw-#{$name} { max-width: $width !important; }
+}
+
+// Lists that do want markers say so.
+.list-disc { list-style: disc; padding-left: 1.25rem; }
+.list-decimal { list-style: decimal; padding-left: 1.25rem; }
+.list-inside { list-style-position: inside; padding-left: 0; }
+
+// A button that reads as an inline text link (the Suspend / Delete actions in
+// table rows) takes its size from the surrounding text, like a real link would,
+// instead of .btn's fixed 1rem.
+.btn.btn-link.p-0 {
+    --bs-btn-font-size: inherit;
+    --bs-btn-line-height: inherit;
+    --bs-btn-font-weight: inherit;
+    vertical-align: baseline;
+}
+
+// A link that underlines on hover only.
+.hover-underline:hover { text-decoration: underline; }
+
+// =====================================================================
 // Project tokens exposed as custom properties, for the hand-written CSS
 // below and for inline gradients in markup.
 // =====================================================================
@@ -168,6 +340,13 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 
     --color-cream: #{$cream};
     --color-cream-dark: #{$cream-dark};
+
+    --gl-brand-bg-subtle: #{$brand-50};
+    --gl-brand-border-subtle: #{$brand-200};
+    --gl-brand-text-emphasis: #{$brand-800};
+    --gl-gold-bg-subtle: #fdf6e3;
+    --gl-gold-border-subtle: #{$gold-400};
+    --gl-gold-text-emphasis: #{$gold-600};
 }
 
 // Two families Bootstrap has no slot for.
@@ -499,17 +678,129 @@ dialog::backdrop {
 }
 
 // =====================================================================
+// A few utilities Bootstrap does not ship, kept deliberately small.
+// Anything Bootstrap already has a name for is NOT redefined here.
+// =====================================================================
+
+// Letter spacing. Bootstrap styles headings but exposes no tracking scale,
+// and the uppercase eyebrow labels throughout the panels need one.
+.tracking-tight  { letter-spacing: -0.015em !important; }
+.tracking-normal { letter-spacing: 0 !important; }
+.tracking-wide   { letter-spacing: 0.025em !important; }
+.tracking-wider  { letter-spacing: 0.05em !important; }
+.tracking-widest { letter-spacing: 0.1em !important; }
+
+// Truncate to a fixed number of lines. `text-truncate` only does one line.
+@for $i from 1 through 4 {
+    .line-clamp-#{$i} {
+        display: -webkit-box;
+        -webkit-line-clamp: $i;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+// Separators between children, for lists built out of plain divs where a
+// Bootstrap list-group would be the wrong semantics.
+.divide-y > * + * {
+    border-top: 1px solid var(--bs-border-color);
+}
+
+// Intrinsic aspect ratios. Bootstrap's .ratio needs a positioned child to
+// fill it; these just constrain the box, which is what image tiles want.
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video  { aspect-ratio: 16 / 9; }
+.aspect-phone  { aspect-ratio: 9 / 17; }
+
+// A dashed border, for the empty-state placeholders. Bootstrap sets a border
+// width and colour but never its style.
+.border-dashed { border-style: dashed !important; }
+
+// Preserve newlines in stored text (activity-log payloads, message bodies).
+.text-prewrap { white-space: pre-wrap; }
+
+.divide-x > * + * {
+    border-left: 1px solid var(--bs-border-color);
+}
+
+// Masonry gallery: CSS multi-column, responsive in the same way as row-cols.
+@each $bp, $min in $grid-breakpoints {
+    $infix: if($min == 0, '', '-#{$bp}');
+
+    @include media-breakpoint-up($bp) {
+        @for $n from 1 through 4 {
+            .columns#{$infix}-#{$n} { columns: $n; }
+        }
+    }
+}
+
+// Equal-column card grids: d-grid + grid-cols{-bp}-N, spaced with gap-N.
+// Bootstrap's .row puts its gutter in the padding of a wrapping .col, so a card
+// placed straight into a row paints its background over the gutter and the
+// cards meet edge to edge. A CSS grid's gap is real space between them.
+@each $bp, $min in $grid-breakpoints {
+    $infix: if($min == 0, '', '-#{$bp}');
+
+    @include media-breakpoint-up($bp) {
+        @for $n from 1 through 12 {
+            .grid-cols#{$infix}-#{$n} { grid-template-columns: repeat($n, minmax(0, 1fr)); }
+            .col-span#{$infix}-#{$n} { grid-column: span $n / span $n; }
+        }
+
+        .col-span#{$infix}-full { grid-column: 1 / -1; }
+    }
+}
+
+// Custom column templates (a main column beside a fixed 340px aside, a 1.4fr
+// brand column in a footer). The template rides in a custom property, so one
+// utility covers every shape: class="d-grid gap-6 grid-template-lg"
+// style="--cols-lg: minmax(0, 1fr) 340px". Bootstrap's row/col system only
+// divides into twelfths, which none of these are.
+@each $bp, $min in $grid-breakpoints {
+    $infix: if($min == 0, '', '-#{$bp}');
+
+    @include media-breakpoint-up($bp) {
+        .grid-template#{$infix} { grid-template-columns: var(--cols#{$infix}); }
+    }
+}
+
+// Caps a scrolling panel's height (checkout summary, hero image).
+.mh-64 { max-height: 16rem; }
+.mh-96 { max-height: 24rem; }
+.min-w-4 { min-width: 1rem; }
+
+// Legible caption over a video thumbnail.
+.text-shadow { text-shadow: 0 1px 3px rgb(0 0 0 / 0.6); }
+
+// Keeps an anchor target clear of the sticky header when jumped to.
+.scroll-offset { scroll-margin-top: 6rem; }
+
+// <details> disclosure icons: the chevron turns, or a plus/minus pair swaps.
+.open-rotate-90 { transition: transform 180ms ease; }
+details[open] .open-rotate-90 { transform: rotate(90deg); }
+details[open] .open-hide { display: none !important; }
+.open-show { display: none !important; }
+details[open] .open-show { display: block !important; }
+
+// =====================================================================
 // Square sizing utilities, chiefly for inline SVG icons (x-icon defaults
 // to `w-6 h-6` and ~210 call sites pass a size this way).
 //
 // Bootstrap ships no fixed width/height scale, so these are generated
 // here rather than written as a style attribute at every call site.
 // =====================================================================
-$icon-sizes: (3: 0.75rem, 3\.5: 0.875rem, 4: 1rem, 5: 1.25rem, 6: 1.5rem,
-              7: 1.75rem, 8: 2rem, 9: 2.25rem, 10: 2.5rem, 11: 2.75rem,
-              12: 3rem, 14: 3.5rem, 16: 4rem);
+// Steps of 0.25rem, the same scale as the spacers, so a size reads the same
+// way a margin does. Covers icons (w-4, h-5) through to image tiles (h-52).
+$box-sizes: (
+    0\.5: 0.125rem, 1: 0.25rem, 1\.5: 0.375rem, 2: 0.5rem, 2\.5: 0.625rem,
+    3: 0.75rem, 3\.5: 0.875rem, 4: 1rem, 5: 1.25rem, 6: 1.5rem, 7: 1.75rem,
+    8: 2rem, 9: 2.25rem, 10: 2.5rem, 11: 2.75rem, 12: 3rem, 14: 3.5rem,
+    16: 4rem, 18: 4.5rem, 20: 5rem, 24: 6rem, 28: 7rem, 32: 8rem, 36: 9rem,
+    40: 10rem, 44: 11rem, 48: 12rem, 52: 13rem, 56: 14rem, 64: 16rem,
+    72: 18rem, 80: 20rem, 96: 24rem,
+);
 
-@each $name, $size in $icon-sizes {
+@each $name, $size in $box-sizes {
     .w-#{$name} { width: $size !important; }
     .h-#{$name} { height: $size !important; }
 }
@@ -608,6 +899,16 @@ $stat-tile-accents: (
     }
 }
 
+// The same lift for any linked card that is not itself a stat tile.
+.stat-tile--lift {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--bs-box-shadow);
+    }
+}
+
 @each $name, $accent in $stat-tile-accents {
     .stat-tile--#{$name} {
         --stat-tint: #{nth($accent, 1)};
@@ -686,9 +987,31 @@ $stat-tile-accents: (
 // never set it, so they keep their branded light design.
 // =====================================================================
 [data-bs-theme='dark'] {
+    // The pale brand tints are background washes in light mode; in dark mode
+    // they become a faint wash of the same hue over the dark surface, so the
+    // text Bootstrap switches to light stays readable on them. Inline
+    // gradients use these variables too, so they follow along.
+    --color-brand-50: color-mix(in srgb, #{$brand-500} 14%, #0f172a);
+    --color-brand-100: color-mix(in srgb, #{$brand-500} 22%, #0f172a);
+    --color-brand-200: color-mix(in srgb, #{$brand-500} 35%, #0f172a);
+    --color-cream: #111a2b;
+    --color-cream-dark: #0f172a;
+
+    --gl-brand-bg-subtle: color-mix(in srgb, #{$brand-500} 18%, #0f172a);
+    --gl-brand-border-subtle: color-mix(in srgb, #{$brand-500} 45%, #0f172a);
+    --gl-brand-text-emphasis: #{$brand-300};
+    --gl-gold-bg-subtle: color-mix(in srgb, #{$gold-500} 18%, #0f172a);
+    --gl-gold-border-subtle: color-mix(in srgb, #{$gold-500} 45%, #0f172a);
+    --gl-gold-text-emphasis: #{$gold-400};
+
     .admin-shell { background-color: #0b1220; }
 
     .premium-shadow { box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.6); }
 
     .msite-card { background: var(--bs-body-bg); }
+
+    // Stat tiles: the light pastel tint per accent becomes a dark wash of it.
+    .stat-tile { --stat-tint: color-mix(in srgb, var(--stat-accent) 18%, var(--bs-body-bg)); }
+    .stat-tile__chip { background: color-mix(in srgb, var(--stat-accent) 28%, var(--bs-body-bg)); }
+    .stat-tile__label { color: color-mix(in srgb, var(--stat-accent) 60%, #fff); }
 }

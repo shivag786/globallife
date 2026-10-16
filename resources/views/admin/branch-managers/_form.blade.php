@@ -5,10 +5,10 @@
     $assignedCityIds = isset($manager) ? $manager->branchCities->pluck('id')->all() : old('cities', []);
 @endphp
 
-<div class="bootstrap-scope max-w-3xl">
+<div class="mw-3xl">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Branch Manager Details</h2>
             </div>
             <div class="card-body">
@@ -41,7 +41,7 @@
                          are never shown a field that could move one away. --}}
                     @if ($seesAll ?? false)
                         <div class="col-md-6">
-                            <label for="created_by" class="block text-sm font-medium text-slate-700">Managed By</label>
+                            <label for="created_by" class="d-block fs-sm fw-medium text-body-secondary">Managed By</label>
                             <select id="created_by" name="created_by"
                                     class="form-select @error('created_by') is-invalid @enderror">
                                 <option value="">Super Admin (unassigned)</option>
@@ -53,7 +53,7 @@
                                 @endforeach
                             </select>
                             @error('created_by')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                <p class="fs-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                             <p class="small text-muted mb-0 mt-1">
                                 The Sub Admin who manages them. Leave as Super Admin to keep them yourself
@@ -66,7 +66,7 @@
         </div>
 
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Assigned Branches (Cities) <span class="fw-normal text-muted small">— optional</span></h2>
                 <p class="small text-muted mb-0">
                     Leave empty if their territory isn't decided yet. They also pick up a city
@@ -80,18 +80,18 @@
                             <label class="d-flex align-items-center gap-2">
                                 <input type="checkbox" name="cities[]" value="{{ $city->id }}"
                                        @checked(in_array($city->id, $assignedCityIds))>
-                                <span class="text-sm">{{ $city->name }}, {{ $city->state }}</span>
+                                <span class="fs-sm">{{ $city->name }}, {{ $city->state }}</span>
                             </label>
                         </div>
                     @empty
-                        <p class="text-slate-400 text-sm">Create a city first.</p>
+                        <p class="text-secondary fs-sm">Create a city first.</p>
                     @endforelse
                 </div>
             </div>
         </div>
 
         <div>
-            <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+            <button type="submit" class="btn btn-brand btn-sm">
                 {{ isset($manager) ? 'Update Branch Manager' : 'Create Branch Manager' }}
             </button>
         </div>

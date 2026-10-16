@@ -1,9 +1,9 @@
 <x-layouts.app title="Site Settings" heading="Site Settings">
-    <p class="text-sm text-slate-500 mb-6">Controls the logo, title, SEO, analytics, and social sharing details used across the public site.</p>
+    <p class="fs-sm text-secondary mb-6">Controls the logo, title, SEO, analytics, and social sharing details used across the public site.</p>
 
     {{-- .bootstrap-scope activates Bootstrap's real (unprefixed) classes for this
          subtree only — see resources/css/bootstrap.scss / scripts/build-bootstrap.mjs. --}}
-    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="bootstrap-scope max-w-4xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="mw-4xl">
         @csrf
         @method('PUT')
 
@@ -11,7 +11,7 @@
 
             {{-- General --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">General</h2>
                 </div>
                 <div class="card-body">
@@ -37,7 +37,7 @@
 
             {{-- Homepage & Announcement --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Homepage &amp; Announcement</h2>
                 </div>
                 <div class="card-body">
@@ -64,7 +64,7 @@
 
             {{-- SEO --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">SEO</h2>
                 </div>
                 <div class="card-body">
@@ -94,7 +94,7 @@
 
             {{-- Social & Open Graph --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Social &amp; Open Graph</h2>
                 </div>
                 <div class="card-body">
@@ -137,7 +137,7 @@
 
             {{-- Analytics --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Analytics</h2>
                 </div>
                 <div class="card-body">
@@ -156,7 +156,7 @@
 
             {{-- Contact --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Contact</h2>
                     <p class="small text-muted mb-0">Powers the footer and contact links across the public site.</p>
                 </div>
@@ -177,7 +177,7 @@
 
             {{-- Delivery --}}
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white">
+                <div class="card-header bg-body">
                     <h2 class="h6 mb-0 fw-semibold">Delivery</h2>
                     <p class="small text-muted mb-0">The global delivery promise shown on every product page ("Delivery by …") and used as the default estimated delivery date on new orders.</p>
                 </div>
@@ -193,7 +193,7 @@
             </div>
 
             <div>
-                <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+                <button type="submit" class="btn btn-brand btn-sm">
                     Save Settings
                 </button>
             </div>

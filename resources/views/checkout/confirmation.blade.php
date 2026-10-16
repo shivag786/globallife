@@ -1,58 +1,58 @@
 <x-layouts.shop title="Order Confirmed" :storefront="$storefront">
     @php $money = fn ($n) => '₹'.number_format((float) $n, 2); @endphp
 
-    <div class="max-w-2xl mx-auto px-6 py-16">
+    <div class="mw-2xl mx-auto px-6 py-16">
         <div class="text-center">
-            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                <x-icon name="check-circle" class="w-9 h-9 text-green-600" />
+            <div class="w-16 h-16 rounded-pill bg-success-subtle d-flex align-items-center justify-content-center mx-auto">
+                <x-icon name="check-circle" class="w-9 h-9 text-success" />
             </div>
-            <h1 class="font-display text-3xl font-bold text-brand-900 mt-5">Thank you for your order!</h1>
-            <p class="text-slate-500 mt-2">Order <span class="font-semibold text-brand-800">{{ $order->order_number }}</span> is confirmed.</p>
+            <h1 class="font-display fs-3xl fw-bold text-brand-emphasis mt-5">Thank you for your order!</h1>
+            <p class="text-secondary mt-2">Order <span class="fw-semibold text-brand-emphasis">{{ $order->order_number }}</span> is confirmed.</p>
             @php $arrivingBy = app(\App\Services\DeliveryService::class)->expectedFor($order); @endphp
             @if ($arrivingBy)
-                <div class="mt-4 inline-flex items-center gap-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-2">
-                    <x-icon name="truck" class="w-5 h-5 text-brand-700" />
-                    <span class="text-sm text-slate-700">Arriving by <span class="font-semibold text-brand-900">{{ $arrivingBy->timezone('Asia/Kolkata')->format('D, d M Y') }}</span></span>
+                <div class="mt-4 d-inline-flex align-items-center gap-2 bg-brand-subtle border border-brand-subtle rounded-pill px-4 py-2">
+                    <x-icon name="truck" class="w-5 h-5 text-brand" />
+                    <span class="fs-sm text-body-secondary">Arriving by <span class="fw-semibold text-brand-emphasis">{{ $arrivingBy->timezone('Asia/Kolkata')->format('D, d M Y') }}</span></span>
                 </div>
             @endif
         </div>
 
         @if ($newAccount)
-            <div class="mt-8 bg-brand-50 border border-brand-100 rounded-2xl p-5 text-center">
-                <p class="font-semibold text-brand-900">We've created your account</p>
-                <p class="text-sm text-slate-600 mt-1">Your login details have been emailed to <strong>{{ $order->customer_email }}</strong>. You're already signed in.</p>
+            <div class="mt-8 bg-brand-subtle border border-brand-subtle rounded-4 p-5 text-center">
+                <p class="fw-semibold text-brand-emphasis">We've created your account</p>
+                <p class="fs-sm text-body-secondary mt-1">Your login details have been emailed to <strong>{{ $order->customer_email }}</strong>. You're already signed in.</p>
             </div>
         @endif
 
-        <div class="mt-8 bg-white border border-slate-100 rounded-2xl divide-y divide-slate-100">
+        <div class="mt-8 bg-body border rounded-4 divide-y">
             @foreach ($order->items as $item)
-                <div class="flex items-center gap-4 p-4">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-medium text-brand-900">{{ $item->product_name }}</p>
-                        <p class="text-sm text-slate-500">{{ $item->quantity }} × {{ $money($item->unit_price) }}</p>
+                <div class="d-flex align-items-center gap-4 p-4">
+                    <div class="flex-grow-1 min-w-0">
+                        <p class="fw-medium text-brand-emphasis">{{ $item->product_name }}</p>
+                        <p class="fs-sm text-secondary">{{ $item->quantity }} × {{ $money($item->unit_price) }}</p>
                     </div>
-                    <div class="font-semibold text-brand-900">{{ $money($item->line_total) }}</div>
+                    <div class="fw-semibold text-brand-emphasis">{{ $money($item->line_total) }}</div>
                 </div>
             @endforeach
-            <div class="p-4 space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-slate-500">Subtotal</span><span>{{ $money($order->subtotal) }}</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Shipping</span><span>{{ $order->shipping > 0 ? $money($order->shipping) : 'Free' }}</span></div>
-                <div class="flex justify-between text-base font-bold text-brand-900 border-t border-slate-100 pt-2"><span>Total</span><span>{{ $money($order->total) }}</span></div>
+            <div class="p-4 d-flex flex-column gap-2 fs-sm">
+                <div class="d-flex justify-content-between"><span class="text-secondary">Subtotal</span><span>{{ $money($order->subtotal) }}</span></div>
+                <div class="d-flex justify-content-between"><span class="text-secondary">Shipping</span><span>{{ $order->shipping > 0 ? $money($order->shipping) : 'Free' }}</span></div>
+                <div class="d-flex justify-content-between fs-base fw-bold text-brand-emphasis border-top pt-2"><span>Total</span><span>{{ $money($order->total) }}</span></div>
             </div>
         </div>
 
-        <div class="mt-6 bg-white border border-slate-100 rounded-2xl p-5 text-sm text-slate-600">
-            <p class="font-medium text-brand-900 mb-1">Delivery to</p>
+        <div class="mt-6 bg-body border rounded-4 p-5 fs-sm text-body-secondary">
+            <p class="fw-medium text-brand-emphasis mb-1">Delivery to</p>
             <p>{{ $order->customer_name }} · {{ $order->customer_phone }}</p>
             <p>{{ $order->address }}, {{ $order->city }}, {{ $order->state }} - {{ $order->pincode }}</p>
-            <p class="mt-2 text-xs text-slate-400">Payment: {{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'Paid online (test)' }}</p>
+            <p class="mt-2 fs-xs text-secondary">Payment: {{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'Paid online (test)' }}</p>
         </div>
 
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <div class="mt-8 d-flex flex-wrap justify-content-center gap-3">
             @auth
-                <a href="{{ route('account.orders.index') }}" class="bg-brand-700 text-white px-6 py-2.5 rounded-full hover:bg-brand-800 transition">View my orders</a>
+                <a href="{{ route('account.orders.index') }}" class="btn btn-brand rounded-pill">View my orders</a>
             @endauth
-            <a href="{{ $continueUrl }}" class="border border-brand-600 text-brand-700 px-6 py-2.5 rounded-full hover:bg-brand-50 transition inline-flex items-center gap-2">
+            <a href="{{ $continueUrl }}" class="border border-brand text-brand px-6 py-2 rounded-pill d-inline-flex align-items-center gap-2">
                 <x-icon name="shopping-bag" class="w-4 h-4" />
                 {{ $storefront ? 'Continue shopping at '.\Illuminate\Support\Str::limit($storefront->business_name, 24) : 'Continue shopping' }}
             </a>

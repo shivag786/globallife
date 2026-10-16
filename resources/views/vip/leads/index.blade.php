@@ -1,14 +1,14 @@
 <x-layouts.app title="Leads" heading="Leads">
-    <div class="flex justify-end mb-4">
-        <a href="{{ route('vip.leads.export') }}" class="bg-white border border-slate-200 text-slate-700 text-sm px-4 py-2 rounded-md hover:bg-slate-50">
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{{ route('vip.leads.export') }}" class="bg-body border text-body-secondary fs-sm px-4 py-2 rounded-2">
             Export CSV
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Contact</th>
@@ -20,18 +20,18 @@
             </thead>
             <tbody>
                 @forelse ($leads as $lead)
-                    <tr class="border-t border-slate-100">
-                        <td class="px-4 py-3 font-medium">{{ $lead->name }}</td>
-                        <td class="px-4 py-3">{{ $lead->email }}<br><span class="text-slate-400">{{ $lead->phone }}</span></td>
+                    <tr class="border-top">
+                        <td class="px-4 py-3 fw-medium">{{ $lead->name }}</td>
+                        <td class="px-4 py-3">{{ $lead->email }}<br><span class="text-secondary">{{ $lead->phone }}</span></td>
                         <td class="px-4 py-3">{{ $lead->city }}</td>
-                        <td class="px-4 py-3 max-w-xs truncate">{{ $lead->message }}</td>
+                        <td class="px-4 py-3 mw-xs text-truncate">{{ $lead->message }}</td>
                         <td class="px-4 py-3">
-                            <span class="px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-600">{{ ucfirst($lead->status) }}</span>
+                            <span class="px-2 py-1 rounded fs-xs bg-body-secondary text-body-secondary">{{ ucfirst($lead->status) }}</span>
                         </td>
-                        <td class="px-4 py-3 text-slate-400">{{ $lead->created_at->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-secondary">{{ $lead->created_at->format('d M Y') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-6 text-center text-slate-400">No leads yet.</td></tr>
+                    <tr><td colspan="6" class="px-4 py-6 text-center text-secondary">No leads yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

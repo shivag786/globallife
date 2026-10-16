@@ -17,7 +17,7 @@ composer dev        # serve + queue + pail logs + vite (concurrently)
 composer test       # config:clear + artisan test  (PHPUnit, tests/Feature)
 php artisan test --filter=SomeTest
 php artisan migrate --seed
-npm run build       # runs build-bootstrap.mjs THEN vite build
+npm run build       # vite build (Bootstrap 5 compiled from resources/css/app.scss)
 ```
 
 Windows + XAMPP dev environment; shell is PowerShell (Bash tool also available).

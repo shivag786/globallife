@@ -205,7 +205,7 @@
 
             @if ($errors->any())
                 <div class="alert alert-danger small">
-                    <ul class="mb-0 ps-3">
+                    <ul class="mb-0 list-disc">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach

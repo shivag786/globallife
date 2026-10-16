@@ -1,8 +1,8 @@
 <x-layouts.app title="Activity Log" heading="Activity Log">
-    <form method="GET" class="mb-4 flex items-center gap-3">
-        <label for="causer_id" class="text-sm text-slate-600">Filter by user</label>
+    <form method="GET" class="mb-4 d-flex align-items-center gap-3">
+        <label for="causer_id" class="fs-sm text-body-secondary">Filter by user</label>
         <select id="causer_id" name="causer_id" onchange="this.form.submit()"
-                class="rounded-md border-slate-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                class="rounded-2 shadow-sm fs-sm">
             <option value="">All Branch Managers &amp; Commission Partners</option>
             @foreach ($causers as $causer)
                 <option value="{{ $causer->id }}" @selected($selectedCauserId === $causer->id)>
@@ -12,10 +12,10 @@
         </select>
     </form>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Date</th>
                     <th class="px-4 py-3">User</th>
@@ -26,19 +26,19 @@
             </thead>
             <tbody>
                 @forelse ($activities as $activity)
-                    <tr class="border-t border-slate-100 align-top">
-                        <td class="px-4 py-3 whitespace-nowrap text-slate-500">{{ $activity->created_at->format('Y-m-d H:i') }}</td>
+                    <tr class="border-top align-top">
+                        <td class="px-4 py-3 text-nowrap text-secondary">{{ $activity->created_at->format('Y-m-d H:i') }}</td>
                         <td class="px-4 py-3">{{ $activity->causer?->name ?? 'System' }}</td>
-                        <td class="px-4 py-3 capitalize">{{ $activity->description }}</td>
+                        <td class="px-4 py-3 text-capitalize">{{ $activity->description }}</td>
                         <td class="px-4 py-3">{{ class_basename($activity->subject_type) }} #{{ $activity->subject_id }}</td>
-                        <td class="px-4 py-3 text-xs text-slate-500">
+                        <td class="px-4 py-3 fs-xs text-secondary">
                             @if ($activity->properties->isNotEmpty())
-                                <pre class="whitespace-pre-wrap font-mono text-[11px]">{{ $activity->properties->toJson(JSON_PRETTY_PRINT) }}</pre>
+                                <pre class="text-prewrap font-monospace">{{ $activity->properties->toJson(JSON_PRETTY_PRINT) }}</pre>
                             @endif
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">No activity recorded yet.</td></tr>
+                    <tr><td colspan="5" class="px-4 py-6 text-center text-secondary">No activity recorded yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -1,31 +1,31 @@
 <x-layouts.app title="Revenue" heading="Company Revenue">
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
-            <p class="text-xs uppercase text-slate-400">Activations</p>
-            <p class="text-2xl font-bold text-brand-900">{{ $totals['count'] }}</p>
+    <div class="d-grid grid-cols-2 grid-cols-md-5 gap-4 mb-6">
+        <div class="bg-body rounded-2 shadow-sm p-5 border">
+            <p class="fs-xs text-uppercase text-secondary">Activations</p>
+            <p class="fs-2xl fw-bold text-brand-emphasis">{{ $totals['count'] }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
-            <p class="text-xs uppercase text-slate-400">Total Package Value</p>
-            <p class="text-2xl font-bold text-brand-900">₹{{ number_format($totals['package'], 2) }}</p>
+        <div class="bg-body rounded-2 shadow-sm p-5 border">
+            <p class="fs-xs text-uppercase text-secondary">Total Package Value</p>
+            <p class="fs-2xl fw-bold text-brand-emphasis">₹{{ number_format($totals['package'], 2) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
-            <p class="text-xs uppercase text-slate-400">Paid to Partners</p>
-            <p class="text-2xl font-bold text-brand-900">₹{{ number_format($totals['partners'], 2) }}</p>
+        <div class="bg-body rounded-2 shadow-sm p-5 border">
+            <p class="fs-xs text-uppercase text-secondary">Paid to Partners</p>
+            <p class="fs-2xl fw-bold text-brand-emphasis">₹{{ number_format($totals['partners'], 2) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-sm p-5 border border-slate-100">
-            <p class="text-xs uppercase text-slate-400">Paid to Managers</p>
-            <p class="text-2xl font-bold text-brand-900">₹{{ number_format($totals['managers'], 2) }}</p>
+        <div class="bg-body rounded-2 shadow-sm p-5 border">
+            <p class="fs-xs text-uppercase text-secondary">Paid to Managers</p>
+            <p class="fs-2xl fw-bold text-brand-emphasis">₹{{ number_format($totals['managers'], 2) }}</p>
         </div>
-        <div class="bg-gradient-to-br from-brand-900 to-brand-950 rounded-lg shadow-sm p-5 text-white">
-            <p class="text-xs uppercase text-brand-200">Company Revenue</p>
-            <p class="text-2xl font-bold text-gold-400">₹{{ number_format($totals['company'], 2) }}</p>
+        <div class="rounded-2 shadow-sm p-5 text-white" style="background: linear-gradient(to bottom right, var(--color-brand-900), var(--color-brand-950))">
+            <p class="fs-xs text-uppercase text-brand">Company Revenue</p>
+            <p class="fs-2xl fw-bold text-gold">₹{{ number_format($totals['company'], 2) }}</p>
         </div>
     </div>
 
-    <form method="GET" class="mb-4 flex items-center gap-3">
-        <label for="branch_manager_id" class="text-sm text-slate-600">Filter by Branch Manager</label>
+    <form method="GET" class="mb-4 d-flex align-items-center gap-3">
+        <label for="branch_manager_id" class="fs-sm text-body-secondary">Filter by Branch Manager</label>
         <select id="branch_manager_id" name="branch_manager_id" onchange="this.form.submit()"
-                class="rounded-md border-slate-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                class="rounded-2 shadow-sm fs-sm">
             <option value="">All Branch Managers</option>
             @foreach ($branchManagers as $manager)
                 <option value="{{ $manager->id }}" @selected($selectedBranchManagerId === $manager->id)>{{ $manager->name }}</option>
@@ -33,10 +33,10 @@
         </select>
     </form>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Date &amp; Time</th>
                     <th class="px-4 py-3">Branch Manager</th>
@@ -50,18 +50,18 @@
             </thead>
             <tbody>
                 @forelse ($transactions as $transaction)
-                    <tr class="border-t border-slate-100">
-                        <td class="px-4 py-3 text-slate-500">{{ $transaction->activated_at->format('d M Y, h:i A') }}</td>
+                    <tr class="border-top">
+                        <td class="px-4 py-3 text-secondary">{{ $transaction->activated_at->format('d M Y, h:i A') }}</td>
                         <td class="px-4 py-3">{{ $transaction->branchManager->name ?? '—' }}</td>
                         <td class="px-4 py-3">{{ $transaction->commissionPartner->name ?? '—' }}</td>
-                        <td class="px-4 py-3 font-medium">{{ $transaction->vipMicrosite->business_name ?? '—' }}</td>
+                        <td class="px-4 py-3 fw-medium">{{ $transaction->vipMicrosite->business_name ?? '—' }}</td>
                         <td class="px-4 py-3">₹{{ number_format($transaction->package_amount, 2) }}</td>
                         <td class="px-4 py-3">₹{{ number_format($transaction->commission_partner_amount, 2) }}</td>
                         <td class="px-4 py-3">₹{{ number_format($transaction->branch_manager_amount, 2) }}</td>
-                        <td class="px-4 py-3 font-semibold text-brand-700">₹{{ number_format($transaction->company_amount, 2) }}</td>
+                        <td class="px-4 py-3 fw-semibold text-brand">₹{{ number_format($transaction->company_amount, 2) }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">No activations yet.</td></tr>
+                    <tr><td colspan="8" class="px-4 py-6 text-center text-secondary">No activations yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

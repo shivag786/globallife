@@ -1,10 +1,10 @@
 @csrf
 @isset($partner) @method('PUT') @endisset
 
-<div class="bootstrap-scope max-w-3xl">
+<div class="mw-3xl">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Commission Partner Details</h2>
             </div>
             <div class="card-body">
@@ -31,7 +31,7 @@
         </div>
 
         <div>
-            <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+            <button type="submit" class="btn btn-brand btn-sm">
                 {{ isset($partner) ? 'Update Commission Partner' : 'Create Commission Partner' }}
             </button>
         </div>

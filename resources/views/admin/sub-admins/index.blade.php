@@ -1,5 +1,5 @@
 <x-layouts.app title="Sub Admins" heading="Sub Admins">
-    <div class="bootstrap-scope mb-4">
+    <div class="mb-4">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <p class="small text-muted mb-0" style="max-width: 46rem">
                 A Sub Admin sits between you and the Branch Managers. Grant them the
@@ -12,10 +12,10 @@
         </div>
     </div>
 
-    <div class="bootstrap-scope">
+    <div class="">
         <div class="card shadow-sm border-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="d-table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Name</th>

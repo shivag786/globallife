@@ -160,45 +160,45 @@
 
     {{-- ===== HEADER ===== --}}
     <header class="bg4-header" id="bg4-header">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between" style="height:4.5rem;">
-            <a href="{{ url('/') }}" class="bg4-hd text-xl font-extrabold text-brand-800 flex items-center gap-2">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-flex align-items-center justify-content-between" style="height:4.5rem;">
+            <a href="{{ url('/') }}" class="bg4-hd fs-xl fw-bolder text-brand-emphasis d-flex align-items-center gap-2">
                 @if (! empty($settings['site_logo']))<img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="h-9 w-auto">
-                @else<span class="w-2.5 h-2.5 rounded-full" style="background:var(--b);box-shadow:0 0 10px var(--b);"></span> {{ $siteName }}@endif
+                @else<span class="w-2.5 h-2.5 rounded-pill" style="background:var(--b);box-shadow:0 0 10px var(--b);"></span> {{ $siteName }}@endif
             </a>
-            <nav class="hidden lg:flex items-center gap-8">
+            <nav class="d-none d-lg-flex align-items-center gap-8">
                 <a href="#features" class="bg4-navlink">Features</a>
                 <a href="#microsite" class="bg4-navlink">Microsite</a>
                 <a href="#seo" class="bg4-navlink">SEO</a>
                 <a href="#analytics" class="bg4-navlink">Analytics</a>
                 <a href="#stories" class="bg4-navlink">Success</a>
             </nav>
-            <div class="flex items-center gap-3 sm:gap-5">
-                <a href="{{ route('login') }}" class="bg4-navlink hidden sm:inline">Log in</a>
+            <div class="d-flex align-items-center gap-3 gap-sm-5">
+                <a href="{{ route('login') }}" class="bg4-navlink d-none d-sm-inline">Log in</a>
                 <a href="{{ route('vip-plans.index') }}" class="bg4-btn bg4-btn-primary" style="padding:.6rem 1.15rem;font-size:.85rem;">Create Business Page</a>
             </div>
         </div>
     </header>
 
     {{-- ===== SECTION 1 — EVERYTHING YOUR BUSINESS NEEDS ===== --}}
-    <section id="features" class="relative overflow-hidden">
+    <section id="features" class="position-relative overflow-hidden">
         <div class="bg4-mesh"></div>
-        <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-20 md:pt-28 pb-16">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="position-relative z-1 mw-7xl mx-auto px-5 px-sm-8 pt-20 pt-md-28 pb-16">
+            <div class="d-grid grid-cols-lg-2 gap-12 align-items-center">
                 <div>
                     <span class="bg4-eyebrow">Business Growth Platform</span>
-                    <h1 class="bg4-hd font-extrabold leading-[1.05] mt-4 text-4xl md:text-5xl lg:text-[3.4rem]">Everything your business needs to <span class="bg4-underline">grow</span>, in one platform</h1>
-                    <p class="mt-6 text-lg bg4-mut max-w-xl">Build your digital identity, reach more customers, collect enquiries, showcase products and services, improve your Google visibility, and unlock new earning opportunities — all from a single professional platform.</p>
-                    <div class="mt-8 flex flex-wrap gap-3">
+                    <h1 class="bg4-hd fw-bolder lh-1 mt-4 fs-4xl fs-5xl">Everything your business needs to <span class="bg4-underline">grow</span>, in one platform</h1>
+                    <p class="mt-6 fs-lg bg4-mut mw-xl">Build your digital identity, reach more customers, collect enquiries, showcase products and services, improve your Google visibility, and unlock new earning opportunities — all from a single professional platform.</p>
+                    <div class="mt-8 d-flex flex-wrap gap-3">
                         <a href="{{ route('vip-plans.index') }}" class="bg4-btn bg4-btn-primary">Create My Business Page</a>
                         <a href="{{ $demoUrl }}" target="_blank" class="bg4-btn bg4-btn-ghost"><x-icon name="play" class="w-4 h-4" /> View Live Demo</a>
                     </div>
                 </div>
-                <div class="bg4-img reveal rounded-[26px] aspect-[4/3] shadow-2xl" data-reveal="zoom">
+                <div class="bg4-img reveal rounded-4 aspect-video shadow-lg" data-reveal="zoom">
                     <img src="{{ $img['hero'] }}" alt="Indian entrepreneur growing their business" onerror="this.style.display='none'" fetchpriority="high">
                 </div>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-16">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-4 gap-5 mt-16">
                 @foreach ([
                     ['photo','Professional Microsite','A polished business page in minutes.'],
                     ['tag','Products &amp; Services','Sell and showcase, beautifully.'],
@@ -210,9 +210,9 @@
                     ['users','Referral Income','Earn as you grow.'],
                 ] as $i => $f)
                     <div class="bg4-card reveal p-6" style="transition-delay: {{ ($i % 4) * 0.07 }}s">
-                        <span class="bg4-feat-icon w-12 h-12 rounded-xl flex items-center justify-center" style="background:#e6f2eb;"><x-icon name="{{ $f[0] }}" class="w-6 h-6 text-brand-600" /></span>
-                        <h3 class="bg4-hd font-semibold text-brand-900 mt-4">{!! $f[1] !!}</h3>
-                        <p class="bg4-mut text-sm mt-1">{{ $f[2] }}</p>
+                        <span class="bg4-feat-icon w-12 h-12 rounded-3 d-flex align-items-center justify-content-center" style="background:#e6f2eb;"><x-icon name="{{ $f[0] }}" class="w-6 h-6 text-brand" /></span>
+                        <h3 class="bg4-hd fw-semibold text-brand-emphasis mt-4">{!! $f[1] !!}</h3>
+                        <p class="bg4-mut fs-sm mt-1">{{ $f[2] }}</p>
                     </div>
                 @endforeach
             </div>
@@ -220,19 +220,19 @@
     </section>
 
     {{-- ===== SECTION 2 — YOUR BUSINESS MICROSITE ===== --}}
-    <section id="microsite" class="py-20 md:py-28" style="background:var(--cream);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="grid lg:grid-cols-2 gap-14 items-center">
+    <section id="microsite" class="py-20 py-md-28" style="background:var(--cream);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="d-grid grid-cols-lg-2 gap-14 align-items-center">
                 <div class="reveal" data-reveal="left">
                     <span class="bg4-eyebrow">Your business microsite</span>
-                    <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">A modern website for your business — done for you</h2>
-                    <p class="mt-5 bg4-mut text-lg">Every VIP member receives a professional microsite with everything customers expect.</p>
-                    <div class="flex flex-wrap gap-2 mt-6">
+                    <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">A modern website for your business — done for you</h2>
+                    <p class="mt-5 bg4-mut fs-lg">Every VIP member receives a professional microsite with everything customers expect.</p>
+                    <div class="d-flex flex-wrap gap-2 mt-6">
                         @foreach (['About','Products','Services','Gallery','Videos','Reviews','Contact','WhatsApp','Booking','Google Map','SEO Pages'] as $m)
-                            <span class="text-sm px-3 py-1.5 rounded-full bg-white border" style="border-color:var(--line);color:var(--mut);">{{ $m }}</span>
+                            <span class="fs-sm px-3 py-2 rounded-pill bg-body border" style="border-color:var(--line);color:var(--mut);">{{ $m }}</span>
                         @endforeach
                     </div>
-                    <div class="flex flex-wrap gap-2 mt-8" id="bg4-tabs">
+                    <div class="d-flex flex-wrap gap-2 mt-8" id="bg4-tabs">
                         @foreach ($mockups as $i => $mk)
                             <button type="button" class="bg4-tab {{ $i === 0 ? 'is-active' : '' }}" data-tab="{{ $i }}">{{ $mk[0] }}</button>
                         @endforeach
@@ -241,21 +241,21 @@
                 </div>
 
                 {{-- Mockups --}}
-                <div class="reveal relative" data-reveal="right">
+                <div class="reveal position-relative" data-reveal="right">
                     <div class="bg4-browser">
-                        <div class="flex items-center gap-1.5 px-4 py-2.5 border-b" style="border-color:var(--line);background:#f6f8f7;">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
-                            <span class="ml-3 text-xs text-slate-400 truncate">globallife.in/<span id="bg4-mock-slug">dr-verma</span></span>
+                        <div class="d-flex align-items-center gap-2 px-4 py-2 border-bottom" style="border-color:var(--line);background:#f6f8f7;">
+                            <span class="w-2.5 h-2.5 rounded-pill bg-danger"></span><span class="w-2.5 h-2.5 rounded-pill bg-warning"></span><span class="w-2.5 h-2.5 rounded-pill bg-success"></span>
+                            <span class="ms-3 fs-xs text-secondary text-truncate">globallife.in/<span id="bg4-mock-slug">dr-verma</span></span>
                         </div>
-                        <div class="bg4-img aspect-[16/10]"><img id="bg4-mock-img" src="{{ $mockups[0][1] }}" alt="Business microsite preview" loading="lazy" onerror="this.style.display='none'"></div>
-                        <div class="p-4 flex items-center gap-3 bg-white">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold bg4-hd" style="background:var(--b6);"><span id="bg4-mock-ini">DR</span></div>
-                            <div><p class="bg4-hd font-bold text-brand-900 text-sm" id="bg4-mock-name">{{ $mockups[0][2] }}</p><p class="text-xs bg4-mut" id="bg4-mock-cat">{{ $mockups[0][3] }}</p></div>
-                            <span class="ml-auto text-[0.6rem] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full">● Live</span>
+                        <div class="bg4-img aspect-video"><img id="bg4-mock-img" src="{{ $mockups[0][1] }}" alt="Business microsite preview" loading="lazy" onerror="this.style.display='none'"></div>
+                        <div class="p-4 d-flex align-items-center gap-3 bg-body">
+                            <div class="w-10 h-10 rounded-2 d-flex align-items-center justify-content-center text-white fw-bold bg4-hd" style="background:var(--b6);"><span id="bg4-mock-ini">DR</span></div>
+                            <div><p class="bg4-hd fw-bold text-brand-emphasis fs-sm" id="bg4-mock-name">{{ $mockups[0][2] }}</p><p class="fs-xs bg4-mut" id="bg4-mock-cat">{{ $mockups[0][3] }}</p></div>
+                            <span class="ms-auto fw-semibold text-success bg-success-subtle px-2 py-1 rounded-pill">● Live</span>
                         </div>
                     </div>
-                    <div class="bg4-phone absolute -bottom-8 -left-4 hidden md:block bg4-float">
-                        <div class="bg4-img aspect-[9/17]"><img src="{{ $mockups[0][1] }}" alt="Mobile preview" loading="lazy" onerror="this.style.display='none'" id="bg4-mock-phone"></div>
+                    <div class="bg4-phone position-absolute bottom-n8 start-n4 d-none d-md-block bg4-float">
+                        <div class="bg4-img aspect-phone"><img src="{{ $mockups[0][1] }}" alt="Mobile preview" loading="lazy" onerror="this.style.display='none'" id="bg4-mock-phone"></div>
                     </div>
                 </div>
             </div>
@@ -263,36 +263,36 @@
     </section>
 
     {{-- ===== SECTION 3 — GOOGLE VISIBILITY & SEO ===== --}}
-    <section id="seo" class="py-20 md:py-28">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="grid lg:grid-cols-2 gap-14 items-center">
+    <section id="seo" class="py-20 py-md-28">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="d-grid grid-cols-lg-2 gap-14 align-items-center">
                 <div class="reveal" data-reveal="left">
                     <span class="bg4-eyebrow">Google visibility &amp; SEO</span>
-                    <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Be found before your competitors</h2>
-                    <p class="mt-5 bg4-mut text-lg">Customers search online before they buy. If your business doesn't show up with complete information, they choose someone who does.</p>
+                    <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Be found before your competitors</h2>
+                    <p class="mt-5 bg4-mut fs-lg">Customers search online before they buy. If your business doesn't show up with complete information, they choose someone who does.</p>
                     {{-- animated search bar --}}
-                    <div class="mt-7 bg-white border rounded-full flex items-center gap-3 px-5 py-3.5 shadow-sm" style="border-color:var(--line);">
-                        <x-icon name="eye" class="w-5 h-5 text-slate-400" />
-                        <span id="bg4-type" class="text-brand-900 font-medium"></span><span class="w-0.5 h-5 bg-brand-600 animate-pulse"></span>
+                    <div class="mt-7 bg-body border rounded-pill d-flex align-items-center gap-3 px-5 py-3 shadow-sm" style="border-color:var(--line);">
+                        <x-icon name="eye" class="w-5 h-5 text-secondary" />
+                        <span id="bg4-type" class="text-brand-emphasis fw-medium"></span><span class="w-0.5 h-5 bg-brand animate-pulse"></span>
                     </div>
-                    <div class="grid sm:grid-cols-2 gap-x-6 gap-y-3 mt-7">
+                    <div class="d-grid grid-cols-sm-2 column-gap-6 row-gap-3 mt-7">
                         @foreach (['SEO-friendly pages','Fast loading','Schema markup','Blog support','Local SEO','Business keywords','Google indexing','Rich snippets'] as $s)
-                            <span class="flex items-center gap-2 text-sm text-brand-900/80"><x-icon name="check-circle" class="w-4 h-4 text-brand-600" /> {{ $s }}</span>
+                            <span class="d-flex align-items-center gap-2 fs-sm"><x-icon name="check-circle" class="w-4 h-4 text-brand" /> {{ $s }}</span>
                         @endforeach
                     </div>
                 </div>
                 {{-- journey flow --}}
                 <div class="reveal" data-reveal="right">
-                    <div class="bg-white rounded-[26px] border p-8" style="border-color:var(--line);box-shadow:0 40px 80px -50px rgba(6,40,26,.35);">
-                        <svg viewBox="0 0 60 320" class="hidden" aria-hidden="true"></svg>
-                        <div class="space-y-3">
+                    <div class="bg-body rounded-4 border p-8" style="border-color:var(--line);box-shadow:0 40px 80px -50px rgba(6,40,26,.35);">
+                        <svg viewBox="0 0 60 320" class="d-none" aria-hidden="true"></svg>
+                        <div class="d-flex flex-column gap-3">
                             @foreach ([['eye','Google Search','A customer searches for your service'],['photo','Your Business Profile','Your microsite appears, complete & trusted'],['users','Customer Visits','They explore products, reviews & gallery'],['chat-bubble','Contact','One tap to WhatsApp, call or enquire'],['tag','Purchase','They buy — and often come back']] as $k => $step)
-                                <div class="flex items-center gap-4 reveal" style="transition-delay: {{ $k * 0.08 }}s">
-                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#e6f2eb;"><x-icon name="{{ $step[0] }}" class="w-5 h-5 text-brand-600" /></div>
-                                    <div class="flex-1"><p class="bg4-hd font-semibold text-brand-900">{{ $step[1] }}</p><p class="text-xs bg4-mut">{{ $step[2] }}</p></div>
-                                    <span class="bg4-hd text-xs font-bold text-slate-300">0{{ $k + 1 }}</span>
+                                <div class="d-flex align-items-center gap-4 reveal" style="transition-delay: {{ $k * 0.08 }}s">
+                                    <div class="w-11 h-11 rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="background:#e6f2eb;"><x-icon name="{{ $step[0] }}" class="w-5 h-5 text-brand" /></div>
+                                    <div class="flex-grow-1"><p class="bg4-hd fw-semibold text-brand-emphasis">{{ $step[1] }}</p><p class="fs-xs bg4-mut">{{ $step[2] }}</p></div>
+                                    <span class="bg4-hd fs-xs fw-bold text-body-tertiary">0{{ $k + 1 }}</span>
                                 </div>
-                                @if (! $loop->last)<div class="ml-5 h-4 w-px" style="background:linear-gradient(var(--b),transparent);"></div>@endif
+                                @if (! $loop->last)<div class="ms-5 h-4 w-0.5" style="background:linear-gradient(var(--b),transparent);"></div>@endif
                             @endforeach
                         </div>
                     </div>
@@ -302,37 +302,37 @@
     </section>
 
     {{-- ===== SECTION 4 — SHOWCASE PRODUCTS & SERVICES ===== --}}
-    <section class="py-20 md:py-28" style="background:var(--mist);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
-            <div class="bg4-img reveal rounded-[26px] aspect-[4/5] shadow-xl order-2 lg:order-1" data-reveal="left">
+    <section class="py-20 py-md-28" style="background:var(--mist);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-grid grid-cols-lg-2 gap-14 align-items-center">
+            <div class="bg4-img reveal rounded-4 aspect-square shadow-lg order-2 order-lg-1" data-reveal="left">
                 <img src="{{ $img['retail'] }}" alt="Retail owner arranging products" loading="lazy" onerror="this.style.display='none'">
             </div>
-            <div class="order-1 lg:order-2 reveal" data-reveal="right">
+            <div class="order-1 order-lg-2 reveal" data-reveal="right">
                 <span class="bg4-eyebrow">Showcase &amp; sell</span>
-                <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Show your products &amp; take orders online</h2>
-                <p class="mt-5 bg4-mut text-lg">A premium storefront built into your microsite — ratings, offers, cart, and booking included.</p>
+                <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Show your products &amp; take orders online</h2>
+                <p class="mt-5 bg4-mut fs-lg">A premium storefront built into your microsite — ratings, offers, cart, and booking included.</p>
                 @if ($products->isNotEmpty())
-                    <div class="grid grid-cols-2 gap-4 mt-8">
+                    <div class="d-grid grid-cols-2 gap-4 mt-8">
                         @foreach ($products->take(2) as $product)
                             <div class="bg4-card reveal overflow-hidden">
-                                <div class="relative aspect-square flex items-center justify-center" style="background:linear-gradient(180deg,#fff,#eef4f0);">
-                                    @if ($product->main_image)<img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-5" loading="lazy">@endif
-                                    @if ($product->discountPercentage())<span class="absolute top-3 left-3 text-xs font-bold text-white px-2 py-1 rounded-full bg-green-600">{{ $product->discountPercentage() }}% OFF</span>@endif
+                                <div class="position-relative aspect-square d-flex align-items-center justify-content-center" style="background:linear-gradient(180deg,#fff,#eef4f0);">
+                                    @if ($product->main_image)<img src="{{ asset('storage/'.$product->main_image) }}" alt="{{ $product->name }}" class="w-100 h-100 object-fit-contain p-5" loading="lazy">@endif
+                                    @if ($product->discountPercentage())<span class="position-absolute top-3 start-3 fs-xs fw-bold text-white px-2 py-1 rounded-pill bg-success">{{ $product->discountPercentage() }}% OFF</span>@endif
                                 </div>
                                 <div class="p-4">
-                                    <p class="bg4-hd font-semibold text-brand-900 text-sm line-clamp-1">{{ $product->name }}</p>
-                                    @if ($product->review_count > 0)<div class="flex items-center gap-1 mt-1"><x-icon name="star" class="w-3.5 h-3.5 text-gold-500" :filled="true" /><span class="text-xs bg4-mut">{{ number_format((float)$product->rating,1) }} ({{ $product->review_count }})</span></div>@endif
-                                    <div class="flex items-baseline gap-1.5 mt-1.5">
-                                        @if ($product->hasPrice())<span class="font-bold text-brand-900">{{ $money($product->sellingPrice()) }}</span>@if ($product->hasDiscount())<span class="text-xs bg4-mut line-through">{{ $money($product->mrp) }}</span>@endif @endif
+                                    <p class="bg4-hd fw-semibold text-brand-emphasis fs-sm line-clamp-1">{{ $product->name }}</p>
+                                    @if ($product->review_count > 0)<div class="d-flex align-items-center gap-1 mt-1"><x-icon name="star" class="w-3.5 h-3.5 text-gold" :filled="true" /><span class="fs-xs bg4-mut">{{ number_format((float)$product->rating,1) }} ({{ $product->review_count }})</span></div>@endif
+                                    <div class="d-flex align-items-baseline gap-2 mt-2">
+                                        @if ($product->hasPrice())<span class="fw-bold text-brand-emphasis">{{ $money($product->sellingPrice()) }}</span>@if ($product->hasDiscount())<span class="fs-xs bg4-mut text-decoration-line-through">{{ $money($product->mrp) }}</span>@endif @endif
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @endif
-                <div class="flex flex-wrap gap-2 mt-6">
+                <div class="d-flex flex-wrap gap-2 mt-6">
                     @foreach (['Add to Cart','Buy Now','Service Booking','Offer Price','Discount Badge','Categories'] as $t)
-                        <span class="text-xs px-3 py-1.5 rounded-full bg-white border" style="border-color:var(--line);color:var(--mut);">{{ $t }}</span>
+                        <span class="fs-xs px-3 py-2 rounded-pill bg-body border" style="border-color:var(--line);color:var(--mut);">{{ $t }}</span>
                     @endforeach
                 </div>
             </div>
@@ -340,89 +340,89 @@
     </section>
 
     {{-- ===== SECTION 5 — BUILD CUSTOMER TRUST ===== --}}
-    <section class="py-20 md:py-28">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
+    <section class="py-20 py-md-28">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-grid grid-cols-lg-2 gap-14 align-items-center">
             <div class="reveal" data-reveal="left">
                 <span class="bg4-eyebrow">Build customer trust</span>
-                <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">People trust businesses they can see</h2>
-                <p class="mt-5 bg4-mut text-lg">Reviews, ratings, certificates and testimonials — the signals that turn a visitor into a customer.</p>
-                <div class="grid sm:grid-cols-2 gap-4 mt-8">
+                <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">People trust businesses they can see</h2>
+                <p class="mt-5 bg4-mut fs-lg">Reviews, ratings, certificates and testimonials — the signals that turn a visitor into a customer.</p>
+                <div class="d-grid grid-cols-sm-2 gap-4 mt-8">
                     @foreach ([['star','Customer Reviews'],['check-circle','Google Ratings'],['shield-check','Verified Badge'],['play','Video Testimonials'],['academic-cap','Business Certificates'],['calendar','Years of Experience']] as $tr)
-                        <div class="flex items-center gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e6f2eb;"><x-icon name="{{ $tr[0] }}" class="w-5 h-5 text-brand-600" /></span><span class="text-sm font-medium text-brand-900">{{ $tr[1] }}</span></div>
+                        <div class="d-flex align-items-center gap-3"><span class="w-9 h-9 rounded-2 d-flex align-items-center justify-content-center" style="background:#e6f2eb;"><x-icon name="{{ $tr[0] }}" class="w-5 h-5 text-brand" /></span><span class="fs-sm fw-medium text-brand-emphasis">{{ $tr[1] }}</span></div>
                     @endforeach
                 </div>
-                <div class="grid grid-cols-3 gap-4 mt-9">
-                    <div class="text-center"><p class="bg4-hd font-extrabold text-3xl text-brand-800" data-countup="4.9">4.9</p><p class="text-xs bg4-mut">Avg Rating</p></div>
-                    <div class="text-center"><p class="bg4-hd font-extrabold text-3xl text-brand-800" data-countup="10,000+">10,000+</p><p class="text-xs bg4-mut">Happy Customers</p></div>
-                    <div class="text-center"><p class="bg4-hd font-extrabold text-3xl text-brand-800" data-countup="100%">100%</p><p class="text-xs bg4-mut">Verified Reviews</p></div>
+                <div class="d-grid grid-cols-3 gap-4 mt-9">
+                    <div class="text-center"><p class="bg4-hd fw-bolder fs-3xl text-brand-emphasis" data-countup="4.9">4.9</p><p class="fs-xs bg4-mut">Avg Rating</p></div>
+                    <div class="text-center"><p class="bg4-hd fw-bolder fs-3xl text-brand-emphasis" data-countup="10,000+">10,000+</p><p class="fs-xs bg4-mut">Happy Customers</p></div>
+                    <div class="text-center"><p class="bg4-hd fw-bolder fs-3xl text-brand-emphasis" data-countup="100%">100%</p><p class="fs-xs bg4-mut">Verified Reviews</p></div>
                 </div>
             </div>
-            <div class="bg4-img reveal rounded-[28px] aspect-[4/5] shadow-xl" data-reveal="right">
+            <div class="bg4-img reveal rounded-4 aspect-square shadow-lg" data-reveal="right">
                 <img src="{{ $img['trust'] }}" alt="Happy customers" loading="lazy" onerror="this.style.display='none'">
             </div>
         </div>
     </section>
 
     {{-- ===== SECTION 6 — WHATSAPP, CALLS & LEADS ===== --}}
-    <section class="py-20 md:py-28 relative overflow-hidden" style="background:var(--b9);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
+    <section class="py-20 py-md-28 position-relative overflow-hidden" style="background:var(--b9);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 d-grid grid-cols-lg-2 gap-14 align-items-center">
             <div class="text-white reveal" data-reveal="left">
                 <span class="bg4-eyebrow" style="color:#e8c873;">WhatsApp, calls &amp; leads</span>
-                <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Turn visitors into conversations</h2>
-                <p class="mt-5 text-white/80 text-lg">Every enquiry lands where you already are — one tap to WhatsApp, call, or book.</p>
-                <div class="space-y-3 mt-8">
+                <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Turn visitors into conversations</h2>
+                <p class="mt-5 text-white text-opacity-75 fs-lg">Every enquiry lands where you already are — one tap to WhatsApp, call, or book.</p>
+                <div class="d-flex flex-column gap-3 mt-8">
                     @foreach (['Customer clicks WhatsApp','Business receives the message','Business replies instantly','Customer books an appointment','Sale completed'] as $k => $flow)
-                        <div class="flex items-center gap-3"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style="background:rgba(232,200,115,.16);color:#e8c873;">{{ $k + 1 }}</span><span class="text-white/90 text-[0.95rem]">{{ $flow }}</span></div>
+                        <div class="d-flex align-items-center gap-3"><span class="w-7 h-7 rounded-pill d-flex align-items-center justify-content-center fs-xs fw-bold" style="background:rgba(232,200,115,.16);color:#e8c873;">{{ $k + 1 }}</span><span class="text-white text-opacity-100">{{ $flow }}</span></div>
                     @endforeach
                 </div>
-                <div class="flex flex-wrap gap-2 mt-8">
+                <div class="d-flex flex-wrap gap-2 mt-8">
                     @foreach (['Click to Call','WhatsApp','Contact Form','Appointment Booking','Google Maps','Business Hours'] as $c)
-                        <span class="text-xs px-3 py-1.5 rounded-full text-white/85" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);">{{ $c }}</span>
+                        <span class="fs-xs px-3 py-2 rounded-pill text-white text-opacity-75" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);">{{ $c }}</span>
                     @endforeach
                 </div>
             </div>
             {{-- phone with floating bubbles --}}
-            <div class="reveal relative flex justify-center" data-reveal="right">
+            <div class="reveal position-relative d-flex justify-content-center" data-reveal="right">
                 <div class="bg4-phone" style="width:230px;">
-                    <div class="bg4-img aspect-[9/18]"><img src="{{ $img['phone'] }}" alt="Customer messaging a business" loading="lazy" onerror="this.style.display='none'"></div>
+                    <div class="bg4-img aspect-phone"><img src="{{ $img['phone'] }}" alt="Customer messaging a business" loading="lazy" onerror="this.style.display='none'"></div>
                 </div>
-                <div class="bg4-float absolute top-8 -left-2 sm:left-4 bg-white rounded-2xl rounded-bl-sm shadow-xl px-4 py-2.5 text-sm max-w-[200px]">Hi! Is this available today? <span class="block text-[0.6rem] text-slate-400 mt-0.5">Customer · 10:24</span></div>
-                <div class="bg4-float d1 absolute top-28 -right-2 sm:right-2 rounded-2xl rounded-br-sm shadow-xl px-4 py-2.5 text-sm max-w-[210px] text-white" style="background:#25d366;">Yes! Want me to book you a slot? <span class="block text-[0.6rem] text-white/70 mt-0.5">Business · 10:24</span></div>
-                <div class="bg4-float d2 absolute bottom-10 -left-2 sm:left-2 bg-white rounded-2xl rounded-bl-sm shadow-xl px-4 py-2.5 text-sm max-w-[200px]">Perfect, please book 🙏 <span class="block text-[0.6rem] text-slate-400 mt-0.5">Customer · 10:25</span></div>
+                <div class="bg4-float position-absolute top-8 start-n2 start-4 bg-body rounded-4 shadow-lg px-4 py-2 fs-sm">Hi! Is this available today? <span class="d-block text-secondary mt-1">Customer · 10:24</span></div>
+                <div class="bg4-float d1 position-absolute top-28 end-n2 end-2 rounded-4 shadow-lg px-4 py-2 fs-sm text-white" style="background:#25d366;">Yes! Want me to book you a slot? <span class="d-block text-white text-opacity-75 mt-1">Business · 10:24</span></div>
+                <div class="bg4-float d2 position-absolute bottom-10 start-n2 start-2 bg-body rounded-4 shadow-lg px-4 py-2 fs-sm">Perfect, please book 🙏 <span class="d-block text-secondary mt-1">Customer · 10:25</span></div>
             </div>
         </div>
     </section>
 
     {{-- ===== SECTION 7 — ANALYTICS DASHBOARD ===== --}}
-    <section id="analytics" class="py-20 md:py-28" style="background:var(--mist);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal">
+    <section id="analytics" class="py-20 py-md-28" style="background:var(--mist);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal">
                 <span class="bg4-eyebrow">Business analytics</span>
-                <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Know exactly what's working</h2>
+                <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Know exactly what's working</h2>
             </div>
-            <div class="reveal bg-white rounded-[26px] border p-6 md:p-8 mt-12" data-reveal="zoom" id="bg4-dash" style="border-color:var(--line);box-shadow:0 50px 90px -50px rgba(6,40,26,.4);">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="reveal bg-body rounded-4 border p-6 p-md-8 mt-12" data-reveal="zoom" id="bg4-dash" style="border-color:var(--line);box-shadow:0 50px 90px -50px rgba(6,40,26,.4);">
+                <div class="d-grid grid-cols-2 grid-cols-md-4 gap-4">
                     @foreach ([['Visitors','1,284'],['Profile Views','942'],['Enquiries','37'],['WhatsApp Clicks','156'],['Calls','83'],['Orders','48'],['Revenue','₹1,86,400'],['Commission','₹12,320']] as $m)
-                        <div class="rounded-xl p-4" style="background:var(--mist);">
-                            <p class="text-xs bg4-mut">{{ $m[0] }}</p>
-                            <p class="bg4-hd font-extrabold text-xl md:text-2xl text-brand-900 mt-1" data-countup="{{ $m[1] }}">{{ $m[1] }}</p>
+                        <div class="rounded-3 p-4" style="background:var(--mist);">
+                            <p class="fs-xs bg4-mut">{{ $m[0] }}</p>
+                            <p class="bg4-hd fw-bolder fs-xl fs-2xl text-brand-emphasis mt-1" data-countup="{{ $m[1] }}">{{ $m[1] }}</p>
                         </div>
                     @endforeach
                 </div>
-                <div class="grid md:grid-cols-3 gap-6 mt-6">
-                    <div class="md:col-span-2 rounded-xl border p-5" style="border-color:var(--line);">
-                        <p class="bg4-hd font-semibold text-brand-900 text-sm mb-4">Monthly Growth</p>
-                        <div class="flex items-end gap-2 h-40">
+                <div class="d-grid grid-cols-md-3 gap-6 mt-6">
+                    <div class="col-span-md-2 rounded-3 border p-5" style="border-color:var(--line);">
+                        <p class="bg4-hd fw-semibold text-brand-emphasis fs-sm mb-4">Monthly Growth</p>
+                        <div class="d-flex align-items-end gap-2 h-40">
                             @foreach ([38,52,45,63,58,72,68,84,79,92,88,100] as $h)
-                                <div class="flex-1 rounded-t-md bg4-bar" style="--h:{{ $h }}%;background:linear-gradient(var(--b6),var(--b7));"></div>
+                                <div class="flex-grow-1 rounded-top bg4-bar" style="--h:{{ $h }}%;background:linear-gradient(var(--b6),var(--b7));"></div>
                             @endforeach
                         </div>
                     </div>
-                    <div class="rounded-xl border p-5" style="border-color:var(--line);">
-                        <p class="bg4-hd font-semibold text-brand-900 text-sm mb-4">Top Products</p>
-                        <div class="space-y-3">
+                    <div class="rounded-3 border p-5" style="border-color:var(--line);">
+                        <p class="bg4-hd fw-semibold text-brand-emphasis fs-sm mb-4">Top Products</p>
+                        <div class="d-flex flex-column gap-3">
                             @foreach ([['Family Prowell',82],['Vitality Herbal',64],['Jasmine EDP',47]] as $tp)
-                                <div><div class="flex justify-between text-xs mb-1"><span class="text-brand-900/80">{{ $tp[0] }}</span><span class="bg4-mut">{{ $tp[1] }}%</span></div><div class="h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full bg4-bar" style="--h:100%;width:{{ $tp[1] }}%;background:var(--b);height:100%;"></div></div></div>
+                                <div><div class="d-flex justify-content-between fs-xs mb-1"><span class="">{{ $tp[0] }}</span><span class="bg4-mut">{{ $tp[1] }}%</span></div><div class="h-2 rounded-pill bg-body-secondary overflow-hidden"><div class="h-100 rounded-pill bg4-bar" style="--h:100%;width:{{ $tp[1] }}%;background:var(--b);height:100%;"></div></div></div>
                             @endforeach
                         </div>
                     </div>
@@ -432,21 +432,21 @@
     </section>
 
     {{-- ===== SECTION 8 — GROWTH JOURNEY (SVG timeline) ===== --}}
-    <section class="py-20 md:py-28">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal">
+    <section class="py-20 py-md-28">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal">
                 <span class="bg4-eyebrow">Your growth journey</span>
-                <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">From zero to selling online — in 8 steps</h2>
+                <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">From zero to selling online — in 8 steps</h2>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-4 gap-5 mt-14">
                 @foreach ([
                     'Create Business Profile','Complete Your Information','Publish Your Microsite','Appear on Google',
                     'Share Your Business Link','Receive Customer Enquiries','Sell Products &amp; Services','Earn Referral Commission',
                 ] as $i => $step)
-                    <div class="reveal relative" style="transition-delay: {{ ($i % 4) * 0.08 }}s">
-                        <div class="bg4-card p-6 h-full">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg4-hd font-extrabold text-white text-lg" style="background:linear-gradient(135deg,var(--b6),var(--b7));">{{ $i + 1 }}</div>
-                            <p class="bg4-hd font-semibold text-brand-900 mt-4">{!! $step !!}</p>
+                    <div class="reveal position-relative" style="transition-delay: {{ ($i % 4) * 0.08 }}s">
+                        <div class="bg4-card p-6 h-100">
+                            <div class="w-12 h-12 rounded-4 d-flex align-items-center justify-content-center bg4-hd fw-bolder text-white fs-lg" style="background:linear-gradient(135deg,var(--b6),var(--b7));">{{ $i + 1 }}</div>
+                            <p class="bg4-hd fw-semibold text-brand-emphasis mt-4">{!! $step !!}</p>
                         </div>
                     </div>
                 @endforeach
@@ -455,30 +455,30 @@
     </section>
 
     {{-- ===== SECTION 9 — SUCCESS STORIES (carousel) ===== --}}
-    <section id="stories" class="py-20 md:py-28" style="background:var(--cream);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="flex flex-wrap items-end justify-between gap-4 reveal">
-                <div><span class="bg4-eyebrow">Real success stories</span><h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3">Before &amp; after</h2></div>
-                <div class="flex gap-2">
-                    <button type="button" data-scar-prev class="w-10 h-10 rounded-full border bg-white flex items-center justify-center text-brand-700 hover:bg-slate-50 transition" style="border-color:var(--line);"><x-icon name="chevron-left" class="w-5 h-5" /></button>
-                    <button type="button" data-scar-next class="w-10 h-10 rounded-full border bg-white flex items-center justify-center text-brand-700 hover:bg-slate-50 transition" style="border-color:var(--line);"><x-icon name="chevron-right" class="w-5 h-5" /></button>
+    <section id="stories" class="py-20 py-md-28" style="background:var(--cream);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="d-flex flex-wrap align-items-end justify-content-between gap-4 reveal">
+                <div><span class="bg4-eyebrow">Real success stories</span><h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3">Before &amp; after</h2></div>
+                <div class="d-flex gap-2">
+                    <button type="button" data-scar-prev class="btn btn-link p-0 text-decoration-none w-10 h-10 rounded-pill border bg-body d-flex align-items-center justify-content-center text-brand" style="border-color:var(--line);"><x-icon name="chevron-left" class="w-5 h-5" /></button>
+                    <button type="button" data-scar-next class="btn btn-link p-0 text-decoration-none w-10 h-10 rounded-pill border bg-body d-flex align-items-center justify-content-center text-brand" style="border-color:var(--line);"><x-icon name="chevron-right" class="w-5 h-5" /></button>
                 </div>
             </div>
-            <div id="bg4-scarousel" class="flex overflow-x-auto snap-x snap-mandatory gap-6 mt-10 pb-2">
+            <div id="bg4-scarousel" class="d-flex overflow-x-auto gap-6 mt-10 pb-2">
                 @foreach ($stories as $s)
-                    <article class="snap-center shrink-0 w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-[24px] border overflow-hidden" style="border-color:var(--line);">
-                        <div class="bg4-img aspect-[16/10]"><img src="{{ $s[1] }}" alt="{{ $s[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
+                    <article class="flex-shrink-0 w-100 bg-body rounded-4 border overflow-hidden" style="border-color:var(--line);">
+                        <div class="bg4-img aspect-video"><img src="{{ $s[1] }}" alt="{{ $s[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
                         <div class="p-6">
                             <span class="bg4-eyebrow">{{ $s[0] }}</span>
-                            <div class="mt-3 space-y-2 text-sm">
-                                <p class="flex gap-2"><x-icon name="x-mark" class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" /> <span class="bg4-mut"><strong class="text-brand-900">Before:</strong> {{ $s[2] }}</span></p>
-                                <p class="flex gap-2"><x-icon name="check-circle" class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" /> <span class="bg4-mut"><strong class="text-brand-900">After:</strong> {{ $s[3] }}</span></p>
+                            <div class="mt-3 d-flex flex-column gap-2 fs-sm">
+                                <p class="d-flex gap-2"><x-icon name="x-mark" class="w-4 h-4 text-danger flex-shrink-0 mt-1" /> <span class="bg4-mut"><strong class="text-brand-emphasis">Before:</strong> {{ $s[2] }}</span></p>
+                                <p class="d-flex gap-2"><x-icon name="check-circle" class="w-4 h-4 text-success flex-shrink-0 mt-1" /> <span class="bg4-mut"><strong class="text-brand-emphasis">After:</strong> {{ $s[3] }}</span></p>
                             </div>
-                            <div class="grid grid-cols-2 gap-3 mt-5">
-                                <div class="rounded-xl p-3 text-center" style="background:var(--mist);"><p class="bg4-hd font-extrabold text-lg text-brand-800">{{ $s[4][0] }}</p><p class="text-[0.65rem] bg4-mut">{{ $s[4][1] }}</p></div>
-                                <div class="rounded-xl p-3 text-center" style="background:var(--mist);"><p class="bg4-hd font-extrabold text-lg text-brand-800">{{ $s[5][0] }}</p><p class="text-[0.65rem] bg4-mut">{{ $s[5][1] }}</p></div>
+                            <div class="d-grid grid-cols-2 gap-3 mt-5">
+                                <div class="rounded-3 p-3 text-center" style="background:var(--mist);"><p class="bg4-hd fw-bolder fs-lg text-brand-emphasis">{{ $s[4][0] }}</p><p class="bg4-mut">{{ $s[4][1] }}</p></div>
+                                <div class="rounded-3 p-3 text-center" style="background:var(--mist);"><p class="bg4-hd fw-bolder fs-lg text-brand-emphasis">{{ $s[5][0] }}</p><p class="bg4-mut">{{ $s[5][1] }}</p></div>
                             </div>
-                            <a href="{{ $demoUrl }}" target="_blank" class="bg4-btn bg4-btn-ghost mt-5 w-full"><x-icon name="play" class="w-4 h-4" /> Watch Story</a>
+                            <a href="{{ $demoUrl }}" target="_blank" class="bg4-btn bg4-btn-ghost mt-5 w-100"><x-icon name="play" class="w-4 h-4" /> Watch Story</a>
                         </div>
                     </article>
                 @endforeach
@@ -487,24 +487,24 @@
     </section>
 
     {{-- ===== SECTION 10 — TRADITIONAL vs DIGITAL ===== --}}
-    <section class="py-20 md:py-28">
-        <div class="max-w-5xl mx-auto px-5 sm:px-8">
-            <div class="text-center reveal"><span class="bg4-eyebrow">The difference</span><h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3">Traditional business vs your digital business</h2></div>
-            <div class="reveal mt-12 rounded-[24px] border overflow-hidden bg-white" style="border-color:var(--line);box-shadow:0 40px 80px -50px rgba(6,40,26,.3);">
-                <div class="grid grid-cols-[1.4fr_1fr_1fr] text-sm border-b" style="border-color:var(--line);">
-                    <div class="p-4 md:p-5 bg4-hd font-semibold text-brand-900"></div>
-                    <div class="p-4 md:p-5 bg4-hd font-semibold text-slate-500 text-center" style="background:#fafbfa;">Traditional</div>
-                    <div class="p-4 md:p-5 bg4-hd font-semibold text-brand-900 text-center" style="background:#e6f2eb;">Our Platform</div>
+    <section class="py-20 py-md-28">
+        <div class="mw-5xl mx-auto px-5 px-sm-8">
+            <div class="text-center reveal"><span class="bg4-eyebrow">The difference</span><h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3">Traditional business vs your digital business</h2></div>
+            <div class="reveal mt-12 rounded-4 border overflow-hidden bg-body" style="border-color:var(--line);box-shadow:0 40px 80px -50px rgba(6,40,26,.3);">
+                <div class="d-grid grid-template fs-sm border-bottom" style="border-color:var(--line); --cols: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr)">
+                    <div class="p-4 p-md-5 bg4-hd fw-semibold text-brand-emphasis"></div>
+                    <div class="p-4 p-md-5 bg4-hd fw-semibold text-secondary text-center" style="background:#fafbfa;">Traditional</div>
+                    <div class="p-4 p-md-5 bg4-hd fw-semibold text-brand-emphasis text-center" style="background:#e6f2eb;">Our Platform</div>
                 </div>
                 @foreach ([
                     ['Website','No website','Premium Microsite'],['Reviews','No reviews','Customer Reviews'],['Google','No SEO','Google Visibility'],
                     ['Products','No online products','Product Showcase'],['Enquiries','Manual only','WhatsApp Integration'],
                     ['Bookings','Phone tag','Appointment Booking'],['Insights','Guesswork','Business Analytics'],['Income','Sales only','+ Referral Income'],
                 ] as $row)
-                    <div class="bg4-row grid grid-cols-[1.4fr_1fr_1fr] text-sm border-b" style="border-color:var(--line);">
-                        <div class="p-4 md:p-5 font-medium text-brand-900">{{ $row[0] }}</div>
-                        <div class="p-4 md:p-5 text-center bg4-mut"><x-icon name="x-mark" class="w-4 h-4 text-red-400 inline" /> {{ $row[1] }}</div>
-                        <div class="p-4 md:p-5 text-center text-brand-900 font-medium"><x-icon name="check-circle" class="w-4 h-4 text-green-600 inline" /> {{ $row[2] }}</div>
+                    <div class="bg4-row d-grid grid-template fs-sm border-bottom" style="border-color:var(--line); --cols: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr)">
+                        <div class="p-4 p-md-5 fw-medium text-brand-emphasis">{{ $row[0] }}</div>
+                        <div class="p-4 p-md-5 text-center bg4-mut"><x-icon name="x-mark" class="w-4 h-4 text-danger d-inline" /> {{ $row[1] }}</div>
+                        <div class="p-4 p-md-5 text-center text-brand-emphasis fw-medium"><x-icon name="check-circle" class="w-4 h-4 text-success d-inline" /> {{ $row[2] }}</div>
                     </div>
                 @endforeach
             </div>
@@ -512,17 +512,17 @@
     </section>
 
     {{-- ===== SECTION 11 — BUSINESS CATEGORIES ===== --}}
-    <section class="py-20 md:py-28" style="background:var(--mist);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8">
-            <div class="text-center max-w-2xl mx-auto reveal"><span class="bg4-eyebrow">Built for every business</span><h2 class="bg4-hd font-extrabold text-3xl md:text-5xl mt-3 leading-tight">Find your business. See your demo.</h2></div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">
+    <section class="py-20 py-md-28" style="background:var(--mist);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8">
+            <div class="text-center mw-2xl mx-auto reveal"><span class="bg4-eyebrow">Built for every business</span><h2 class="bg4-hd fw-bolder fs-3xl fs-5xl mt-3 lh-sm">Find your business. See your demo.</h2></div>
+            <div class="d-grid grid-cols-2 grid-cols-sm-3 grid-cols-lg-4 gap-4 mt-12">
                 @foreach ($categories as $i => $cat)
                     <a href="{{ $demoUrl }}" target="_blank" class="bg4-cat reveal h-52" style="transition-delay: {{ ($i % 4) * 0.06 }}s">
-                        <div class="bg4-img absolute inset-0"><img src="{{ $u($cat[1], 600) }}" alt="{{ $cat[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
-                        <div class="absolute inset-0 z-10 flex flex-col justify-end p-5">
-                            <h3 class="bg4-hd text-white font-bold">{{ $cat[0] }}</h3>
-                            <p class="text-white/75 text-xs mt-0.5">{{ $cat[2] }}</p>
-                            <span class="text-white/90 text-xs inline-flex items-center gap-1 mt-2">View Demo <x-icon name="arrow-right" class="w-3.5 h-3.5" /></span>
+                        <div class="bg4-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $u($cat[1], 600) }}" alt="{{ $cat[0] }}" loading="lazy" onerror="this.style.display='none'"></div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 z-1 d-flex flex-column justify-content-end p-5">
+                            <h3 class="bg4-hd text-white fw-bold">{{ $cat[0] }}</h3>
+                            <p class="text-white text-opacity-75 fs-xs mt-1">{{ $cat[2] }}</p>
+                            <span class="text-white text-opacity-100 fs-xs d-inline-flex align-items-center gap-1 mt-2">View Demo <x-icon name="arrow-right" class="w-3.5 h-3.5" /></span>
                         </div>
                     </a>
                 @endforeach
@@ -531,14 +531,14 @@
     </section>
 
     {{-- ===== SECTION 12 — FINAL CTA ===== --}}
-    <section class="relative overflow-hidden">
-        <div class="bg4-img absolute inset-0"><img src="{{ $img['cta'] }}" alt="Entrepreneurs and customers" loading="lazy" onerror="this.style.display='none'"></div>
-        <div class="absolute inset-0" style="background:linear-gradient(110deg,rgba(15,32,25,.94),rgba(31,72,52,.72) 55%,rgba(36,90,63,.45));"></div>
+    <section class="position-relative overflow-hidden">
+        <div class="bg4-img position-absolute top-0 start-0 w-100 h-100"><img src="{{ $img['cta'] }}" alt="Entrepreneurs and customers" loading="lazy" onerror="this.style.display='none'"></div>
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background:linear-gradient(110deg,rgba(15,32,25,.94),rgba(31,72,52,.72) 55%,rgba(36,90,63,.45));"></div>
         <div class="bg4-mesh" style="opacity:.5;"></div>
-        <div class="relative z-10 max-w-3xl mx-auto px-5 sm:px-8 py-24 md:py-32 text-center text-white reveal">
-            <h2 class="bg4-hd font-extrabold text-3xl md:text-5xl leading-[1.08]">Your business deserves more than just a social media page</h2>
-            <p class="mt-6 text-lg text-white/85">Give customers a reason to trust you, discover you, and choose you. Build your professional digital presence, promote your products and services, and unlock new opportunities for growth.</p>
-            <div class="mt-9 flex flex-wrap justify-center gap-3">
+        <div class="position-relative z-1 mw-3xl mx-auto px-5 px-sm-8 py-24 py-md-32 text-center text-white reveal">
+            <h2 class="bg4-hd fw-bolder fs-3xl fs-5xl lh-1">Your business deserves more than just a social media page</h2>
+            <p class="mt-6 fs-lg text-white text-opacity-75">Give customers a reason to trust you, discover you, and choose you. Build your professional digital presence, promote your products and services, and unlock new opportunities for growth.</p>
+            <div class="mt-9 d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('vip-plans.index') }}" class="bg4-btn bg4-btn-gold">Create My Business Page</a>
                 <a href="{{ route('vip-plans.index') }}" class="bg4-btn bg4-btn-light">Become a VIP Member</a>
                 <a href="{{ route('contact') }}" class="bg4-btn bg4-btn-light">Talk to Our Business Expert</a>
@@ -547,17 +547,17 @@
     </section>
 
     {{-- ===== FOOTER ===== --}}
-    <footer class="bg-white border-t" style="border-color:var(--line);">
-        <div class="max-w-7xl mx-auto px-5 sm:px-8 py-14 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <a href="{{ url('/') }}" class="bg4-hd text-lg font-extrabold text-brand-800">{{ $siteName }}</a>
-            <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm bg4-mut">
-                <a href="{{ route('products.index') }}" class="hover:text-brand-700">Products</a>
-                <a href="{{ route('vip-plans.index') }}" class="hover:text-brand-700">VIP Plans</a>
-                <a href="{{ route('blog.index') }}" class="hover:text-brand-700">Blog</a>
-                <a href="{{ route('contact') }}" class="hover:text-brand-700">Contact</a>
-                <a href="{{ $demoUrl }}" target="_blank" class="hover:text-brand-700">Live Demo</a>
+    <footer class="bg-body border-top" style="border-color:var(--line);">
+        <div class="mw-7xl mx-auto px-5 px-sm-8 py-14 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-4">
+            <a href="{{ url('/') }}" class="bg4-hd fs-lg fw-bolder text-brand-emphasis">{{ $siteName }}</a>
+            <nav class="d-flex flex-wrap justify-content-center column-gap-6 row-gap-2 fs-sm bg4-mut">
+                <a href="{{ route('products.index') }}" class="">Products</a>
+                <a href="{{ route('vip-plans.index') }}" class="">VIP Plans</a>
+                <a href="{{ route('blog.index') }}" class="">Blog</a>
+                <a href="{{ route('contact') }}" class="">Contact</a>
+                <a href="{{ $demoUrl }}" target="_blank" class="">Live Demo</a>
             </nav>
-            <p class="text-xs bg4-mut">© {{ date('Y') }} {{ $siteName }}</p>
+            <p class="fs-xs bg4-mut">© {{ date('Y') }} {{ $siteName }}</p>
         </div>
     </footer>
 

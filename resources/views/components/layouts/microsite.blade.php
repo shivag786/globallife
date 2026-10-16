@@ -119,7 +119,7 @@
     </footer>
 
     <button type="button" id="msite-back-to-top" data-msite-back-to-top
-            class="msite-float-btn is-hidden position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow border-0"
+            class="btn btn-link p-0 text-decoration-none msite-float-btn is-hidden position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm border-0"
             style="bottom: 6rem; right: 1.5rem; z-index: 1030; width: 3rem; height: 3rem; background: var(--color-brand-900)"
             aria-label="Back to top">
         <x-icon name="arrow-up" class="w-5 h-5" />

@@ -278,17 +278,17 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     }
 
     function openChat() {
-        panel?.classList.remove('hidden');
+        panel?.classList.remove('d-none');
         startConversation();
         input?.focus();
     }
 
     function closeChat() {
-        panel?.classList.add('hidden');
+        panel?.classList.add('d-none');
     }
 
     toggleBtn?.addEventListener('click', () => {
-        panel?.classList.contains('hidden') ? openChat() : closeChat();
+        panel?.classList.contains('d-none') ? openChat() : closeChat();
     });
     closeBtn?.addEventListener('click', closeChat);
 

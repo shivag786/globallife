@@ -31,7 +31,7 @@ export function initCart() {
     function updateBadges(count) {
         document.querySelectorAll('[data-cart-count]').forEach((el) => {
             el.textContent = count > 9 ? '9+' : count;
-            el.classList.toggle('hidden', count <= 0);
+            el.classList.toggle('d-none', count <= 0);
             if (count > 0) bump(el);
         });
     }
@@ -78,22 +78,23 @@ export function initCart() {
             const stepper = wrap.querySelector('[data-role="stepper"]');
             const qtyEl = wrap.querySelector('[data-qty]');
             if (quantity > 0) {
-                add?.classList.add('hidden');
-                stepper?.classList.remove('hidden');
+                add?.classList.add('d-none');
+                stepper?.classList.remove('d-none');
                 if (qtyEl) qtyEl.textContent = quantity;
                 wrap.querySelectorAll('[data-role="dec"] input[name="quantity"]').forEach((i) => { i.value = quantity - 1; });
                 wrap.querySelectorAll('[data-role="inc"] input[name="quantity"]').forEach((i) => { i.value = quantity + 1; });
             } else {
-                add?.classList.remove('hidden');
-                stepper?.classList.add('hidden');
+                add?.classList.remove('d-none');
+                stepper?.classList.add('d-none');
             }
         });
-        document.querySelectorAll(`[data-cart-added="${cssEscape(key)}"]`).forEach((b) => b.classList.toggle('hidden', quantity <= 0));
+        document.querySelectorAll(`[data-cart-added="${cssEscape(key)}"]`).forEach((b) => b.classList.toggle('d-none', quantity <= 0));
     }
 
     function toast(message, isError = false) {
         const el = document.createElement('div');
-        el.className = 'fixed top-4 left-1/2 z-[70] px-4 py-2.5 rounded-full text-sm font-medium text-white shadow-lg';
+        el.className = 'position-fixed top-0 start-50 mt-3 px-4 py-2 rounded-pill fs-sm fw-medium text-white shadow';
+        el.style.zIndex = '1080';
         el.style.cssText += `background:${isError ? '#dc2626' : '#245a3f'};opacity:0;transform:translate(-50%,-8px);transition:opacity .25s,transform .25s;`;
         el.textContent = message;
         document.body.appendChild(el);

@@ -1,7 +1,7 @@
 @props(['name', 'value' => '', 'rows' => 10])
 
 <textarea name="{{ $name }}" id="editor-{{ $name }}" rows="{{ $rows }}"
-          class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old($name, $value) }}</textarea>
+          class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old($name, $value) }}</textarea>
 
 @once
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>

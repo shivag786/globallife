@@ -2,66 +2,66 @@
     @php
         $money = fn ($n) => '₹'.number_format((float) $n, 2);
         $badge = fn ($s) => match ($s) {
-            'delivered' => 'bg-green-50 text-green-700',
-            'dispatched' => 'bg-indigo-50 text-indigo-700',
-            'cancelled', 'refunded' => 'bg-red-50 text-red-600',
-            default => 'bg-amber-50 text-amber-700',
+            'delivered' => 'bg-success-subtle text-success',
+            'dispatched' => 'bg-primary-subtle text-primary',
+            'cancelled', 'refunded' => 'bg-danger-subtle text-danger',
+            default => 'bg-warning-subtle text-warning',
         };
     @endphp
 
-    <div class="mb-4"><a href="{{ route('admin.orders.index') }}" class="text-sm text-indigo-600 hover:underline">← All orders</a></div>
+    <div class="mb-4"><a href="{{ route('admin.orders.index') }}" class="fs-sm text-primary hover-underline">← All orders</a></div>
 
-    <div class="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
-        <div class="space-y-6">
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6">
-                <div class="flex items-center justify-between mb-4">
+    <div class="d-grid grid-template-lg gap-6 align-items-start" style="--cols-lg: minmax(0, 1fr) 320px">
+        <div class="d-flex flex-column gap-6">
+            <div class="bg-body rounded-2 shadow-sm border p-6">
+                <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h2 class="font-bold text-lg text-slate-800">{{ $order->order_number }}</h2>
-                        <p class="text-sm text-slate-500">Placed <x-ist :value="$order->placed_at" /></p>
+                        <h2 class="fw-bold fs-lg text-body">{{ $order->order_number }}</h2>
+                        <p class="fs-sm text-secondary">Placed <x-ist :value="$order->placed_at" /></p>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-sm capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
+                    <span class="px-3 py-1 rounded-pill fs-sm text-capitalize {{ $badge($order->status) }}">{{ $order->status }}</span>
                 </div>
-                <table class="w-full text-sm">
-                    <thead class="text-left text-slate-400 border-b border-slate-100">
-                        <tr><th class="py-2">Item</th><th class="py-2">Seller</th><th class="py-2 text-center">Qty</th><th class="py-2 text-right">Total</th></tr>
+                <table class="w-100 fs-sm">
+                    <thead class="text-start text-secondary border-bottom">
+                        <tr><th class="py-2">Item</th><th class="py-2">Seller</th><th class="py-2 text-center">Qty</th><th class="py-2 text-end">Total</th></tr>
                     </thead>
                     <tbody>
                         @foreach ($order->items as $item)
-                            <tr class="border-b border-slate-50">
-                                <td class="py-2.5">{{ $item->product_name }}</td>
-                                <td class="py-2.5 text-slate-500">{{ $item->seller?->business_name ?? '—' }}</td>
-                                <td class="py-2.5 text-center">{{ $item->quantity }}</td>
-                                <td class="py-2.5 text-right tabular-nums">{{ $money($item->line_total) }}</td>
+                            <tr class="border-bottom">
+                                <td class="py-2">{{ $item->product_name }}</td>
+                                <td class="py-2 text-secondary">{{ $item->seller?->business_name ?? '—' }}</td>
+                                <td class="py-2 text-center">{{ $item->quantity }}</td>
+                                <td class="py-2 text-end font-monospace">{{ $money($item->line_total) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div class="flex justify-end mt-3">
-                    <div class="w-48 space-y-1 text-sm">
-                        <div class="flex justify-between"><span class="text-slate-500">Subtotal</span><span>{{ $money($order->subtotal) }}</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Shipping</span><span>{{ $order->shipping > 0 ? $money($order->shipping) : 'Free' }}</span></div>
-                        <div class="flex justify-between font-bold text-slate-800 border-t border-slate-100 pt-1"><span>Total</span><span>{{ $money($order->total) }}</span></div>
+                <div class="d-flex justify-content-end mt-3">
+                    <div class="w-48 d-flex flex-column gap-1 fs-sm">
+                        <div class="d-flex justify-content-between"><span class="text-secondary">Subtotal</span><span>{{ $money($order->subtotal) }}</span></div>
+                        <div class="d-flex justify-content-between"><span class="text-secondary">Shipping</span><span>{{ $order->shipping > 0 ? $money($order->shipping) : 'Free' }}</span></div>
+                        <div class="d-flex justify-content-between fw-bold text-body border-top pt-1"><span>Total</span><span>{{ $money($order->total) }}</span></div>
                     </div>
                 </div>
             </div>
 
             {{-- Commission split for this order --}}
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-6">
-                <h3 class="font-semibold text-slate-800 mb-3">Commission ({{ $order->commission_credited ? 'credited' : 'pending until delivered' }})</h3>
+            <div class="bg-body rounded-2 shadow-sm border p-6">
+                <h3 class="fw-semibold text-body mb-3">Commission ({{ $order->commission_credited ? 'credited' : 'pending until delivered' }})</h3>
                 @if ($order->earnings->isEmpty())
-                    <p class="text-sm text-slate-400">No commission on this order (no VIP seller attached).</p>
+                    <p class="fs-sm text-secondary">No commission on this order (no VIP seller attached).</p>
                 @else
-                    <table class="w-full text-sm">
-                        <thead class="text-left text-slate-400 border-b border-slate-100">
-                            <tr><th class="py-2">Beneficiary</th><th class="py-2">Role</th><th class="py-2 text-right">Amount</th><th class="py-2">Status</th></tr>
+                    <table class="w-100 fs-sm">
+                        <thead class="text-start text-secondary border-bottom">
+                            <tr><th class="py-2">Beneficiary</th><th class="py-2">Role</th><th class="py-2 text-end">Amount</th><th class="py-2">Status</th></tr>
                         </thead>
                         <tbody>
                             @foreach ($order->earnings as $earning)
-                                <tr class="border-b border-slate-50">
-                                    <td class="py-2.5">{{ $earning->beneficiary?->name ?? '—' }}</td>
-                                    <td class="py-2.5 text-slate-500">{{ ucwords(str_replace('_', ' ', $earning->role)) }}</td>
-                                    <td class="py-2.5 text-right tabular-nums">{{ $money($earning->amount) }}</td>
-                                    <td class="py-2.5"><span class="px-2 py-0.5 rounded text-xs {{ $earning->status === 'approved' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700' }}">{{ $earning->status }}</span></td>
+                                <tr class="border-bottom">
+                                    <td class="py-2">{{ $earning->beneficiary?->name ?? '—' }}</td>
+                                    <td class="py-2 text-secondary">{{ ucwords(str_replace('_', ' ', $earning->role)) }}</td>
+                                    <td class="py-2 text-end font-monospace">{{ $money($earning->amount) }}</td>
+                                    <td class="py-2"><span class="px-2 py-1 rounded fs-xs {{ $earning->status === 'approved' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning' }}">{{ $earning->status }}</span></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -74,32 +74,32 @@
         </div>
 
         {{-- Sidebar: status + delivery + customer --}}
-        <div class="space-y-6">
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5">
-                <h3 class="font-semibold text-slate-800 mb-3">Update Status</h3>
+        <div class="d-flex flex-column gap-6">
+            <div class="bg-body rounded-2 shadow-sm border p-5">
+                <h3 class="fw-semibold text-body mb-3">Update Status</h3>
                 <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
                     @csrf @method('PATCH')
-                    <select name="status" class="block w-full rounded-md border-slate-300 shadow-sm text-sm mb-3">
+                    <select name="status" class="d-block w-100 rounded-2 shadow-sm fs-sm mb-3">
                         @foreach (['pending', 'confirmed', 'processing', 'dispatched', 'delivered', 'cancelled', 'refunded'] as $s)
                             <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
                         @endforeach
                     </select>
-                    <button type="submit" class="w-full bg-brand-700 text-white text-sm py-2 rounded-md hover:bg-brand-800">Save Status</button>
+                    <button type="submit" class="btn btn-brand btn-sm w-100">Save Status</button>
                 </form>
-                <p class="text-xs text-slate-400 mt-2">Marking an order <strong>delivered</strong> approves and credits commission to all wallets.</p>
+                <p class="fs-xs text-secondary mt-2">Marking an order <strong>delivered</strong> approves and credits commission to all wallets.</p>
             </div>
 
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5">
-                <h3 class="font-semibold text-slate-800 mb-3">Expected Delivery Date</h3>
+            <div class="bg-body rounded-2 shadow-sm border p-5">
+                <h3 class="fw-semibold text-body mb-3">Expected Delivery Date</h3>
                 @php $effectiveExpected = app(\App\Services\DeliveryService::class)->expectedFor($order); @endphp
                 <form method="POST" action="{{ route('admin.orders.update-delivery', $order) }}">
                     @csrf @method('PATCH')
                     <input type="date" name="expected_delivery_date"
                            value="{{ old('expected_delivery_date', optional($effectiveExpected)->format('Y-m-d')) }}"
-                           class="block w-full rounded-md border-slate-300 shadow-sm text-sm mb-3">
-                    <button type="submit" class="w-full bg-slate-800 text-white text-sm py-2 rounded-md hover:bg-slate-900">Save Delivery Date</button>
+                           class="d-block w-100 rounded-2 shadow-sm fs-sm mb-3">
+                    <button type="submit" class="btn btn-dark btn-sm w-100">Save Delivery Date</button>
                 </form>
-                <p class="text-xs text-slate-400 mt-2">
+                <p class="fs-xs text-secondary mt-2">
                     @if ($order->expected_delivery_date)
                         Shown to the customer as the arrival estimate.
                     @else
@@ -108,12 +108,12 @@
                 </p>
             </div>
 
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5 text-sm">
-                <h3 class="font-semibold text-slate-800 mb-2">Customer</h3>
-                <p class="text-slate-600">{{ $order->customer_name }}<br>{{ $order->customer_email }}<br>{{ $order->customer_phone }}</p>
-                <p class="text-slate-600 mt-3">{{ $order->address }}, {{ $order->city }}, {{ $order->state }} - {{ $order->pincode }}</p>
+            <div class="bg-body rounded-2 shadow-sm border p-5 fs-sm">
+                <h3 class="fw-semibold text-body mb-2">Customer</h3>
+                <p class="text-body-secondary">{{ $order->customer_name }}<br>{{ $order->customer_email }}<br>{{ $order->customer_phone }}</p>
+                <p class="text-body-secondary mt-3">{{ $order->address }}, {{ $order->city }}, {{ $order->state }} - {{ $order->pincode }}</p>
                 @if ($order->delivery_notes)
-                    <p class="text-slate-400 text-xs mt-2">Notes: {{ $order->delivery_notes }}</p>
+                    <p class="text-secondary fs-xs mt-2">Notes: {{ $order->delivery_notes }}</p>
                 @endif
                 @php
                     $paidVia = match (true) {
@@ -122,10 +122,10 @@
                         default => 'Online (test)',
                     };
                 @endphp
-                <p class="text-xs text-slate-400 mt-3 capitalize">{{ $paidVia }} · {{ $order->payment_status }}</p>
+                <p class="fs-xs text-secondary mt-3 text-capitalize">{{ $paidVia }} · {{ $order->payment_status }}</p>
                 @if ($order->razorpay_payment_id)
                     {{-- Reference for reconciling / refunding in the Razorpay dashboard. --}}
-                    <p class="text-xs text-slate-400 mt-1">Payment ID: <span class="font-mono">{{ $order->razorpay_payment_id }}</span></p>
+                    <p class="fs-xs text-secondary mt-1">Payment ID: <span class="font-monospace">{{ $order->razorpay_payment_id }}</span></p>
                 @endif
             </div>
         </div>

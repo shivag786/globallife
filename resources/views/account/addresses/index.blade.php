@@ -1,84 +1,84 @@
 <x-layouts.public title="My Addresses">
-    @php $field = 'mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+    @php $field = 'form-control'; @endphp
 
-    <div class="max-w-3xl mx-auto px-6 py-16">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="font-display text-3xl font-bold text-brand-900">My Addresses</h1>
-            <a href="{{ route('account.orders.index') }}" class="text-sm text-brand-700 hover:underline">My Orders →</a>
+    <div class="mw-3xl mx-auto px-6 py-16">
+        <div class="d-flex align-items-center justify-content-between mb-8">
+            <h1 class="font-display fs-3xl fw-bold text-brand-emphasis">My Addresses</h1>
+            <a href="{{ route('account.orders.index') }}" class="fs-sm text-brand hover-underline">My Orders →</a>
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-4">
-                <ul class="list-disc list-inside space-y-1">
+            <div class="mb-6 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded-2 p-4">
+                <ul class="list-disc list-inside d-flex flex-column gap-1">
                     @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                 </ul>
             </div>
         @endif
 
         {{-- Saved addresses --}}
-        <div class="space-y-3 mb-8">
+        <div class="d-flex flex-column gap-3 mb-8">
             @forelse ($addresses as $address)
-                <div class="flex flex-wrap items-start justify-between gap-4 bg-white border border-slate-100 rounded-2xl p-5">
-                    <div class="text-sm">
-                        <p class="font-medium text-brand-900">
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-4 bg-body border rounded-4 p-5">
+                    <div class="fs-sm">
+                        <p class="fw-medium text-brand-emphasis">
                             {{ $address->name }} · {{ $address->phone }}
-                            @if ($address->is_default)<span class="ml-1 text-xs text-brand-700 bg-brand-100 px-1.5 py-0.5 rounded-full">Default</span>@endif
+                            @if ($address->is_default)<span class="ms-1 fs-xs text-brand bg-brand-subtle px-2 py-1 rounded-pill">Default</span>@endif
                         </p>
-                        <p class="text-slate-500 mt-0.5">{{ $address->summary() }}</p>
+                        <p class="text-secondary mt-1">{{ $address->summary() }}</p>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
                         @unless ($address->is_default)
                             <form method="POST" action="{{ route('account.addresses.default', $address) }}">
                                 @csrf @method('PATCH')
-                                <button type="submit" class="text-xs text-brand-700 hover:underline">Set default</button>
+                                <button type="submit" class="btn btn-link p-0 text-decoration-none fs-xs text-brand hover-underline">Set default</button>
                             </form>
                         @endunless
                         <form method="POST" action="{{ route('account.addresses.destroy', $address) }}">
                             @csrf @method('DELETE')
-                            <button type="submit" class="text-xs text-red-500 hover:underline">Delete</button>
+                            <button type="submit" class="btn btn-link p-0 text-decoration-none fs-xs text-danger hover-underline">Delete</button>
                         </form>
                     </div>
                 </div>
             @empty
-                <p class="text-slate-500 text-sm">You have no saved addresses yet.</p>
+                <p class="text-secondary fs-sm">You have no saved addresses yet.</p>
             @endforelse
         </div>
 
         {{-- Add address --}}
-        <div class="bg-white border border-slate-100 rounded-2xl p-6">
-            <h2 class="font-semibold text-brand-900 mb-4">Add a new address</h2>
+        <div class="bg-body border rounded-4 p-6">
+            <h2 class="fw-semibold text-brand-emphasis mb-4">Add a new address</h2>
             <form method="POST" action="{{ route('account.addresses.store') }}">
                 @csrf
-                <div class="grid sm:grid-cols-2 gap-4">
+                <div class="d-grid grid-cols-sm-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">Full Name</label>
+                        <label class="d-block fs-sm fw-medium text-body-secondary">Full Name</label>
                         <input type="text" name="name" value="{{ old('name', $user?->name) }}" required class="{{ $field }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">Mobile</label>
+                        <label class="d-block fs-sm fw-medium text-body-secondary">Mobile</label>
                         <input type="text" name="phone" value="{{ old('phone', $user?->mobile) }}" required class="{{ $field }}">
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700">Address</label>
+                    <div class="col-span-sm-2">
+                        <label class="d-block fs-sm fw-medium text-body-secondary">Address</label>
                         <textarea name="address" rows="2" required class="{{ $field }}">{{ old('address') }}</textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">City</label>
+                        <label class="d-block fs-sm fw-medium text-body-secondary">City</label>
                         <input type="text" name="city" value="{{ old('city') }}" required class="{{ $field }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">State</label>
+                        <label class="d-block fs-sm fw-medium text-body-secondary">State</label>
                         <input type="text" name="state" value="{{ old('state') }}" required class="{{ $field }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">PIN Code</label>
+                        <label class="d-block fs-sm fw-medium text-body-secondary">PIN Code</label>
                         <input type="text" name="pincode" value="{{ old('pincode') }}" required class="{{ $field }}">
                     </div>
-                    <label class="flex items-center gap-2 text-sm text-slate-600">
-                        <input type="checkbox" name="is_default" value="1" class="rounded text-brand-600 focus:ring-brand-500"> Make this my default
+                    <label class="d-flex align-items-center gap-2 fs-sm text-body-secondary">
+                        <input type="checkbox" name="is_default" value="1" class="rounded text-brand"> Make this my default
                     </label>
                 </div>
-                <button type="submit" class="mt-5 bg-brand-700 text-white text-sm px-5 py-2.5 rounded-full font-medium hover:bg-brand-800 transition">Save address</button>
+                <button type="submit" class="btn btn-brand btn-sm rounded-pill mt-5">Save address</button>
             </form>
         </div>
     </div>

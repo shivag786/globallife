@@ -8,7 +8,7 @@
 @endphp
 
 @if ($errors->any())
-    <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
+    <div class="mb-4 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded p-3">
         <ul class="list-disc list-inside">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -19,7 +19,7 @@
 
 <form method="POST"
       action="{{ route('enquiry.store') }}"
-      class="space-y-4"
+      class="d-flex flex-column gap-4"
       id="enquiryForm-{{ $source }}">
 
     @csrf
@@ -31,7 +31,7 @@
     @endif
 
     {{-- Honeypot --}}
-    <div class="hidden" aria-hidden="true">
+    <div class="d-none" aria-hidden="true">
         <label for="website-{{ $source }}">Website</label>
         <input type="text"
                id="website-{{ $source }}"
@@ -40,12 +40,12 @@
                autocomplete="off">
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-4">
+    <div class="d-grid grid-cols-sm-2 gap-4">
 
         {{-- Name --}}
         <div>
             <label for="name-{{ $source }}"
-                   class="block text-sm font-medium text-slate-700">
+                   class="d-block fs-sm fw-medium text-body-secondary">
                 Name
             </label>
 
@@ -57,15 +57,15 @@
                    minlength="2"
                    maxlength="100"
                    autocomplete="name"
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
 
-            <p class="name-error mt-1 text-sm text-red-600 hidden"></p>
+            <p class="name-error mt-1 fs-sm text-danger d-none"></p>
         </div>
 
         {{-- Email --}}
         <div>
             <label for="email-{{ $source }}"
-                   class="block text-sm font-medium text-slate-700">
+                   class="d-block fs-sm fw-medium text-body-secondary">
                 Email
             </label>
 
@@ -77,15 +77,15 @@
                    maxlength="254"
                    autocomplete="email"
                    inputmode="email"
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
 
-            <p class="email-error mt-1 text-sm text-red-600 hidden"></p>
+            <p class="email-error mt-1 fs-sm text-danger d-none"></p>
         </div>
 
         {{-- Phone --}}
         <div>
             <label for="phone-{{ $source }}"
-                   class="block text-sm font-medium text-slate-700">
+                   class="d-block fs-sm fw-medium text-body-secondary">
                 Phone
             </label>
 
@@ -100,15 +100,15 @@
                    autocomplete="tel"
                    placeholder="Enter 10 digit mobile number"
                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
 
-            <p class="phone-error mt-1 text-sm text-red-600 hidden"></p>
+            <p class="phone-error mt-1 fs-sm text-danger d-none"></p>
         </div>
 
         {{-- City --}}
         <div>
             <label for="city-{{ $source }}"
-                   class="block text-sm font-medium text-slate-700">
+                   class="d-block fs-sm fw-medium text-body-secondary">
                 City
             </label>
 
@@ -118,7 +118,7 @@
                    value="{{ old('city', $prefillCity) }}"
                    maxlength="100"
                    autocomplete="address-level2"
-                   class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
         </div>
 
     </div>
@@ -127,14 +127,14 @@
     @if ($plans->isNotEmpty())
         <div>
             <label for="interested_plan_id-{{ $source }}"
-                   class="block text-sm font-medium text-slate-700">
+                   class="d-block fs-sm fw-medium text-body-secondary">
                 Interested Plan
-                <span class="text-slate-400">(optional)</span>
+                <span class="text-secondary">(optional)</span>
             </label>
 
             <select id="interested_plan_id-{{ $source }}"
                     name="interested_plan_id"
-                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                    class="mt-1 d-block w-100 rounded-2 shadow-sm">
 
                 <option value="">None / General Enquiry</option>
 
@@ -157,7 +157,7 @@
     {{-- Message --}}
     <div>
         <label for="message-{{ $source }}"
-               class="block text-sm font-medium text-slate-700">
+               class="d-block fs-sm fw-medium text-body-secondary">
             Message
         </label>
 
@@ -165,11 +165,11 @@
                   name="message"
                   rows="4"
                   maxlength="2000"
-                  class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('message', $prefillMessage) }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('message', $prefillMessage) }}</textarea>
     </div>
 
     <button type="submit"
-            class="bg-brand-700 text-white px-6 py-3 rounded-full font-medium hover:bg-brand-800 transition">
+            class="btn btn-brand rounded-pill">
         Send Enquiry
     </button>
 

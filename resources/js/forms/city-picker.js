@@ -38,7 +38,7 @@ function setupSingle(root) {
     const cityInput = root.querySelector('[data-city-name-new]');
     const stateValue = root.querySelector('[data-city-state-value]');
 
-    const show = (el, visible) => el?.classList.toggle('hidden', !visible);
+    const show = (el, visible) => el?.classList.toggle('d-none', !visible);
     const isCustomState = () => stateSelect.value === OTHER;
     const currentState = () => (isCustomState() ? stateInput.value : stateSelect.value).trim();
 
@@ -106,7 +106,7 @@ function setup(root) {
 
     let newIndex = 0;
 
-    const show = (el, visible) => el?.classList.toggle('hidden', !visible);
+    const show = (el, visible) => el?.classList.toggle('d-none', !visible);
 
     function fail(message) {
         if (!error) return;
@@ -171,7 +171,7 @@ function setup(root) {
     function addChip({ id, name, state }) {
         const chip = document.createElement('span');
         chip.className =
-            'inline-flex items-center gap-2 bg-brand-50 text-brand-800 border border-brand-200 rounded-full pl-3 pr-1 py-1 text-sm';
+            'd-inline-flex align-items-center gap-2 bg-brand-subtle text-brand-emphasis border border-brand-subtle rounded-pill ps-3 pe-1 py-1 fs-sm';
 
         if (id) {
             chip.dataset.chipCityId = String(id);
@@ -194,7 +194,7 @@ function setup(root) {
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className =
-            'w-5 h-5 rounded-full text-brand-600 hover:bg-brand-200 hover:text-brand-900 leading-none';
+            'btn btn-link p-0 w-5 h-5 rounded-pill text-brand lh-1 text-decoration-none';
         remove.innerHTML = '&times;';
         remove.setAttribute('aria-label', `Remove ${name}`);
         remove.addEventListener('click', () => {

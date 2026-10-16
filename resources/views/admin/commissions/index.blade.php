@@ -1,20 +1,20 @@
 <x-layouts.app title="Product Commissions" heading="Product Commissions">
-    <p class="text-sm text-slate-500 mb-6 max-w-3xl">
+    <p class="fs-sm text-secondary mb-6 mw-3xl">
         Configure how product-sale commission is split. Rules resolve most-specific first:
         a <strong>product</strong> rule overrides its <strong>category</strong> rule, which overrides the
         <strong>global</strong> default. The company keeps whatever remains. This is separate from VIP joining commission.
     </p>
 
     {{-- Global defaults --}}
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5 mb-6 max-w-3xl">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-slate-800">Global Default Commission</h2>
-            <a href="{{ route('admin.commissions.global.edit') }}" class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">Configure</a>
+    <div class="bg-body rounded-2 shadow-sm border p-5 mb-6 mw-3xl">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h2 class="fw-semibold text-body">Global Default Commission</h2>
+            <a href="{{ route('admin.commissions.global.edit') }}" class="btn btn-primary btn-sm">Configure</a>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2">
             @foreach ($roles as $role => $label)
                 @php $rule = $global[$role] ?? null; @endphp
-                <span class="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full {{ $rule ? 'bg-brand-50 text-brand-700' : 'bg-slate-100 text-slate-400' }}">
+                <span class="d-inline-flex align-items-center gap-2 fs-sm px-3 py-2 rounded-pill {{ $rule ? 'bg-brand-subtle text-brand' : 'bg-body-secondary text-secondary' }}">
                     {{ $label }}:
                     <strong>
                         @if ($rule)
@@ -28,48 +28,48 @@
         </div>
     </div>
 
-    <div class="grid lg:grid-cols-2 gap-6 max-w-5xl">
+    <div class="d-grid grid-cols-lg-2 gap-6 mw-5xl">
         {{-- By category --}}
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
-            <div class="px-5 py-3 border-b border-slate-100 font-semibold text-slate-800">By Category</div>
-            <ul class="divide-y divide-slate-100">
+        <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
+            <div class="px-5 py-3 border-bottom fw-semibold text-body">By Category</div>
+            <ul class="divide-y">
                 @forelse ($categories as $category)
-                    <li class="flex items-center justify-between px-5 py-3">
-                        <span class="text-sm text-slate-700">{{ $category->name }}</span>
-                        <div class="flex items-center gap-3">
+                    <li class="d-flex align-items-center justify-content-between px-5 py-3">
+                        <span class="fs-sm text-body-secondary">{{ $category->name }}</span>
+                        <div class="d-flex align-items-center gap-3">
                             @if ($categoryScoped->contains($category->id))
-                                <span class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">Custom</span>
+                                <span class="fs-xs bg-brand-subtle text-brand px-2 py-1 rounded-pill">Custom</span>
                             @else
-                                <span class="text-xs text-slate-400">Inherits global</span>
+                                <span class="fs-xs text-secondary">Inherits global</span>
                             @endif
-                            <a href="{{ route('admin.commissions.category.edit', $category) }}" class="text-sm text-indigo-600 hover:underline">Set</a>
+                            <a href="{{ route('admin.commissions.category.edit', $category) }}" class="fs-sm text-primary hover-underline">Set</a>
                         </div>
                     </li>
                 @empty
-                    <li class="px-5 py-6 text-center text-slate-400 text-sm">No categories yet.</li>
+                    <li class="px-5 py-6 text-center text-secondary fs-sm">No categories yet.</li>
                 @endforelse
             </ul>
         </div>
 
         {{-- By product --}}
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
-            <div class="px-5 py-3 border-b border-slate-100 font-semibold text-slate-800">By Product</div>
-            <ul class="divide-y divide-slate-100">
+        <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
+            <div class="px-5 py-3 border-bottom fw-semibold text-body">By Product</div>
+            <ul class="divide-y">
                 @forelse ($products as $product)
-                    <li class="flex items-center justify-between px-5 py-3">
+                    <li class="d-flex align-items-center justify-content-between px-5 py-3">
                         <div class="min-w-0">
-                            <p class="text-sm text-slate-700 truncate">{{ $product->name }}</p>
-                            <p class="text-xs text-slate-400">{{ $product->category?->name ?? 'Uncategorised' }} · {{ $product->sellingPrice() ? '₹'.number_format($product->sellingPrice(), 2) : 'no price' }}</p>
+                            <p class="fs-sm text-body-secondary text-truncate">{{ $product->name }}</p>
+                            <p class="fs-xs text-secondary">{{ $product->category?->name ?? 'Uncategorised' }} · {{ $product->sellingPrice() ? '₹'.number_format($product->sellingPrice(), 2) : 'no price' }}</p>
                         </div>
-                        <div class="flex items-center gap-3 flex-shrink-0">
+                        <div class="d-flex align-items-center gap-3 flex-shrink-0">
                             @if ($productScoped->contains($product->id))
-                                <span class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">Custom</span>
+                                <span class="fs-xs bg-brand-subtle text-brand px-2 py-1 rounded-pill">Custom</span>
                             @endif
-                            <a href="{{ route('admin.commissions.product.edit', $product) }}" class="text-sm text-indigo-600 hover:underline">Set</a>
+                            <a href="{{ route('admin.commissions.product.edit', $product) }}" class="fs-sm text-primary hover-underline">Set</a>
                         </div>
                     </li>
                 @empty
-                    <li class="px-5 py-6 text-center text-slate-400 text-sm">No products yet.</li>
+                    <li class="px-5 py-6 text-center text-secondary fs-sm">No products yet.</li>
                 @endforelse
             </ul>
         </div>

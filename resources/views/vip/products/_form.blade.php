@@ -1,7 +1,7 @@
 @csrf
 @isset($product) @method('PUT') @endisset
 
-<div class="bootstrap-scope max-w-3xl">
+<div class="mw-3xl">
     <div class="d-flex flex-column gap-4">
         <div class="card shadow-sm border-0">
             <div class="card-body">
@@ -29,7 +29,7 @@
         </div>
 
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white"><h2 class="h6 mb-0 fw-semibold">Pricing</h2></div>
+            <div class="card-header bg-body"><h2 class="h6 mb-0 fw-semibold">Pricing</h2></div>
             <div class="card-body">
                 <div class="row g-4">
                     <div class="col-md-3">
@@ -47,7 +47,7 @@
                     <div class="col-12">
                         <label class="d-flex align-items-center gap-2">
                             <input type="checkbox" name="show_pricing" value="1" @checked($product->show_pricing ?? true)>
-                            <span class="text-sm">Show pricing on public page</span>
+                            <span class="fs-sm">Show pricing on public page</span>
                         </label>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
         </div>
 
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white"><h2 class="h6 mb-0 fw-semibold">Inventory Details</h2></div>
+            <div class="card-header bg-body"><h2 class="h6 mb-0 fw-semibold">Inventory Details</h2></div>
             <div class="card-body">
                 <div class="row g-4">
                     <div class="col-md-4">
@@ -95,7 +95,7 @@
                     <div class="col-md-4 d-flex align-items-end">
                         <label class="d-flex align-items-center gap-2 mb-2">
                             <input type="checkbox" name="is_featured" value="1" @checked($product->is_featured ?? false)>
-                            <span class="text-sm">Featured</span>
+                            <span class="fs-sm">Featured</span>
                         </label>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
         </div>
 
         <div>
-            <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+            <button type="submit" class="btn btn-brand btn-sm">
                 {{ isset($product) ? 'Update Product' : 'Create Product' }}
             </button>
         </div>

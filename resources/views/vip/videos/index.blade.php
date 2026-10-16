@@ -1,40 +1,40 @@
 <x-layouts.app title="YouTube Videos" heading="YouTube Videos">
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5 mb-6">
-        <h2 class="font-semibold mb-3">Add Video ({{ $videos->count() }}/6)</h2>
+    <div class="bg-body rounded-2 shadow-sm border p-5 mb-6">
+        <h2 class="fw-semibold mb-3">Add Video ({{ $videos->count() }}/6)</h2>
         @if ($videos->count() < 6)
-            <form method="POST" action="{{ route('vip.videos.store') }}" class="flex flex-wrap items-end gap-3">
+            <form method="POST" action="{{ route('vip.videos.store') }}" class="d-flex flex-wrap align-items-end gap-3">
                 @csrf
-                <div class="flex-1 min-w-[240px]">
-                    <label class="block text-sm font-medium text-slate-700">YouTube URL</label>
+                <div class="flex-grow-1">
+                    <label class="d-block fs-sm fw-medium text-body-secondary">YouTube URL</label>
                     <input type="url" name="youtube_url" required placeholder="https://youtube.com/watch?v=..."
-                           class="mt-1 block w-full rounded-md border-slate-300 shadow-sm text-sm">
+                           class="mt-1 d-block w-100 rounded-2 shadow-sm fs-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Title (optional)</label>
-                    <input type="text" name="title" class="mt-1 rounded-md border-slate-300 shadow-sm text-sm">
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Title (optional)</label>
+                    <input type="text" name="title" class="mt-1 rounded-2 shadow-sm fs-sm">
                 </div>
-                <button type="submit" class="bg-brand-700 text-white text-sm px-4 py-2 rounded-md hover:bg-brand-800">Add</button>
+                <button type="submit" class="btn btn-brand btn-sm">Add</button>
             </form>
         @else
-            <p class="text-sm text-slate-400">You've reached the 6-video limit. Remove one to add another.</p>
+            <p class="fs-sm text-secondary">You've reached the 6-video limit. Remove one to add another.</p>
         @endif
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-4">
         @forelse ($videos as $video)
-            <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
-                <img src="{{ $video->thumbnail_url }}" class="w-full h-36 object-cover">
+            <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
+                <img src="{{ $video->thumbnail_url }}" class="w-100 h-36 object-fit-cover">
                 <div class="p-3">
-                    <p class="text-sm font-medium truncate">{{ $video->title ?: $video->youtube_url }}</p>
+                    <p class="fs-sm fw-medium text-truncate">{{ $video->title ?: $video->youtube_url }}</p>
                     <form method="POST" action="{{ route('vip.videos.destroy', $video) }}" data-confirm="Remove this video?" data-confirm-danger class="mt-2">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:underline text-xs">Remove</button>
+                        <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger hover-underline fs-xs">Remove</button>
                     </form>
                 </div>
             </div>
         @empty
-            <p class="text-slate-400 text-sm col-span-full">No videos yet.</p>
+            <p class="text-secondary fs-sm col-span-full">No videos yet.</p>
         @endforelse
     </div>
 </x-layouts.app>

@@ -1,12 +1,12 @@
 <x-layouts.app title="Payment Gateway" heading="Payment Gateway">
-    <p class="text-sm text-slate-500 mb-6">
+    <p class="fs-sm text-secondary mb-6">
         Controls how customers pay at checkout. Razorpay keys are taken from here — nothing is read from the server environment,
         so keys can be rotated without a deploy.
     </p>
 
     {{-- .bootstrap-scope activates Bootstrap's real (unprefixed) classes for this
          subtree only — see resources/css/bootstrap.scss / scripts/build-bootstrap.mjs. --}}
-    <div class="bootstrap-scope max-w-4xl">
+    <div class="mw-4xl">
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0 ps-3">
@@ -23,7 +23,7 @@
 
                 {{-- Razorpay --}}
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <div class="card-header bg-body d-flex align-items-center justify-content-between">
                         <div>
                             <h2 class="h6 mb-0 fw-semibold">Razorpay</h2>
                             <p class="small text-muted mb-0">Cards, UPI, netbanking and wallets.</p>
@@ -92,7 +92,7 @@
 
                 {{-- Webhook --}}
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <div class="card-header bg-body d-flex align-items-center justify-content-between">
                         <div>
                             <h2 class="h6 mb-0 fw-semibold">Razorpay Webhook</h2>
                             <p class="small text-muted mb-0">Catches payments whose browser never came back.</p>
@@ -146,7 +146,7 @@
 
                 {{-- Other methods --}}
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-body">
                         <h2 class="h6 mb-0 fw-semibold">Other Checkout Methods</h2>
                     </div>
                     <div class="card-body">
@@ -175,10 +175,10 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <button type="submit" class="bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+                    <button type="submit" class="btn btn-brand btn-sm">
                         Save Payment Settings
                     </button>
-                    <span class="text-sm text-slate-400">Changes apply to the next checkout immediately.</span>
+                    <span class="fs-sm text-secondary">Changes apply to the next checkout immediately.</span>
                 </div>
             </div>
         </form>

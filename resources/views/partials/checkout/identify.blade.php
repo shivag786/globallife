@@ -1,60 +1,60 @@
-@php $field = 'mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500'; @endphp
+@php $field = 'form-control'; @endphp
 
-<div class="grid lg:grid-cols-[1fr_340px] gap-8 items-start" data-identify>
-    <div class="bg-white border border-slate-100 rounded-2xl p-6">
+<div class="d-grid grid-template-lg gap-8 align-items-start" style="--cols-lg: minmax(0, 1fr) 340px" data-identify>
+    <div class="bg-body border rounded-4 p-6">
         {{-- Tabs --}}
-        <div class="flex gap-2 mb-6 bg-slate-100 p-1 rounded-full">
-            <button type="button" data-tab="register" class="flex-1 py-2 rounded-full text-sm font-medium transition bg-white text-brand-800 shadow-sm">New customer</button>
-            <button type="button" data-tab="login" class="flex-1 py-2 rounded-full text-sm font-medium transition text-slate-500">I have an account</button>
+        <div class="d-flex gap-2 mb-6 bg-body-secondary p-1 rounded-pill">
+            <button type="button" data-tab="register" class="btn btn-link p-0 text-decoration-none flex-grow-1 py-2 rounded-pill fs-sm fw-medium bg-body text-brand-emphasis shadow-sm">New customer</button>
+            <button type="button" data-tab="login" class="btn btn-link p-0 text-decoration-none flex-grow-1 py-2 rounded-pill fs-sm fw-medium text-secondary">I have an account</button>
         </div>
 
         {{-- Register --}}
         <form method="POST" action="{{ route('checkout.register') }}" data-pane="register" data-checkout-auth>
             @csrf
-            <p class="text-sm text-slate-500 mb-4">Create your account to place the order and track delivery.</p>
-            <div data-errors class="hidden mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3"></div>
-            <div class="grid sm:grid-cols-2 gap-4">
-                <div class="sm:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700">Full Name</label>
+            <p class="fs-sm text-secondary mb-4">Create your account to place the order and track delivery.</p>
+            <div data-errors class="d-none mb-4 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded-2 p-3"></div>
+            <div class="d-grid grid-cols-sm-2 gap-4">
+                <div class="col-span-sm-2">
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Full Name</label>
                     <input type="text" name="name" value="{{ old('name') }}" required class="{{ $field }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Email</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" required class="{{ $field }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Mobile</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Mobile</label>
                     <input type="text" name="mobile" value="{{ old('mobile') }}" required class="{{ $field }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Password</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Password</label>
                     <input type="password" name="password" required minlength="8" class="{{ $field }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Confirm Password</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Confirm Password</label>
                     <input type="password" name="password_confirmation" required minlength="8" class="{{ $field }}">
                 </div>
             </div>
-            <button type="submit" class="mt-5 w-full bg-brand-700 text-white py-3 rounded-full font-medium hover:bg-brand-800 transition">Create account &amp; continue</button>
+            <button type="submit" class="btn btn-brand rounded-pill mt-5 w-100">Create account &amp; continue</button>
         </form>
 
         {{-- Login --}}
-        <form method="POST" action="{{ route('checkout.login') }}" data-pane="login" data-checkout-auth class="hidden">
+        <form method="POST" action="{{ route('checkout.login') }}" data-pane="login" data-checkout-auth class="d-none">
             @csrf
-            <p class="text-sm text-slate-500 mb-4">Welcome back — sign in to continue to delivery &amp; payment.</p>
-            <div data-errors class="hidden mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3"></div>
-            <div class="space-y-4">
+            <p class="fs-sm text-secondary mb-4">Welcome back — sign in to continue to delivery &amp; payment.</p>
+            <div data-errors class="d-none mb-4 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded-2 p-3"></div>
+            <div class="d-flex flex-column gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Email</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Email</label>
                     <input type="email" name="email" required class="{{ $field }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Password</label>
+                    <label class="d-block fs-sm fw-medium text-body-secondary">Password</label>
                     <input type="password" name="password" required class="{{ $field }}">
-                    <a href="{{ route('password.request') }}" class="inline-block mt-1.5 text-xs text-brand-700 hover:underline">Forgot password?</a>
+                    <a href="{{ route('password.request') }}" class="d-inline-block mt-2 fs-xs text-brand hover-underline">Forgot password?</a>
                 </div>
             </div>
-            <button type="submit" class="mt-5 w-full bg-brand-700 text-white py-3 rounded-full font-medium hover:bg-brand-800 transition">Sign in &amp; continue</button>
+            <button type="submit" class="btn btn-brand rounded-pill mt-5 w-100">Sign in &amp; continue</button>
         </form>
     </div>
 

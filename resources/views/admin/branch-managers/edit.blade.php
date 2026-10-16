@@ -6,9 +6,9 @@
     {{-- Its own form, a sibling of the one above: nesting forms is invalid HTML,
          and a password reset should be a deliberate action rather than something
          that rides along with a profile save. --}}
-    <div class="bootstrap-scope max-w-3xl mt-4">
+    <div class="mw-3xl mt-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-white">
+            <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Change Password</h2>
                 <p class="small text-muted mb-0">
                     Sets a new password for <strong>{{ $manager->name }}</strong>. They are signed out
@@ -25,17 +25,17 @@
 
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label for="bm-password" class="form-label small fw-medium text-slate-700">New Password</label>
+                            <label for="bm-password" class="form-label small fw-medium text-body-secondary">New Password</label>
                             <input id="bm-password" type="password" name="password" required minlength="8"
                                    autocomplete="new-password"
                                    class="form-control @error('password') is-invalid @enderror">
                             @error('password')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                <p class="fs-sm text-danger mt-1">{{ $message }}</p>
                             @enderror
                             <p class="small text-muted mb-0 mt-1">At least 8 characters.</p>
                         </div>
                         <div class="col-md-6">
-                            <label for="bm-password-confirm" class="form-label small fw-medium text-slate-700">Confirm New Password</label>
+                            <label for="bm-password-confirm" class="form-label small fw-medium text-body-secondary">Confirm New Password</label>
                             <input id="bm-password-confirm" type="password" name="password_confirmation" required
                                    minlength="8" autocomplete="new-password" class="form-control">
                             <p class="small text-muted mb-0 mt-1">Type it again &mdash; there is no login attempt to catch a typo.</p>
@@ -43,7 +43,7 @@
                     </div>
 
                     <button type="submit"
-                            class="mt-4 bg-brand-700 text-white text-sm px-[1.25rem] py-2.5 rounded-md hover:bg-brand-800 transition font-medium">
+                            class="btn btn-brand btn-sm mt-4">
                         Change Password
                     </button>
                 </form>

@@ -23,7 +23,7 @@
          no-JS submit still posts an empty city_id rather than a bad one. --}}
     <div data-city-picker="single" data-cities='@json($citiesByState)' class="row g-4">
         <div class="col-md-6">
-            <label for="city-picker-state" class="form-label small fw-medium text-slate-700">State</label>
+            <label for="city-picker-state" class="form-label small fw-medium text-body-secondary">State</label>
             <select id="city-picker-state" data-city-state class="form-select">
                 <option value="">Select a state&hellip;</option>
                 @foreach ($states as $state)
@@ -33,30 +33,30 @@
                     Other &mdash; type the state name&hellip;
                 </option>
             </select>
-            <input type="text" data-city-state-new class="form-control mt-2 hidden"
+            <input type="text" data-city-state-new class="form-control mt-2 d-none"
                    placeholder="Type the state name" maxlength="120"
                    value="{{ old('new_city.state') && ! in_array(old('new_city.state'), $states, true) ? old('new_city.state') : '' }}">
-            @error('new_city.state')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+            @error('new_city.state')<p class="fs-sm text-danger mt-1">{{ $message }}</p>@enderror
         </div>
 
         <div class="col-md-6">
-            <label for="city-picker-city" class="form-label small fw-medium text-slate-700">City</label>
+            <label for="city-picker-city" class="form-label small fw-medium text-body-secondary">City</label>
             <select id="city-picker-city" name="city_id" data-city-select class="form-select">
                 <option value="">Select a state first&hellip;</option>
             </select>
-            <input type="text" name="new_city[name]" data-city-name-new class="form-control mt-2 hidden"
+            <input type="text" name="new_city[name]" data-city-name-new class="form-control mt-2 d-none"
                    placeholder="Type the city name" maxlength="120" value="{{ old('new_city.name') }}">
             {{-- Mirrors whichever state is active, so a typed city carries one. --}}
             <input type="hidden" name="new_city[state]" data-city-state-value value="{{ old('new_city.state') }}">
-            @error('city_id')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
-            @error('new_city.name')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+            @error('city_id')<p class="fs-sm text-danger mt-1">{{ $message }}</p>@enderror
+            @error('new_city.name')<p class="fs-sm text-danger mt-1">{{ $message }}</p>@enderror
         </div>
     </div>
 @else
 <div data-city-picker data-cities='@json($citiesByState)'>
     <div class="row g-3 align-items-end">
         <div class="col-md-5">
-            <label for="city-picker-state" class="form-label small fw-medium text-slate-700">State</label>
+            <label for="city-picker-state" class="form-label small fw-medium text-body-secondary">State</label>
             <select id="city-picker-state" data-city-state class="form-select">
                 <option value="">Select a state&hellip;</option>
                 @foreach ($states as $state)
@@ -64,16 +64,16 @@
                 @endforeach
                 <option value="__other__">Other &mdash; type the state name&hellip;</option>
             </select>
-            <input type="text" data-city-state-new class="form-control mt-2 hidden"
+            <input type="text" data-city-state-new class="form-control mt-2 d-none"
                    placeholder="Type the state name" maxlength="120">
         </div>
 
         <div class="col-md-5">
-            <label for="city-picker-city" class="form-label small fw-medium text-slate-700">City</label>
+            <label for="city-picker-city" class="form-label small fw-medium text-body-secondary">City</label>
             <select id="city-picker-city" data-city-select class="form-select" disabled>
                 <option value="">Select a state first&hellip;</option>
             </select>
-            <input type="text" data-city-name-new class="form-control mt-2 hidden"
+            <input type="text" data-city-name-new class="form-control mt-2 d-none"
                    placeholder="Type the city name" maxlength="120">
         </div>
 
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <p data-city-error class="hidden text-sm text-red-600 mt-2"></p>
+    <p data-city-error class="d-none fs-sm text-danger mt-2"></p>
 
     <div class="mt-3">
         <p class="small text-muted mb-2">Cities this partner serves</p>
@@ -95,40 +95,40 @@
                  a failed submit. The picker appends new ones in the same shape. --}}
             @foreach ($preselected as $city)
                 <span data-chip-city-id="{{ $city->id }}"
-                      class="inline-flex items-center gap-2 bg-brand-50 text-brand-800 border border-brand-200 rounded-full pl-3 pr-1 py-1 text-sm">
+                      class="d-inline-flex align-items-center gap-2 bg-brand-subtle text-brand-emphasis border border-brand-subtle rounded-pill ps-3 pe-1 py-1 fs-sm">
                     <span>{{ $city->name }}, {{ $city->state }}</span>
                     <input type="hidden" name="cities[]" value="{{ $city->id }}">
                     <button type="button" onclick="this.closest('[data-chip-city-id]').remove()"
-                            class="w-5 h-5 rounded-full text-brand-600 hover:bg-brand-200 hover:text-brand-900 leading-none"
+                            class="btn btn-link p-0 text-decoration-none w-5 h-5 rounded-pill text-brand lh-1"
                             aria-label="Remove {{ $city->name }}">&times;</button>
                 </span>
             @endforeach
 
             @foreach ($oldNew as $i => $row)
                 <span data-chip-key="{{ strtolower(($row['name'] ?? '').'|'.($row['state'] ?? '')) }}"
-                      class="inline-flex items-center gap-2 bg-brand-50 text-brand-800 border border-brand-200 rounded-full pl-3 pr-1 py-1 text-sm">
+                      class="d-inline-flex align-items-center gap-2 bg-brand-subtle text-brand-emphasis border border-brand-subtle rounded-pill ps-3 pe-1 py-1 fs-sm">
                     <span>{{ $row['name'] }}, {{ $row['state'] ?? '' }} (new)</span>
                     <input type="hidden" name="new_cities[{{ $i }}][name]" value="{{ $row['name'] }}">
                     <input type="hidden" name="new_cities[{{ $i }}][state]" value="{{ $row['state'] ?? '' }}">
                     <button type="button" onclick="this.closest('[data-chip-key]').remove()"
-                            class="w-5 h-5 rounded-full text-brand-600 hover:bg-brand-200 hover:text-brand-900 leading-none"
+                            class="btn btn-link p-0 text-decoration-none w-5 h-5 rounded-pill text-brand lh-1"
                             aria-label="Remove {{ $row['name'] }}">&times;</button>
                 </span>
             @endforeach
         </div>
 
-        <p data-city-empty class="small text-muted mb-0 {{ $preselected->isEmpty() && $oldNew->isEmpty() ? '' : 'hidden' }}">
+        <p data-city-empty class="small text-muted mb-0 {{ $preselected->isEmpty() && $oldNew->isEmpty() ? '' : 'd-none' }}">
             No cities added yet &mdash; pick a state and city above, then press Add.
         </p>
     </div>
 
-    @error('cities')<p class="text-sm text-red-600 mt-2">{{ $message }}</p>@enderror
-    @error('new_cities')<p class="text-sm text-red-600 mt-2">{{ $message }}</p>@enderror
+    @error('cities')<p class="fs-sm text-danger mt-2">{{ $message }}</p>@enderror
+    @error('new_cities')<p class="fs-sm text-danger mt-2">{{ $message }}</p>@enderror
     @foreach ($errors->get('new_cities.*.name') as $messages)
-        @foreach ($messages as $message)<p class="text-sm text-red-600 mt-2">{{ $message }}</p>@endforeach
+        @foreach ($messages as $message)<p class="fs-sm text-danger mt-2">{{ $message }}</p>@endforeach
     @endforeach
     @foreach ($errors->get('new_cities.*.state') as $messages)
-        @foreach ($messages as $message)<p class="text-sm text-red-600 mt-2">{{ $message }}</p>@endforeach
+        @foreach ($messages as $message)<p class="fs-sm text-danger mt-2">{{ $message }}</p>@endforeach
     @endforeach
 </div>
 @endif

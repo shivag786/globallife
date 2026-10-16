@@ -1,5 +1,5 @@
 @php $cartCount = $cartCount ?? app(\App\Services\CartService::class)->count(); @endphp
-<a href="{{ route('cart.index') }}" data-cart-icon class="relative text-slate-600 hover:text-brand-700 transition" aria-label="Cart">
+<a href="{{ route('cart.index') }}" data-cart-icon class="position-relative text-body-secondary" aria-label="Cart">
     <x-icon name="shopping-bag" class="w-6 h-6" />
-    <span data-cart-count class="absolute -top-1.5 -right-1.5 bg-brand-700 text-white text-[0.6rem] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center {{ $cartCount > 0 ? '' : 'hidden' }}">{{ $cartCount > 9 ? '9+' : $cartCount }}</span>
+    <span data-cart-count class="position-absolute top-1 end-1 bg-brand text-white fw-bold rounded-pill min-w-4 h-4 px-1 d-flex align-items-center justify-content-center {{ $cartCount > 0 ? '' : 'd-none' }}">{{ $cartCount > 9 ? '9+' : $cartCount }}</span>
 </a>

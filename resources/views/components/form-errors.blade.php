@@ -8,7 +8,7 @@
         <p class="fw-semibold mb-1">
             {{ $errors->count() === 1 ? "Couldn't save — please fix this:" : "Couldn't save — please fix these ".$errors->count().' items:' }}
         </p>
-        <ul class="mb-0 ps-3 small">
+        <ul class="mb-0 list-disc small">
             @foreach ($errors->all() as $message)
                 <li>{{ $message }}</li>
             @endforeach

@@ -29,7 +29,7 @@ belongs to the **Commission Partner** role (renamed from "city_manager").
 | Auth | Laravel Fortify `^1.36` (login, 2FA, password reset) |
 | RBAC | spatie/laravel-permission `^8.1` (roles + permissions, `web` guard) |
 | Audit | spatie/laravel-activitylog `^4.12` |
-| Frontend build | Vite `^8`, Tailwind CSS `^4`, Bootstrap `^5.3`, Sass |
+| Frontend build | Vite `^8`, Bootstrap `^5.3` (compiled from SCSS), Sass. **No Tailwind.** |
 | JS libs | ApexCharts, GSAP, Motion, SweetAlert2, Three.js |
 | Testing | PHPUnit `^12.5` (Feature tests under `tests/Feature`) |
 | DB | MySQL/MariaDB (XAMPP local dev) |
@@ -38,8 +38,45 @@ belongs to the **Commission Partner** role (renamed from "city_manager").
 Model attributes use **PHP 8 attributes** (`#[Fillable([...])]`, `#[Hidden([...])]`)
 instead of `$fillable`/`$hidden` properties — a Laravel 13 pattern used throughout.
 
-Build note: `npm run build` first runs `scripts/build-bootstrap.mjs`
-(`build:bootstrap`) before `vite build`.
+### 2a. CSS: Bootstrap only
+
+The whole UI is Bootstrap 5, compiled with the project's own CSS from one entry,
+`resources/css/app.scss` (`@vite(['resources/css/app.scss', ...])`). Tailwind was
+removed; there is no `.bootstrap-scope` wrapper and no separate Bootstrap build.
+Things a newcomer will trip on:
+
+- **Bootstrap is customised through its own SCSS hooks, before `utilities`:**
+  `$theme-colors` gains `brand`, `brand-dark`, `gold`, `cream` (so `btn-brand`,
+  `bg-brand`, `text-bg-brand` exist); `$spacers` is a **0.25rem scale up to 32**
+  (`p-4` = 1rem, `p-8` = 2rem, `mb-12` = 3rem -- not Bootstrap's default five
+  steps); `$gutters` is restated from it; `$font-sizes` adds `fs-xs`..`fs-5xl`;
+  `$position-values` adds the spacing scale and negatives (`top-3`, `start-6`,
+  `end-n24`); `$enable-negative-margins` is on (`mt-n1`). The brand/gold
+  `-subtle` / `-emphasis` variants are merged into the `$utilities-*` maps
+  *after* `maps` -- merging into `$theme-colors` alone does not create them.
+- **Element base is a blank slate.** Right after Bootstrap's imports, headings
+  lose their size/weight/margin, `p`/lists lose margins and bullets, links inherit
+  their colour, and `img`/`svg` are block-level. Every view sizes and spaces
+  elements explicitly with utilities. Use `.h5`/`.lead` etc. when you want
+  Bootstrap's typographic defaults, and `list-disc` when you want bullets.
+- **Card grids are CSS Grid, not `.row`.** `d-grid grid-cols-1 grid-cols-md-3
+  gap-4`. Bootstrap's `.row` makes its gutter out of padding on a wrapping
+  `.col`, so a card placed straight in a row paints over the gutter and cards
+  touch. Use `.row` + `col-*` only for form fields. `col-span-{bp}-N` spans grid
+  cells; one-off templates use `grid-template{-bp}` with `--cols{-bp}` inline.
+- Project utilities Bootstrap lacks: `w-*`/`h-*` square sizes (icons, image
+  tiles), `min-w-0`, `mw-xs`..`mw-7xl` (centred column widths), `tracking-*`,
+  `line-clamp-N`, `divide-y`/`divide-x`, `aspect-*`, `columns{-bp}-N`,
+  `border-dashed`, `text-prewrap`, `hover-underline`.
+- Components with their own CSS: `.stat-tile` (+ `--{accent}` variants and
+  `--lift`), `.admin-sidebar`, the `msite-*` microsite system, `.perm-*` toggles,
+  `.pkg-*` package picker, `.reveal` animations.
+- **Dark mode is Bootstrap's** `data-bs-theme` on `<html>` (panels only). Pale
+  brand tints are CSS variables (`--color-brand-50`, `--gl-brand-bg-subtle`, ...)
+  redefined under `[data-bs-theme='dark']`; write gradients with those variables
+  and `var(--bs-body-bg)` rather than literal light hex, or they stay light.
+- Link-style `<button>`s are `btn btn-link p-0` and inherit the surrounding font
+  size. Pagination uses `Paginator::useBootstrapFive()` (AppServiceProvider).
 
 ## 3. Roles & RBAC
 
@@ -408,15 +445,9 @@ autofill often fires only `change`.
 
 ### Form and permission UI conventions
 
-- **Input borders.** `--color-input-border` in `resources/css/app.css` is the one
-  dial for every form control's border. The rule is **deliberately unlayered**
-  (placed after every `@layer` block): a rule inside `@layer base` loses to
-  Tailwind's utilities layer whatever its specificity, so `border-slate-300`
-  would win. It sets `border-width` and `border-style` too, not just the colour —
-  Preflight sets `border: 0 solid` and this project has no Tailwind forms plugin,
-  so those utility classes had only been colouring a zero-width border and most
-  inputs rendered with no border at all. Focus colour is restated there for the
-  same cascade reason.
+- **Input borders.** `$input-border-color` in `resources/css/app.scss` is the
+  one dial for every form control's border (`.form-control` / `.form-select`;
+  `x-forms.input` renders those plus `.is-invalid` / `.invalid-feedback`).
 - **Autofocus.** `resources/js/app.js` marks the first usable field of every form
   with `autofocus` and focuses the first one on the page. It skips disabled,
   readonly, hidden and `display:none` fields, anything inside a closed
@@ -641,7 +672,7 @@ composer dev        # serve + queue + pail logs + vite (concurrently)
 composer test       # config:clear + artisan test
 php artisan migrate --seed
 php artisan storage:link   # REQUIRED once per environment - see below
-npm run build       # build-bootstrap + vite build
+npm run build       # vite build (Bootstrap compiled from app.scss)
 ```
 
 ### Uploads & the storage link (read before debugging a missing image)

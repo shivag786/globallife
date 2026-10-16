@@ -20,62 +20,62 @@
     $fits = $productsFit && $servicesFit;
     $hasUsage = $productsUsed !== null && $servicesUsed !== null;
 
-    $frame = 'relative bg-white rounded-2xl flex flex-col premium-shadow transition h-full '
-        .($popular ? 'border-2 border-gold-500' : 'border border-slate-200');
+    $frame = 'position-relative bg-body rounded-4 d-flex flex-column premium-shadow h-100'
+        .($popular ? 'border-2 border-gold' : 'border');
 @endphp
 
-<{{ $selectable ? 'label' : 'div' }} class="{{ $selectable ? 'block cursor-pointer h-full' : 'h-full' }}">
+<{{ $selectable ? 'label' : 'div' }} class="{{ $selectable ? 'd-block h-100' : 'h-100' }}" @if ($selectable) style="cursor: pointer" @endif>
     @if ($selectable)
-        <input type="radio" name="{{ $name }}" value="{{ $package->id }}" class="pkg-radio sr-only" @checked($checked)>
+        <input type="radio" name="{{ $name }}" value="{{ $package->id }}" class="pkg-radio visually-hidden" @checked($checked)>
     @endif
 
-    <div class="{{ $frame }} hover:-translate-y-1 {{ $selectable ? 'pkg-frame' : '' }}">
+    <div class="{{ $frame }} {{ $selectable ? 'pkg-frame' : '' }}">
         @if ($popular)
-            <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-500 text-brand-950 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full whitespace-nowrap shadow">
+            <span class="position-absolute top-n3 start-50 bg-gold text-brand-emphasis fw-bold text-uppercase tracking-wider px-3 py-1 rounded-pill text-nowrap shadow-sm">
                 Most Popular
             </span>
         @endif
 
         {{-- Name + price --}}
-        <div class="px-6 pt-7 pb-5 text-center border-b border-slate-100">
-            <h4 class="font-display text-lg font-bold text-brand-900 uppercase tracking-wide">{{ $package->name }}</h4>
+        <div class="px-6 pt-7 pb-5 text-center border-bottom">
+            <h4 class="font-display fs-lg fw-bold text-brand-emphasis text-uppercase tracking-wide">{{ $package->name }}</h4>
             @if ($currentLabel)
-                <p class="text-[11px] text-slate-400 mt-0.5">{{ $currentLabel }}</p>
+                <p class="text-secondary mt-1">{{ $currentLabel }}</p>
             @endif
             <p class="mt-3">
-                <span class="font-display text-4xl font-extrabold text-brand-800">{{ $money($package->renewal_price) }}</span>
+                <span class="font-display fs-4xl fw-bolder text-brand-emphasis">{{ $money($package->renewal_price) }}</span>
             </p>
-            <p class="inline-flex items-center gap-1.5 mt-2 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full">
+            <p class="d-inline-flex align-items-center gap-2 mt-2 bg-brand-subtle text-brand fs-xs fw-semibold px-3 py-1 rounded-pill">
                 <x-icon name="calendar" class="w-3.5 h-3.5" />
                 {{ $package->validityLabel() }} validity
             </p>
         </div>
 
         {{-- What it buys --}}
-        <div class="px-6 py-5 flex-1 space-y-3 text-sm">
-            <div class="flex items-center gap-2.5">
+        <div class="px-6 py-5 flex-grow-1 d-flex flex-column gap-3 fs-sm">
+            <div class="d-flex align-items-center gap-2">
                 <x-icon name="{{ $productsFit ? 'check-circle' : 'x-mark' }}"
-                        class="w-4 h-4 flex-shrink-0 {{ $productsFit ? 'text-brand-500' : 'text-red-500' }}" />
-                <span class="text-slate-600">
-                    <span class="font-bold text-brand-900">{{ $package->productLimit() }}</span> product catalogue
+                        class="w-4 h-4 flex-shrink-0 {{ $productsFit ? 'text-brand' : 'text-danger' }}" />
+                <span class="text-body-secondary">
+                    <span class="fw-bold text-brand-emphasis">{{ $package->productLimit() }}</span> product catalogue
                 </span>
             </div>
-            <div class="flex items-center gap-2.5">
+            <div class="d-flex align-items-center gap-2">
                 <x-icon name="{{ $servicesFit ? 'check-circle' : 'x-mark' }}"
-                        class="w-4 h-4 flex-shrink-0 {{ $servicesFit ? 'text-brand-500' : 'text-red-500' }}" />
-                <span class="text-slate-600">
-                    <span class="font-bold text-brand-900">{{ $package->serviceLimit() }}</span> services
+                        class="w-4 h-4 flex-shrink-0 {{ $servicesFit ? 'text-brand' : 'text-danger' }}" />
+                <span class="text-body-secondary">
+                    <span class="fw-bold text-brand-emphasis">{{ $package->serviceLimit() }}</span> services
                 </span>
             </div>
 
             @if ($hasUsage && $fits)
-                <p class="text-xs text-slate-400 pt-1 border-t border-slate-100 mt-3">
+                <p class="fs-xs text-secondary pt-1 border-top mt-3">
                     Room for {{ $package->productLimit() - $productsUsed }} more products and
                     {{ $package->serviceLimit() - $servicesUsed }} more services.
                 </p>
             @elseif ($hasUsage)
-                <p class="text-xs text-red-600 pt-2 border-t border-red-100 mt-3 flex items-start gap-1.5">
-                    <x-icon name="x-mark" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <p class="fs-xs text-danger pt-2 border-top border-danger-subtle mt-3 d-flex align-items-start gap-2">
+                    <x-icon name="x-mark" class="w-3.5 h-3.5 flex-shrink-0 mt-1" />
                     <span>Below what they already use. They keep everything, but can add no more.</span>
                 </p>
             @endif
@@ -84,10 +84,10 @@
         <div class="px-6 pb-6">
             @if ($selectable)
                     {{-- No JS: the radio's :checked state drives both labels (see app.scss). --}}
-                <span class="pkg-select block w-full text-center py-3 rounded-full font-semibold text-sm border border-slate-200 text-slate-500">
+                <span class="pkg-select d-block w-100 text-center py-3 rounded-pill fw-semibold fs-sm border text-secondary">
                     Select
                 </span>
-                <span class="pkg-selected hidden w-full text-center py-3 rounded-full font-semibold text-sm bg-brand-700 text-white">
+                <span class="pkg-selected d-none w-100 text-center py-3 rounded-pill fw-semibold fs-sm bg-brand text-white">
                     Selected
                 </span>
             @else

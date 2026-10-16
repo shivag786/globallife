@@ -1,16 +1,16 @@
 <x-layouts.app title="Products" heading="Products">
-    <div class="flex justify-end mb-4">
+    <div class="d-flex justify-content-end mb-4">
         @can('products.create')
-            <a href="{{ route('admin.products.create') }}" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">
+            <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm">
                 + Add Product
             </a>
         @endcan
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-left text-slate-500">
+        <table class="w-100 fs-sm">
+            <thead class="bg-body-tertiary text-start text-secondary">
                 <tr>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Category</th>
@@ -21,31 +21,31 @@
             </thead>
             <tbody>
                 @forelse ($products as $product)
-                    <tr class="border-t border-slate-100">
-                        <td class="px-4 py-3 font-medium">{{ $product->name }}</td>
+                    <tr class="border-top">
+                        <td class="px-4 py-3 fw-medium">{{ $product->name }}</td>
                         <td class="px-4 py-3">{{ $product->category }}</td>
                         <td class="px-4 py-3">{{ $product->is_featured ? 'Yes' : 'No' }}</td>
                         <td class="px-4 py-3">
-                            <span class="px-2 py-0.5 rounded text-xs {{ $product->status === 'active' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500' }}">
+                            <span class="px-2 py-1 rounded fs-xs {{ $product->status === 'active' ? 'bg-success-subtle text-success' : 'bg-body-secondary text-secondary' }}">
                                 {{ $product->status }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-right space-x-3">
-                            <a href="{{ route('products.show', $product) }}" class="text-slate-500 hover:underline" target="_blank">View</a>
+                        <td class="px-4 py-3 text-end d-flex align-items-center gap-3">
+                            <a href="{{ route('products.show', $product) }}" class="text-secondary hover-underline" target="_blank">View</a>
                             @can('products.edit')
-                                <a href="{{ route('admin.products.benefits.index', $product) }}" class="text-brand-600 hover:underline">Benefits</a>
-                                <a href="{{ route('admin.products.edit', $product) }}" class="text-indigo-600 hover:underline">Edit</a>
+                                <a href="{{ route('admin.products.benefits.index', $product) }}" class="text-brand hover-underline">Benefits</a>
+                                <a href="{{ route('admin.products.edit', $product) }}" class="text-primary hover-underline">Edit</a>
                             @endcan
                             @can('products.delete')
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="inline" data-confirm="Delete this product?" data-confirm-danger>
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline" data-confirm="Delete this product?" data-confirm-danger>
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                    <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger hover-underline">Delete</button>
                                 </form>
                             @endcan
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">No products yet.</td></tr>
+                    <tr><td colspan="5" class="px-4 py-6 text-center text-secondary">No products yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -1,11 +1,11 @@
 @if ($microsite->videos->isNotEmpty())
     <section id="videos" class="msite-section">
         <div class="msite-container">
-            <div class="text-center max-w-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-                <p class="text-sm font-semibold text-gold-600 uppercase tracking-wide mb-2">Watch</p>
-                <h2 class="msite-heading text-3xl md:text-4xl">Videos</h2>
+            <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
+                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">Watch</p>
+                <h2 class="msite-heading fs-3xl fs-4xl">Videos</h2>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-6">
                 @foreach ($microsite->videos as $video)
                     @php
                         $youtubeId = \App\Models\BusinessVideo::extractYoutubeId($video->youtube_url);
@@ -24,15 +24,15 @@
                     @continue(! $youtubeId)
 
                     <button type="button" data-msite-video="{{ $youtubeId }}"
-                            class="relative block rounded-xl overflow-hidden msite-card-img group reveal cursor-pointer">
-                        <img src="{{ $video->thumbnail_url }}" loading="lazy" class="w-full h-44 object-cover">
-                        <div class="absolute inset-0 bg-black/25 flex items-center justify-center group-hover:bg-black/35 transition">
-                            <div class="w-14 h-14 rounded-full bg-white/95 flex items-center justify-center group-hover:scale-110 transition">
-                                <x-icon name="play" :filled="true" class="w-6 h-6 text-brand-800 ml-0.5" />
+                            class="btn btn-link p-0 text-decoration-none position-relative d-block rounded-3 overflow-hidden msite-card-img reveal">
+                        <img src="{{ $video->thumbnail_url }}" loading="lazy" class="w-100 h-44 object-fit-cover">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-black bg-opacity-25 d-flex align-items-center justify-content-center">
+                            <div class="w-14 h-14 rounded-pill bg-white bg-opacity-100 d-flex align-items-center justify-content-center">
+                                <x-icon name="play" :filled="true" class="w-6 h-6 text-brand-emphasis ms-1" />
                             </div>
                         </div>
                         @if ($video->title)
-                            <p class="absolute bottom-2 left-3 right-3 text-left text-white text-sm font-medium drop-shadow truncate">{{ $video->title }}</p>
+                            <p class="position-absolute bottom-2 start-3 end-3 text-start text-white fs-sm fw-medium text-shadow text-truncate">{{ $video->title }}</p>
                         @endif
                     </button>
                 @endforeach
@@ -40,12 +40,12 @@
         </div>
     </section>
 
-    <div id="msite-video-modal" class="fixed inset-0 z-50 hidden bg-black/90 items-center justify-center p-4" data-msite-video-modal>
-        <button type="button" data-msite-video-close aria-label="Close" class="absolute top-5 right-5 text-white/80 hover:text-white">
+    <div id="msite-video-modal" class="position-fixed top-0 start-0 w-100 h-100 z-3 d-none bg-black bg-opacity-100 align-items-center justify-content-center p-4" data-msite-video-modal>
+        <button type="button" data-msite-video-close aria-label="Close" class="btn btn-link p-0 text-decoration-none position-absolute top-5 end-5 text-white text-opacity-75">
             <x-icon name="x-mark" class="w-8 h-8" />
         </button>
-        <div class="w-full max-w-3xl aspect-video">
-            <iframe data-msite-video-frame src="" class="w-full h-full rounded-lg"
+        <div class="w-100 mw-3xl aspect-video">
+            <iframe data-msite-video-frame src="" class="w-100 h-100 rounded-2"
                     allow="autoplay; encrypted-media; picture-in-picture"
                     referrerpolicy="strict-origin-when-cross-origin"
                     allowfullscreen></iframe>

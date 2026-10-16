@@ -7,37 +7,37 @@
             : route('admin.products.benefits.store', $product);
     @endphp
 
-    <div class="flex items-center justify-between mb-4">
-        <p class="text-sm text-slate-500">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <p class="fs-sm text-secondary">
             Manage the benefits shown in the product's “Benefits” popup for
-            <span class="font-medium text-slate-700">{{ $product->name }}</span>.
+            <span class="fw-medium text-body-secondary">{{ $product->name }}</span>.
         </p>
-        <a href="{{ route('admin.products.edit', $product) }}" class="text-sm text-indigo-600 hover:underline">← Back to product</a>
+        <a href="{{ route('admin.products.edit', $product) }}" class="fs-sm text-primary hover-underline">← Back to product</a>
     </div>
 
-    <div class="grid lg:grid-cols-[380px_1fr] gap-6 items-start">
+    <div class="d-grid grid-template-lg gap-6 align-items-start" style="--cols-lg: 380px minmax(0, 1fr)">
         {{-- Add / Edit form --}}
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 p-5">
-            <h2 class="font-semibold text-slate-800 mb-4">{{ $isEditing ? 'Edit Benefit' : 'Add Benefit' }}</h2>
-            <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="space-y-4">
+        <div class="bg-body rounded-2 shadow-sm border p-5">
+            <h2 class="fw-semibold text-body mb-4">{{ $isEditing ? 'Edit Benefit' : 'Add Benefit' }}</h2>
+            <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="d-flex flex-column gap-4">
                 @csrf
                 @if ($isEditing) @method('PUT') @endif
 
                 <div>
-                    <label for="title" class="block text-sm font-medium text-slate-700">Title</label>
+                    <label for="title" class="d-block fs-sm fw-medium text-body-secondary">Title</label>
                     <input id="title" type="text" name="title" value="{{ old('title', $editing->title ?? '') }}" required
-                           class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 d-block w-100 rounded-2 shadow-sm">
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <label for="description" class="d-block fs-sm fw-medium text-body-secondary">Description</label>
                     <textarea id="description" name="description" rows="3"
-                              class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $editing->description ?? '') }}</textarea>
+                              class="mt-1 d-block w-100 rounded-2 shadow-sm">{{ old('description', $editing->description ?? '') }}</textarea>
                 </div>
 
                 <div>
-                    <label for="icon" class="block text-sm font-medium text-slate-700">Icon</label>
-                    <select id="icon" name="icon" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <label for="icon" class="d-block fs-sm fw-medium text-body-secondary">Icon</label>
+                    <select id="icon" name="icon" class="mt-1 d-block w-100 rounded-2 shadow-sm">
                         <option value="">— No icon —</option>
                         @foreach ($iconOptions as $ic)
                             <option value="{{ $ic }}" @selected(old('icon', $editing->icon ?? '') === $ic)>{{ $ic }}</option>
@@ -46,22 +46,22 @@
                 </div>
 
                 <div>
-                    <label for="image" class="block text-sm font-medium text-slate-700">Image <span class="text-slate-400">(optional, overrides icon)</span></label>
+                    <label for="image" class="d-block fs-sm fw-medium text-body-secondary">Image <span class="text-secondary">(optional, overrides icon)</span></label>
                     @if ($isEditing && $editing->image)
                         <img src="{{ asset('storage/'.$editing->image) }}" alt="" class="h-14 mt-1 mb-2 rounded">
                     @endif
-                    <input id="image" type="file" name="image" accept="image/*" class="mt-1 block w-full text-sm text-slate-600">
+                    <input id="image" type="file" name="image" accept="image/*" class="mt-1 d-block w-100 fs-sm text-body-secondary">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="d-grid grid-cols-2 gap-3">
                     <div>
-                        <label for="display_order" class="block text-sm font-medium text-slate-700">Order</label>
+                        <label for="display_order" class="d-block fs-sm fw-medium text-body-secondary">Order</label>
                         <input id="display_order" type="number" min="0" name="display_order" value="{{ old('display_order', $editing->display_order ?? 0) }}"
-                               class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="mt-1 d-block w-100 rounded-2 shadow-sm">
                     </div>
                     <div>
-                        <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
-                        <select id="status" name="status" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <label for="status" class="d-block fs-sm fw-medium text-body-secondary">Status</label>
+                        <select id="status" name="status" class="mt-1 d-block w-100 rounded-2 shadow-sm">
                             @foreach (['active', 'inactive'] as $option)
                                 <option value="{{ $option }}" @selected(old('status', $editing->status ?? 'active') === $option)>{{ ucfirst($option) }}</option>
                             @endforeach
@@ -69,54 +69,54 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <button type="submit" class="bg-indigo-600 text-white text-sm px-4 py-2 rounded-md hover:bg-indigo-700">
+                <div class="d-flex align-items-center gap-3">
+                    <button type="submit" class="btn btn-primary btn-sm">
                         {{ $isEditing ? 'Update Benefit' : 'Add Benefit' }}
                     </button>
                     @if ($isEditing)
-                        <a href="{{ route('admin.products.benefits.index', $product) }}" class="text-sm text-slate-500 hover:underline">Cancel</a>
+                        <a href="{{ route('admin.products.benefits.index', $product) }}" class="fs-sm text-secondary hover-underline">Cancel</a>
                     @endif
                 </div>
             </form>
         </div>
 
         {{-- Existing benefits --}}
-        <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden">
-            <div class="px-5 py-3 border-b border-slate-100 text-sm font-medium text-slate-600">
+        <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
+            <div class="px-5 py-3 border-bottom fs-sm fw-medium text-body-secondary">
                 {{ $benefits->count() }} {{ Str::plural('benefit', $benefits->count()) }}
             </div>
-            <ul class="divide-y divide-slate-100">
+            <ul class="divide-y">
                 @forelse ($benefits as $benefit)
-                    <li class="flex items-start gap-4 px-5 py-4 {{ $editing && $editing->id === $benefit->id ? 'bg-indigo-50/50' : '' }}">
-                        <div class="flex-shrink-0 w-11 h-11 rounded-lg bg-brand-50 flex items-center justify-center overflow-hidden">
+                    <li class="d-flex align-items-start gap-4 px-5 py-4 {{ $editing && $editing->id === $benefit->id ? 'bg-primary-subtle' : '' }}">
+                        <div class="flex-shrink-0 w-11 h-11 rounded-2 bg-brand-subtle d-flex align-items-center justify-content-center overflow-hidden">
                             @if ($benefit->image)
-                                <img src="{{ asset('storage/'.$benefit->image) }}" alt="" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/'.$benefit->image) }}" alt="" class="w-100 h-100 object-fit-cover">
                             @elseif ($benefit->icon)
-                                <x-icon :name="$benefit->icon" class="w-6 h-6 text-brand-600" />
+                                <x-icon :name="$benefit->icon" class="w-6 h-6 text-brand" />
                             @else
-                                <x-icon name="sparkles" class="w-6 h-6 text-slate-300" />
+                                <x-icon name="sparkles" class="w-6 h-6 text-body-tertiary" />
                             @endif
                         </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2">
-                                <p class="font-medium text-slate-800">{{ $benefit->title }}</p>
-                                <span class="text-xs text-slate-400">#{{ $benefit->display_order }}</span>
-                                <span class="px-2 py-0.5 rounded text-xs {{ $benefit->status === 'active' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500' }}">{{ $benefit->status }}</span>
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <p class="fw-medium text-body">{{ $benefit->title }}</p>
+                                <span class="fs-xs text-secondary">#{{ $benefit->display_order }}</span>
+                                <span class="px-2 py-1 rounded fs-xs {{ $benefit->status === 'active' ? 'bg-success-subtle text-success' : 'bg-body-secondary text-secondary' }}">{{ $benefit->status }}</span>
                             </div>
                             @if ($benefit->description)
-                                <p class="text-sm text-slate-500 mt-0.5">{{ $benefit->description }}</p>
+                                <p class="fs-sm text-secondary mt-1">{{ $benefit->description }}</p>
                             @endif
                         </div>
-                        <div class="flex-shrink-0 space-x-3 text-sm">
-                            <a href="{{ route('admin.products.benefits.index', [$product, 'edit' => $benefit->id]) }}" class="text-indigo-600 hover:underline">Edit</a>
-                            <form action="{{ route('admin.products.benefits.destroy', [$product, $benefit]) }}" method="POST" class="inline" data-confirm="Delete this benefit?" data-confirm-danger>
+                        <div class="flex-shrink-0 d-flex align-items-center gap-3 fs-sm">
+                            <a href="{{ route('admin.products.benefits.index', [$product, 'edit' => $benefit->id]) }}" class="text-primary hover-underline">Edit</a>
+                            <form action="{{ route('admin.products.benefits.destroy', [$product, $benefit]) }}" method="POST" class="d-inline" data-confirm="Delete this benefit?" data-confirm-danger>
                                 @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                <button type="submit" class="btn btn-link p-0 text-decoration-none text-danger hover-underline">Delete</button>
                             </form>
                         </div>
                     </li>
                 @empty
-                    <li class="px-5 py-10 text-center text-slate-400 text-sm">No benefits yet. Add the first one on the left.</li>
+                    <li class="px-5 py-10 text-center text-secondary fs-sm">No benefits yet. Add the first one on the left.</li>
                 @endforelse
             </ul>
         </div>

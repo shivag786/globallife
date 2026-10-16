@@ -75,9 +75,9 @@
     @endif
 
     <section id="enquiry" class="msite-section pt-0">
-        <div class="msite-container max-w-lg">
+        <div class="msite-container mw-lg">
             <div class="msite-card p-8 reveal">
-                <h2 class="msite-heading text-2xl mb-5">Get in Touch</h2>
+                <h2 class="msite-heading fs-2xl mb-5">Get in Touch</h2>
                 @include('partials.enquiry-form', [
                     'source' => 'microsite',
                     'vipMicrositeId' => $microsite->id,

@@ -45,7 +45,7 @@
         ];
     @endphp
 
-    <div class="bootstrap-scope">
+    <div class="">
         {{-- Who this is for, and how much they currently hold. --}}
         <div class="card border-0 shadow-sm mb-4 overflow-hidden">
             <div class="card-body text-white d-flex flex-wrap justify-content-between align-items-start gap-4"
@@ -63,7 +63,7 @@
                     </p>
                 </div>
             </div>
-            <div class="card-footer bg-white small text-muted">
+            <div class="card-footer bg-body small text-muted">
                 Set by Super Admin only. <strong>Branch Managers</strong> is the one that places this
                 Sub Admin in the user hierarchy &mdash; with it they create and run their own Branch
                 Managers, and see nobody else's.
@@ -114,7 +114,7 @@
             <div class="d-flex flex-column gap-3">
                 @foreach ($modules as $module)
                     <div class="card border shadow-sm overflow-hidden">
-                        <div class="card-header bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="card-header bg-body d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <div class="d-flex align-items-center gap-3 min-w-0">
                                 <span class="d-flex align-items-center justify-content-center rounded flex-shrink-0"
                                       style="width:2.25rem;height:2.25rem;background:#e8f1ec;color:#2c704c">

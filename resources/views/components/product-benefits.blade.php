@@ -8,37 +8,37 @@
 @endphp
 
 @if ($benefits->isNotEmpty())
-    <button type="button" data-modal-open="#{{ $modalId }}"
-            {{ $attributes->merge(['class' => 'inline-flex items-center gap-2 border border-brand-200 text-brand-700 px-5 py-2.5 rounded-full font-medium hover:bg-brand-50 transition']) }}>
-        <x-icon name="sparkles" class="w-4 h-4 text-gold-500" /> Benefits
+    <button class="btn btn-link p-0" type="button" data-modal-open="#{{ $modalId }}"
+            {{ $attributes->merge(['class' => 'd-inline-flex align-items-center gap-2 border border-brand-subtle text-brand px-5 py-2 rounded-pill fw-medium']) }}>
+        <x-icon name="sparkles" class="w-4 h-4 text-gold" /> Benefits
     </button>
 
     <div id="{{ $modalId }}" data-modal
-         class="hidden fixed inset-0 z-50 items-center justify-center bg-brand-950/50 backdrop-blur-sm p-4"
+         class="d-none position-fixed top-0 start-0 w-100 h-100 z-3 align-items-center justify-content-center bg-brand-subtle p-4"
          role="dialog" aria-modal="true" aria-labelledby="{{ $modalId }}-title">
-        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto premium-shadow animate-fade-in-up">
-            <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-2xl">
-                <h3 id="{{ $modalId }}-title" class="font-display text-lg font-bold text-brand-900">
+        <div class="bg-body rounded-4 mw-lg w-100 overflow-y-auto premium-shadow animate-fade-in-up">
+            <div class="d-flex align-items-center justify-content-between gap-4 px-6 py-4 border-bottom position-sticky top-0 bg-body rounded-top">
+                <h3 id="{{ $modalId }}-title" class="font-display fs-lg fw-bold text-brand-emphasis">
                     Why you'll love {{ $product->name }}
                 </h3>
-                <button type="button" data-modal-close aria-label="Close" class="text-slate-400 hover:text-slate-700 transition">
+                <button type="button" data-modal-close aria-label="Close" class="btn btn-link p-0 text-decoration-none text-secondary">
                     <x-icon name="x-mark" class="w-6 h-6" />
                 </button>
             </div>
-            <div class="p-6 space-y-5">
+            <div class="p-6 d-flex flex-column gap-5">
                 @foreach ($benefits as $benefit)
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-brand-50 to-gold-500/10 flex items-center justify-center overflow-hidden">
+                    <div class="d-flex align-items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-3 d-flex align-items-center justify-content-center overflow-hidden" style="background: linear-gradient(to bottom right, var(--color-brand-50), color-mix(in srgb, var(--color-gold-500) 10%, transparent))">
                             @if ($benefit->image)
-                                <img src="{{ asset('storage/'.$benefit->image) }}" alt="" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/'.$benefit->image) }}" alt="" class="w-100 h-100 object-fit-cover">
                             @else
-                                <x-icon :name="$benefit->icon ?: 'check-circle'" class="w-6 h-6 text-brand-600" />
+                                <x-icon :name="$benefit->icon ?: 'check-circle'" class="w-6 h-6 text-brand" />
                             @endif
                         </div>
                         <div>
-                            <h4 class="font-semibold text-brand-900">{{ $benefit->title }}</h4>
+                            <h4 class="fw-semibold text-brand-emphasis">{{ $benefit->title }}</h4>
                             @if ($benefit->description)
-                                <p class="text-sm text-slate-600 mt-0.5 leading-relaxed">{{ $benefit->description }}</p>
+                                <p class="fs-sm text-body-secondary mt-1 lh-lg">{{ $benefit->description }}</p>
                             @endif
                         </div>
                     </div>
