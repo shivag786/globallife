@@ -4,15 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? config('app.name') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-6">
-            <a href="{{ url('/') }}" class="text-2xl font-bold text-slate-800">{{ config('app.name') }}</a>
+<body class="bg-body-tertiary min-vh-100 d-flex align-items-center justify-content-center px-3 py-4">
+    <div class="w-100" style="max-width: 28rem">
+        <div class="text-center mb-4">
+            <a href="{{ url('/') }}" class="fs-3 fw-bold text-body text-decoration-none">{{ config('app.name') }}</a>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-8">
-            {{ $slot }}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-sm-5">
+                {{ $slot }}
+            </div>
         </div>
     </div>
 </body>

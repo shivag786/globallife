@@ -25,38 +25,49 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('vendor/bootstrap.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
-<body class="bg-cream text-slate-800 antialiased">
+<body class="bg-cream">
     <x-flash />
 
-    <header class="sticky top-0 z-30 bg-cream/90 backdrop-blur border-b border-slate-200/60">
-        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
+        <div class="container-lg d-flex align-items-center justify-content-between gap-3" style="height: 4rem">
             @if ($storefront)
                 {{-- Shopping a VIP storefront → keep the customer in that store's context. --}}
-                <a href="{{ url($storefront->publicPath()) }}" class="flex items-center gap-2.5 min-w-0">
+                <a href="{{ url($storefront->publicPath()) }}"
+                   class="d-flex align-items-center gap-2 min-w-0 text-decoration-none">
                     @if ($storefront->logo_path)
-                        <img src="{{ asset('storage/'.$storefront->logo_path) }}" alt="{{ $storefront->business_name }}" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+                        <img src="{{ asset('storage/'.$storefront->logo_path) }}" alt="{{ $storefront->business_name }}"
+                             class="rounded-circle object-fit-cover flex-shrink-0" width="36" height="36">
                     @else
-                        <span class="w-9 h-9 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold flex-shrink-0">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($storefront->business_name, 0, 1)) }}</span>
+                        <span class="rounded-circle bg-brand text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                              style="width: 2.25rem; height: 2.25rem">
+                            {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($storefront->business_name, 0, 1)) }}
+                        </span>
                     @endif
-                    <span class="font-heading font-bold text-brand-900 truncate">{{ $storefront->business_name }}</span>
+                    <span class="font-heading fw-bold text-truncate" style="color: var(--color-brand-900)">
+                        {{ $storefront->business_name }}
+                    </span>
                 </a>
-                <div class="flex items-center gap-4 sm:gap-6 flex-shrink-0">
-                    <a href="{{ url($storefront->publicPath()) }}#shop" class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-brand-700">← Continue Shopping</a>
+                <div class="d-flex align-items-center gap-3 gap-sm-4 flex-shrink-0">
+                    <a href="{{ url($storefront->publicPath()) }}#shop"
+                       class="d-none d-sm-inline small fw-medium text-secondary text-decoration-none">← Continue Shopping</a>
                     @include('partials.cart-icon')
                 </div>
             @else
-                <a href="{{ url('/') }}" class="flex items-center gap-2 font-display text-2xl font-bold text-brand-800">
+                <a href="{{ url('/') }}"
+                   class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
+                   style="color: var(--color-brand-800)">
                     @if (! empty($settings['site_logo']))
-                        <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="h-10 w-auto">
+                        <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}"
+                             style="height: 2.5rem; width: auto">
                     @else
                         {{ $siteName }}
                     @endif
                 </a>
-                <div class="flex items-center gap-4 sm:gap-6">
-                    <a href="{{ route('products.index') }}" class="hidden sm:inline text-sm font-medium text-slate-600 hover:text-brand-700">← Continue Shopping</a>
+                <div class="d-flex align-items-center gap-3 gap-sm-4">
+                    <a href="{{ route('products.index') }}"
+                       class="d-none d-sm-inline small fw-medium text-secondary text-decoration-none">← Continue Shopping</a>
                     @include('partials.cart-icon')
                 </div>
             @endif
@@ -67,13 +78,15 @@
         {{ $slot }}
     </main>
 
-    <footer class="border-t border-slate-200/60 mt-16">
-        <div class="max-w-6xl mx-auto px-6 py-8 text-center text-sm text-slate-400">
+    <footer class="border-top mt-5">
+        <div class="container-lg py-4 text-center small text-secondary">
             @if ($storefront)
-                <p>{{ $storefront->business_name }}{{ $storefront->city ? ' · '.$storefront->city->name : '' }}</p>
-                <p class="text-xs mt-1">Powered by <a href="{{ url('/') }}" class="hover:text-brand-700">{{ $siteName }}</a></p>
+                <p class="mb-1">{{ $storefront->business_name }}{{ $storefront->city ? ' · '.$storefront->city->name : '' }}</p>
+                <p class="mb-0" style="font-size: 0.8125rem">
+                    Powered by <a href="{{ url('/') }}" class="text-decoration-none">{{ $siteName }}</a>
+                </p>
             @else
-                <p>© {{ date('Y') }} {{ $siteName }}</p>
+                <p class="mb-0">© {{ date('Y') }} {{ $siteName }}</p>
             @endif
         </div>
     </footer>

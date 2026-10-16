@@ -50,8 +50,8 @@ if (document.querySelector('[data-profit-calc]')) {
 // [data-modal-close] element or a click on the backdrop itself closes it.
 function closeModal(modal) {
     if (!modal) return;
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    modal.classList.add('d-none');
+    modal.classList.remove('d-flex');
     document.body.style.overflow = '';
 }
 
@@ -65,8 +65,8 @@ document.addEventListener('click', (event) => {
             if (modal.parentElement !== document.body) {
                 document.body.appendChild(modal);
             }
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.remove('d-none');
+            modal.classList.add('d-flex');
             document.body.style.overflow = 'hidden';
         }
         return;
@@ -86,7 +86,7 @@ document.addEventListener('click', (event) => {
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-        document.querySelectorAll('[data-modal]:not(.hidden)').forEach(closeModal);
+        document.querySelectorAll('[data-modal]:not(.d-none)').forEach(closeModal);
     }
 });
 
@@ -114,12 +114,20 @@ const revealObserver = new IntersectionObserver(
 
 document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
-// Dark-mode toggle: flips <html data-theme> and persists the choice. The no-flash
-// init script in the panel layout applies the saved value before first paint.
+// Dark-mode toggle: flips <html data-bs-theme> (Bootstrap's own attribute) and
+// persists the choice. The no-flash init script in the panel layout applies the
+// saved value before first paint; this keeps the sun/moon icon in step with it.
+function syncThemeIcons() {
+    const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    document.querySelectorAll('[data-icon-light]').forEach((el) => el.classList.toggle('d-none', dark));
+    document.querySelectorAll('[data-icon-dark]').forEach((el) => el.classList.toggle('d-none', !dark));
+}
+
 document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
-        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
+        const next = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', next);
+        syncThemeIcons();
         try {
             localStorage.setItem('theme', next);
         } catch (e) {
@@ -128,18 +136,20 @@ document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
     });
 });
 
+syncThemeIcons();
+
 // Admin sidebar mobile toggle
 const sidebar = document.getElementById('admin-sidebar');
 const sidebarOverlay = document.querySelector('[data-sidebar-overlay]');
 
 function openSidebar() {
-    sidebar?.classList.remove('-translate-x-full');
-    sidebarOverlay?.classList.remove('hidden');
+    sidebar?.classList.add('is-open');
+    sidebarOverlay?.classList.remove('d-none');
 }
 
 function closeSidebar() {
-    sidebar?.classList.add('-translate-x-full');
-    sidebarOverlay?.classList.add('hidden');
+    sidebar?.classList.remove('is-open');
+    sidebarOverlay?.classList.add('d-none');
 }
 
 document.querySelectorAll('[data-sidebar-open]').forEach((btn) => btn.addEventListener('click', openSidebar));
@@ -149,7 +159,7 @@ sidebarOverlay?.addEventListener('click', closeSidebar);
 // Public header mobile nav toggle
 const mobileNav = document.getElementById('mobile-nav');
 document.querySelectorAll('[data-mobile-nav-open]').forEach((btn) => {
-    btn.addEventListener('click', () => mobileNav?.classList.toggle('hidden'));
+    btn.addEventListener('click', () => mobileNav?.classList.toggle('d-none'));
 });
 
 // Password show/hide toggle: <button data-password-toggle="#password-field-id">
@@ -162,8 +172,8 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     toggle.addEventListener('click', () => {
         const showing = input.type === 'text';
         input.type = showing ? 'password' : 'text';
-        toggle.querySelector('[data-icon-eye]')?.classList.toggle('hidden', !showing);
-        toggle.querySelector('[data-icon-eye-slash]')?.classList.toggle('hidden', showing);
+        toggle.querySelector('[data-icon-eye]')?.classList.toggle('d-none', !showing);
+        toggle.querySelector('[data-icon-eye-slash]')?.classList.toggle('d-none', showing);
     });
 });
 
@@ -174,7 +184,7 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     const EYE_SLASH = 'M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88';
 
     const svg = (path, hidden) =>
-        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5${hidden ? ' hidden' : ''}" data-eye="${hidden ? 'off' : 'on'}"><path stroke-linecap="round" stroke-linejoin="round" d="${path}"/></svg>`;
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5${hidden ? ' d-none' : ''}" data-eye="${hidden ? 'off' : 'on'}"><path stroke-linecap="round" stroke-linejoin="round" d="${path}"/></svg>`;
 
     document.querySelectorAll('input[type="password"]').forEach((input) => {
         if (input.dataset.pwEnhanced) return;
@@ -183,15 +193,15 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
         input.dataset.pwEnhanced = '1';
 
         const wrap = document.createElement('div');
-        wrap.className = 'relative';
+        wrap.className = 'position-relative';
         input.parentNode.insertBefore(wrap, input);
         wrap.appendChild(input);
-        input.classList.add('pr-10');
+        input.style.paddingRight = '2.5rem';
 
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.setAttribute('aria-label', 'Show password');
-        btn.className = 'absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600';
+        btn.className = 'btn btn-link text-secondary position-absolute top-0 end-0 h-100 px-3 d-flex align-items-center';
         btn.innerHTML = svg(EYE, false) + svg(EYE_SLASH, true);
         wrap.appendChild(btn);
 
@@ -199,8 +209,8 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
             const showing = input.type === 'text';
             input.type = showing ? 'password' : 'text';
             btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-            btn.querySelector('[data-eye="on"]').classList.toggle('hidden', !showing);
-            btn.querySelector('[data-eye="off"]').classList.toggle('hidden', showing);
+            btn.querySelector('[data-eye="on"]').classList.toggle('d-none', !showing);
+            btn.querySelector('[data-eye="off"]').classList.toggle('d-none', showing);
         });
     });
 })();
@@ -227,8 +237,9 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     function addMessage(text, from) {
         const bubble = document.createElement('div');
         bubble.className = from === 'bot'
-            ? 'bg-white border border-slate-100 rounded-2xl rounded-bl-sm px-4 py-2 max-w-[85%] text-slate-700'
-            : 'bg-brand-700 text-white rounded-2xl rounded-br-sm px-4 py-2 max-w-[85%] ml-auto';
+            ? 'bg-body border rounded-4 px-3 py-2 text-body'
+            : 'bg-brand text-white rounded-4 px-3 py-2 ms-auto';
+        bubble.style.maxWidth = '85%';
         bubble.textContent = text;
         messagesEl.appendChild(bubble);
         messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -236,12 +247,12 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
 
     function addServiceButtons() {
         const wrap = document.createElement('div');
-        wrap.className = 'flex flex-wrap gap-2';
+        wrap.className = 'd-flex flex-wrap gap-2';
         services.forEach((service) => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.textContent = service.label;
-            btn.className = 'text-xs bg-brand-50 text-brand-700 border border-brand-100 px-3 py-1.5 rounded-full hover:bg-brand-100';
+            btn.className = 'btn btn-sm btn-outline-brand rounded-pill';
             btn.addEventListener('click', () => {
                 wrap.remove();
                 handleServiceChoice(service.label);
@@ -381,9 +392,8 @@ likeButton?.addEventListener('click', () => {
         .then((response) => response.json())
         .then(({ liked, count }) => {
             document.getElementById('blog-like-count').textContent = count;
-            likeButton.classList.toggle('bg-rose-50', liked);
-            likeButton.classList.toggle('border-rose-200', liked);
-            likeButton.classList.toggle('text-rose-600', liked);
+            likeButton.classList.toggle('btn-danger', liked);
+            likeButton.classList.toggle('btn-outline-danger', !liked);
         })
         .catch(() => {});
 });
@@ -416,6 +426,5 @@ document.addEventListener('submit', (event) => {
     submitter.dataset.originalContent = submitter.innerHTML;
     submitter.disabled = true;
     submitter.style.minWidth = `${submitter.offsetWidth}px`;
-    submitter.innerHTML =
-        '<svg class="animate-spin h-4 w-4 mx-auto" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>';
+    submitter.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
 });

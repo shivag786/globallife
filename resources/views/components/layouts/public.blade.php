@@ -64,8 +64,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('vendor/bootstrap.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
 
     @if (! empty($settings['gtm_id']))
         <script>
@@ -88,7 +87,7 @@
 
     {{ $head ?? '' }}
 </head>
-<body class="bg-cream text-slate-800 antialiased">
+<body class="bg-cream">
     @if (! empty($settings['gtm_id']))
         <noscript>
             <iframe src="https://www.googletagmanager.com/ns.html?id={{ $settings['gtm_id'] }}"
@@ -97,103 +96,104 @@
     @endif
 
     @if (! empty($settings['announcement_text']))
-        <div class="bg-gradient-to-r from-brand-800 via-brand-900 to-brand-950 text-cream text-center text-sm py-2.5 px-4">
+        <div class="text-center small py-2 px-3"
+             style="background: linear-gradient(90deg, var(--color-brand-800), var(--color-brand-900), var(--color-brand-950)); color: var(--color-cream)">
             @if (! empty($settings['announcement_link']))
-                <a href="{{ $settings['announcement_link'] }}" class="inline-flex items-center gap-2 hover:text-gold-400 transition">
-                    <x-icon name="sparkles" class="w-4 h-4 text-gold-400" />
+                <a href="{{ $settings['announcement_link'] }}"
+                   class="d-inline-flex align-items-center gap-2 text-reset text-decoration-none">
+                    <x-icon name="sparkles" class="w-4 h-4" style="color: var(--color-gold-400)" />
                     {{ $settings['announcement_text'] }}
-                    <span class="underline underline-offset-2 font-medium">Learn more</span>
+                    <span class="text-decoration-underline fw-medium">Learn more</span>
                 </a>
             @else
-                <span class="inline-flex items-center gap-2">
-                    <x-icon name="sparkles" class="w-4 h-4 text-gold-400" />
+                <span class="d-inline-flex align-items-center gap-2">
+                    <x-icon name="sparkles" class="w-4 h-4" style="color: var(--color-gold-400)" />
                     {{ $settings['announcement_text'] }}
                 </span>
             @endif
         </div>
     @endif
 
-    <header class="sticky top-0 z-30 bg-cream/90 backdrop-blur border-b border-slate-200/60">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="flex items-center gap-2 font-display text-2xl font-bold text-brand-800">
+    <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
+        <div class="container-lg py-3 d-flex align-items-center justify-content-between">
+            <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
+               style="color: var(--color-brand-800)">
                 @if (! empty($settings['site_logo']))
-                    <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="h-10 w-auto">
+                    <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}"
+                         style="height: 2.5rem; width: auto">
                 @else
                     {{ $siteName }}
                 @endif
             </a>
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-                <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
-                <a href="{{ route('products.index') }}" class="hover:text-brand-600">Products</a>
-                <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
-                <a href="{{ route('events.index') }}" class="hover:text-brand-600">Events</a>
-                <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
+            <nav class="d-none d-md-flex align-items-center gap-4 small fw-medium">
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none">Home</a>
+                <a href="{{ route('products.index') }}" class="text-secondary text-decoration-none">Products</a>
+                <a href="{{ route('blog.index') }}" class="text-secondary text-decoration-none">Blog</a>
+                <a href="{{ route('events.index') }}" class="text-secondary text-decoration-none">Events</a>
+                <a href="{{ route('contact') }}" class="text-secondary text-decoration-none">Contact</a>
             </nav>
-            <div class="flex items-center gap-3 sm:gap-4 text-sm">
+            <div class="d-flex align-items-center gap-2 gap-sm-3 small">
                 @include('partials.cart-icon')
 
                 @auth
                     {{-- Logged-in user menu: avatar + name + dashboard + logout --}}
-                    <div class="relative" data-user-menu>
-                        <button type="button" data-user-menu-toggle aria-haspopup="true" aria-expanded="false"
-                                class="flex items-center gap-2 rounded-full pl-1 pr-1 sm:pr-3 hover:bg-white/70 transition focus:outline-none focus:ring-2 focus:ring-brand-300">
-                            <span class="w-9 h-9 cursor-pointer rounded-full bg-brand-700 text-white flex items-center justify-center text-xs font-semibold select-none">
+                    {{-- Bootstrap's own dropdown: its JS is already loaded globally,
+                         so the hand-rolled open/close script this used to need is gone. --}}
+                    <div class="dropdown" data-user-menu>
+                        <button type="button" class="btn btn-link text-decoration-none d-flex align-items-center gap-2 p-1 rounded-pill"
+                                data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <span class="rounded-circle bg-brand text-white d-flex align-items-center justify-content-center fw-semibold user-select-none"
+                                  style="width: 2.25rem; height: 2.25rem; font-size: 0.75rem">
                                 {{ $userInitials }}
                             </span>
-                            <span class="hidden sm:block font-medium text-slate-700 max-w-[120px] truncate">{{ $authUser->name }}</span>
-                            <svg class="w-4 h-4 text-slate-400 hidden sm:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="d-none d-sm-block fw-medium text-body text-truncate" style="max-width: 120px">
+                                {{ $authUser->name }}
+                            </span>
                         </button>
 
-                        <div data-user-menu-panel
-                             class="hidden absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
-                            <div class="px-4 py-3 border-b border-slate-100">
-                                <p class="font-semibold text-slate-800 truncate">{{ $authUser->name }}</p>
+                        <div class="dropdown-menu dropdown-menu-end shadow">
+                            <div class="px-3 py-2">
+                                <p class="fw-semibold mb-0 text-truncate">{{ $authUser->name }}</p>
                                 @if (! empty($authUser->email))
-                                    <p class="text-xs text-slate-500 truncate">{{ $authUser->email }}</p>
+                                    <p class="small text-secondary mb-0 text-truncate">{{ $authUser->email }}</p>
                                 @endif
                             </div>
-
-                            <a href="{{ route('dashboard') }}"
-                               class="block px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition">
-                                Dashboard
-                            </a>
-
-                            <form method="POST" action="{{ route('logout', [], false) }}" class="border-t border-slate-100">
+                            <hr class="dropdown-divider">
+                            <a href="{{ route('dashboard') }}" class="dropdown-item">Dashboard</a>
+                            <hr class="dropdown-divider">
+                            <form method="POST" action="{{ route('logout', [], false) }}">
                                 @csrf
-                                <button type="submit"
-                                        class="w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 transition">
-                                    Logout
-                                </button>
+                                <button type="submit" class="dropdown-item text-danger">Logout</button>
                             </form>
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="hidden sm:inline font-medium text-brand-700 hover:text-brand-800">Login</a>
+                    <a href="{{ route('login') }}" class="d-none d-sm-inline fw-medium text-decoration-none"
+                       style="color: var(--color-brand-700)">Login</a>
                 @endauth
 
-                <button type="button" class="md:hidden text-slate-600" data-mobile-nav-open aria-label="Open menu">
+                <button type="button" class="btn btn-link text-secondary p-0 d-md-none"
+                        data-mobile-nav-open aria-label="Open menu">
                     <x-icon name="bars" class="w-6 h-6" />
                 </button>
             </div>
         </div>
 
-        <div id="mobile-nav" class="hidden md:hidden border-t border-slate-200/60 bg-cream">
-            <nav class="px-6 py-4 flex flex-col gap-3 text-sm font-medium text-slate-600">
-                <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
-                <a href="{{ route('products.index') }}" class="hover:text-brand-600">Products</a>
-                <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
-                <a href="{{ route('events.index') }}" class="hover:text-brand-600">Events</a>
-                <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
+        <div id="mobile-nav" class="d-none border-top bg-cream">
+            <nav class="container-lg py-3 d-flex flex-column gap-2 small fw-medium">
+                <a href="{{ url('/') }}" class="text-secondary text-decoration-none">Home</a>
+                <a href="{{ route('products.index') }}" class="text-secondary text-decoration-none">Products</a>
+                <a href="{{ route('blog.index') }}" class="text-secondary text-decoration-none">Blog</a>
+                <a href="{{ route('events.index') }}" class="text-secondary text-decoration-none">Events</a>
+                <a href="{{ route('contact') }}" class="text-secondary text-decoration-none">Contact</a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="hover:text-brand-600">Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="text-secondary text-decoration-none">Dashboard</a>
                     <form method="POST" action="{{ route('logout', [], false) }}">
                         @csrf
-                        <button type="submit" class="text-red-600 hover:underline">Logout</button>
+                        <button type="submit" class="btn btn-link btn-sm text-danger p-0">Logout</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="hover:text-brand-600">Login</a>
+                    <a href="{{ route('login') }}" class="text-secondary text-decoration-none">Login</a>
                 @endauth
             </nav>
         </div>
@@ -205,28 +205,37 @@
         {{ $slot }}
     </main>
 
-    <footer class="bg-brand-950 text-brand-100 mt-20">
+    <footer class="mt-5" style="background: var(--color-brand-950); color: var(--color-brand-100)">
         {{-- Newsletter band --}}
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="relative -translate-y-8 bg-gradient-to-br from-brand-700 to-brand-900 rounded-3xl px-8 py-10 md:px-12 md:py-12 premium-shadow border border-brand-700/40">
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h3 class="font-display text-2xl md:text-3xl font-bold text-white mb-2">Join the {{ $siteName }} family</h3>
-                        <p class="text-sm text-brand-100/80">Wellness tips, new launches, and member-only offers — straight to your inbox. No spam, ever.</p>
+        <div class="container-lg">
+            <div class="rounded-4 p-4 p-md-5 premium-shadow position-relative"
+                 style="transform: translateY(-2rem); background: linear-gradient(135deg, var(--color-brand-700), var(--color-brand-900)); border: 1px solid rgb(36 90 63 / 0.4)">
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-6">
+                        <h3 class="font-display fs-2 fw-bold text-white mb-2">Join the {{ $siteName }} family</h3>
+                        <p class="small mb-0" style="color: rgb(227 241 233 / 0.8)">
+                            Wellness tips, new launches, and member-only offers — straight to your inbox. No spam, ever.
+                        </p>
                     </div>
-                    <div>
+                    <div class="col-md-6">
                         @if (session('status'))
-                            <div class="mb-3 text-sm text-white bg-white/10 border border-white/20 rounded-lg px-4 py-2.5">{{ session('status') }}</div>
+                            <div class="alert alert-light bg-white bg-opacity-10 border-white border-opacity-25 text-white small py-2">
+                                {{ session('status') }}
+                            </div>
                         @endif
-                        <form method="POST" action="{{ route('enquiry.store') }}" class="flex flex-col sm:flex-row gap-3">
+                        <form method="POST" action="{{ route('enquiry.store') }}"
+                              class="d-flex flex-column flex-sm-row gap-2">
                             @csrf
                             <input type="hidden" name="source" value="homepage">
                             <input type="hidden" name="name" value="Newsletter Subscriber">
                             <input type="hidden" name="message" value="Newsletter subscription from footer">
-                            <div class="hidden" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+                            <div class="d-none" aria-hidden="true">
+                                <input type="text" name="website" tabindex="-1" autocomplete="off">
+                            </div>
                             <input type="email" name="email" required placeholder="Enter your email"
-                                   class="flex-1 rounded-full border-0 px-5 py-3 text-sm text-slate-800 focus:ring-2 focus:ring-gold-400 focus:outline-none">
-                            <button type="submit" class="bg-gold-500 text-brand-950 font-semibold px-6 py-3 rounded-full hover:bg-gold-400 transition whitespace-nowrap">
+                                   class="form-control rounded-pill border-0 px-4">
+                            <button type="submit" class="btn btn-gold fw-semibold rounded-pill px-4 text-nowrap"
+                                    style="color: var(--color-brand-950)">
                                 Subscribe
                             </button>
                         </form>
@@ -235,76 +244,91 @@
             </div>
         </div>
 
-        <div class="max-w-6xl mx-auto px-6 pb-12 grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
-            <div class="lg:col-span-2">
-                <p class="font-display text-xl font-bold text-white mb-3">{{ $siteName }}</p>
-                <p class="text-sm text-brand-200 max-w-xs">A homegrown brand built on transparency, quality, and people — wellness products and a nationwide distributor community.</p>
-                <div class="flex gap-3 mt-5">
-                    @foreach (['social_facebook' => 'FB', 'social_instagram' => 'IG', 'social_youtube' => 'YT', 'social_linkedin' => 'IN'] as $key => $label)
-                        @if ($settings[$key] ?? null)
-                            <a href="{{ $settings[$key] }}" class="w-9 h-9 rounded-full bg-brand-800 flex items-center justify-center text-xs hover:bg-gold-500 hover:text-brand-950 transition">{{ $label }}</a>
-                        @endif
-                    @endforeach
+        <div class="container-lg pb-5">
+            <div class="row g-4">
+                <div class="col-12 col-lg-4">
+                    <p class="font-display fs-5 fw-bold text-white mb-2">{{ $siteName }}</p>
+                    <p class="small mb-0" style="max-width: 20rem; color: var(--color-brand-200)">
+                        A homegrown brand built on transparency, quality, and people — wellness products and a
+                        nationwide distributor community.
+                    </p>
+                    <div class="d-flex gap-2 mt-4">
+                        @foreach (['social_facebook' => 'FB', 'social_instagram' => 'IG', 'social_youtube' => 'YT', 'social_linkedin' => 'IN'] as $key => $label)
+                            @if ($settings[$key] ?? null)
+                                <a href="{{ $settings[$key] }}"
+                                   class="rounded-circle d-flex align-items-center justify-content-center text-white text-decoration-none"
+                                   style="width: 2.25rem; height: 2.25rem; font-size: 0.75rem; background: var(--color-brand-800)">{{ $label }}</a>
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-            <div>
-                <p class="text-sm font-semibold text-white mb-3 uppercase tracking-wide">Company</p>
-                <ul class="space-y-2 text-sm text-brand-200">
-                    <li><a href="{{ url('/') }}#about" class="hover:text-white">About Us</a></li>
-                    <li><a href="{{ url('/') }}#opportunity" class="hover:text-white">Business Opportunity</a></li>
-                    <li><a href="{{ route('blog.index') }}" class="hover:text-white">Blog</a></li>
-                    <li><a href="{{ route('events.index') }}" class="hover:text-white">Events</a></li>
-                    <li><a href="{{ route('contact') }}" class="hover:text-white">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="text-sm font-semibold text-white mb-3 uppercase tracking-wide">Explore</p>
-                <ul class="space-y-2 text-sm text-brand-200">
-                    <li><a href="{{ route('products.index') }}" class="hover:text-white">All Products</a></li>
-                    <li><a href="{{ url('/') }}#testimonials" class="hover:text-white">Testimonials</a></li>
-                </ul>
-            </div>
-            <div>
-                <p class="text-sm font-semibold text-white mb-3 uppercase tracking-wide">Contact</p>
-                <ul class="space-y-2 text-sm text-brand-200">
-                    @if ($settings['contact_address'] ?? null)
-                        <li>{{ $settings['contact_address'] }}</li>
-                    @endif
-                    @if ($settings['contact_email'] ?? null)
-                        <li><a href="mailto:{{ $settings['contact_email'] }}" class="hover:text-white">{{ $settings['contact_email'] }}</a></li>
-                    @endif
-                    @if ($settings['contact_whatsapp'] ?? null)
-                        <li><a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}" class="hover:text-white">WhatsApp: {{ $settings['contact_whatsapp'] }}</a></li>
-                    @endif
-                </ul>
+                <div class="col-6 col-lg-3">
+                    <p class="small fw-semibold text-white mb-2 text-uppercase">Company</p>
+                    <ul class="list-unstyled small mb-0" style="color: var(--color-brand-200)">
+                        <li class="mb-2"><a href="{{ url('/') }}#about" class="text-reset text-decoration-none">About Us</a></li>
+                        <li class="mb-2"><a href="{{ url('/') }}#opportunity" class="text-reset text-decoration-none">Business Opportunity</a></li>
+                        <li class="mb-2"><a href="{{ route('blog.index') }}" class="text-reset text-decoration-none">Blog</a></li>
+                        <li class="mb-2"><a href="{{ route('events.index') }}" class="text-reset text-decoration-none">Events</a></li>
+                        <li><a href="{{ route('contact') }}" class="text-reset text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <p class="small fw-semibold text-white mb-2 text-uppercase">Explore</p>
+                    <ul class="list-unstyled small mb-0" style="color: var(--color-brand-200)">
+                        <li class="mb-2"><a href="{{ route('products.index') }}" class="text-reset text-decoration-none">All Products</a></li>
+                        <li><a href="{{ url('/') }}#testimonials" class="text-reset text-decoration-none">Testimonials</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <p class="small fw-semibold text-white mb-2 text-uppercase">Contact</p>
+                    <ul class="list-unstyled small mb-0" style="color: var(--color-brand-200)">
+                        @if ($settings['contact_address'] ?? null)
+                            <li class="mb-2">{{ $settings['contact_address'] }}</li>
+                        @endif
+                        @if ($settings['contact_email'] ?? null)
+                            <li class="mb-2">
+                                <a href="mailto:{{ $settings['contact_email'] }}" class="text-reset text-decoration-none">{{ $settings['contact_email'] }}</a>
+                            </li>
+                        @endif
+                        @if ($settings['contact_whatsapp'] ?? null)
+                            <li>
+                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}"
+                                   class="text-reset text-decoration-none">WhatsApp: {{ $settings['contact_whatsapp'] }}</a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
             </div>
         </div>
 
         {{-- Trust + payment badges --}}
-        <div class="border-t border-brand-800/70">
-            <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex flex-wrap items-center gap-2">
+        <div style="border-top: 1px solid rgb(31 72 52 / 0.7)">
+            <div class="container-lg py-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     @foreach (['SSL Secured', 'FSSAI Certified', 'Lab Tested', '100% Genuine'] as $trust)
-                        <span class="inline-flex items-center gap-1.5 text-xs text-brand-200 bg-brand-900 border border-brand-800 px-3 py-1.5 rounded-full">
-                            <x-icon name="shield-check" class="w-3.5 h-3.5 text-gold-400" /> {{ $trust }}
+                        <span class="d-inline-flex align-items-center gap-1 rounded-pill px-3 py-1"
+                              style="font-size: 0.75rem; color: var(--color-brand-200); background: var(--color-brand-900); border: 1px solid var(--color-brand-800)">
+                            <x-icon name="shield-check" class="w-3.5 h-3.5" style="color: var(--color-gold-400)" /> {{ $trust }}
                         </span>
                     @endforeach
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     @foreach (['UPI', 'Visa', 'Mastercard', 'RuPay', 'NetBanking'] as $pay)
-                        <span class="text-[11px] font-semibold text-brand-300 bg-brand-900 border border-brand-800 px-2.5 py-1.5 rounded">{{ $pay }}</span>
+                        <span class="fw-semibold rounded px-2 py-1"
+                              style="font-size: 0.6875rem; color: var(--color-brand-300); background: var(--color-brand-900); border: 1px solid var(--color-brand-800)">{{ $pay }}</span>
                     @endforeach
                 </div>
             </div>
         </div>
 
-        <div class="border-t border-brand-800">
-            <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-brand-300">
-                <p>&copy; {{ now()->year }} {{ $siteName }}. All rights reserved. &middot; Made in India 🇮🇳</p>
-                <div class="flex gap-4">
-                    <a href="#" class="hover:text-white">Privacy Policy</a>
-                    <a href="#" class="hover:text-white">Terms of Service</a>
-                    <a href="#" class="hover:text-white">Refund Policy</a>
+        <div style="border-top: 1px solid var(--color-brand-800)">
+            <div class="container-lg py-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2"
+                 style="font-size: 0.75rem; color: var(--color-brand-300)">
+                <p class="mb-0">&copy; {{ now()->year }} {{ $siteName }}. All rights reserved. &middot; Made in India 🇮🇳</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-reset text-decoration-none">Privacy Policy</a>
+                    <a href="#" class="text-reset text-decoration-none">Terms of Service</a>
+                    <a href="#" class="text-reset text-decoration-none">Refund Policy</a>
                 </div>
             </div>
         </div>
@@ -312,7 +336,8 @@
 
     @if ($settings['contact_whatsapp'] ?? null)
         <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}"
-           class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 hover:scale-110 transition animate-pulse-ring"
+           class="position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow animate-pulse-ring text-decoration-none"
+           style="bottom: 1.5rem; right: 1.5rem; z-index: 1030; width: 3.5rem; height: 3.5rem; background: #25d366"
            title="Chat on WhatsApp">
             <x-icon name="chat-bubble" class="w-7 h-7" />
         </a>
@@ -320,34 +345,5 @@
 
     <x-chatbot />
 
-    {{-- User menu dropdown behaviour --}}
-    @auth
-        <script>
-            (function () {
-                var menu = document.querySelector('[data-user-menu]');
-                if (!menu) return;
-                var toggle = menu.querySelector('[data-user-menu-toggle]');
-                var panel = menu.querySelector('[data-user-menu-panel]');
-
-                function setOpen(open) {
-                    panel.classList.toggle('hidden', !open);
-                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                }
-
-                toggle.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    setOpen(panel.classList.contains('hidden'));
-                });
-
-                document.addEventListener('click', function (e) {
-                    if (!menu.contains(e.target)) setOpen(false);
-                });
-
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') setOpen(false);
-                });
-            })();
-        </script>
-    @endauth
 </body>
 </html>

@@ -30,8 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="stylesheet" href="{{ asset('vendor/bootstrap.css') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
 
     @if (! empty($settings['gtm_id']))
         <script>
@@ -51,7 +50,7 @@
         </script>
     @endif
 </head>
-<body class="bg-cream text-slate-800 antialiased" id="msite-body">
+<body class="bg-cream" id="msite-body">
     @if (! empty($settings['gtm_id']))
         <noscript>
             <iframe src="https://www.googletagmanager.com/ns.html?id={{ $settings['gtm_id'] }}"
@@ -59,40 +58,46 @@
         </noscript>
     @endif
 
-    <header id="msite-nav" class="sticky top-0 z-40 msite-glass border-b border-slate-200/60 transition-shadow">
-        <div class="msite-container flex items-center justify-between h-16">
-            <a href="#top" class="flex items-center gap-2.5 min-w-0">
+    <header id="msite-nav" class="sticky-top msite-glass border-bottom">
+        <div class="msite-container d-flex align-items-center justify-content-between" style="height: 4rem">
+            <a href="#top" class="d-flex align-items-center gap-2 min-w-0 text-decoration-none">
                 @if ($microsite->logo_path)
-                    <img src="{{ asset('storage/'.$microsite->logo_path) }}" alt="{{ $microsite->business_name }}" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
-                @else 
-                <span class="font-heading font-bold text-brand-950 truncate">{{ $microsite->business_name }}</span>
+                    <img src="{{ asset('storage/'.$microsite->logo_path) }}" alt="{{ $microsite->business_name }}"
+                         class="rounded-circle object-fit-cover flex-shrink-0" width="36" height="36">
+                @else
+                    <span class="font-heading fw-bold text-truncate" style="color: var(--color-brand-950)">
+                        {{ $microsite->business_name }}
+                    </span>
                 @endif
             </a>
 
-            <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">
+            <nav class="d-none d-lg-flex align-items-center gap-4 small fw-medium text-secondary">
                 @foreach ($navSections as $anchor => $label)
-                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}" class="msite-nav-link hover:text-brand-700">{{ $label }}</a>
+                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}"
+                       class="msite-nav-link text-reset">{{ $label }}</a>
                 @endforeach
             </nav>
 
-            <div class="flex items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
                 @include('partials.cart-icon')
                 @if ($microsite->phone_number)
                     <a href="{{ route('microsite.click', [$microsite, 'call']) }}"
-                       class="hidden sm:inline-flex msite-btn msite-btn-primary !h-10 !px-5 !text-sm">
+                       class="d-none d-sm-inline-flex msite-btn msite-btn-primary msite-btn-sm">
                         <x-icon name="phone" class="w-4 h-4" /> Call Now
                     </a>
                 @endif
-                <button type="button" class="lg:hidden text-slate-600" data-msite-menu-open aria-label="Open menu">
+                <button type="button" class="btn btn-link text-secondary p-0 d-lg-none"
+                        data-msite-menu-open aria-label="Open menu">
                     <x-icon name="bars" class="w-6 h-6" />
                 </button>
             </div>
         </div>
 
-        <div id="msite-mobile-nav" class="hidden lg:hidden border-t border-slate-200/60 bg-white">
-            <nav class="msite-container py-4 flex flex-col gap-1 text-sm font-medium text-slate-600">
+        <div id="msite-mobile-nav" class="d-none border-top bg-body">
+            <nav class="msite-container py-3 d-flex flex-column gap-1 small fw-medium">
                 @foreach ($navSections as $anchor => $label)
-                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}" class="px-2 py-2 rounded hover:bg-slate-50 hover:text-brand-700">{{ $label }}</a>
+                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}"
+                       class="px-2 py-2 rounded text-secondary text-decoration-none">{{ $label }}</a>
                 @endforeach
             </nav>
         </div>
@@ -104,17 +109,18 @@
         {{ $slot }}
     </main>
 
-    <footer class="bg-brand-950 text-brand-200 py-8 text-center text-sm">
+    <footer class="py-4 text-center small" style="background: var(--color-brand-950); color: var(--color-brand-200)">
         <div class="msite-container">
-            <p>{{ $microsite->business_name }} &middot; {{ $microsite->city->name }}</p>
-            <p class="text-xs text-brand-400 mt-2">
-                Powered by <a href="{{ url('/') }}" class="hover:text-white">{{ $siteName }}</a>
+            <p class="mb-1">{{ $microsite->business_name }} &middot; {{ $microsite->city->name }}</p>
+            <p class="mb-0" style="font-size: 0.8125rem; color: var(--color-brand-400)">
+                Powered by <a href="{{ url('/') }}" class="text-reset">{{ $siteName }}</a>
             </p>
         </div>
     </footer>
 
     <button type="button" id="msite-back-to-top" data-msite-back-to-top
-            class="msite-float-btn is-hidden fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-brand-900 text-white flex items-center justify-center shadow-lg hover:bg-brand-800"
+            class="msite-float-btn is-hidden position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow border-0"
+            style="bottom: 6rem; right: 1.5rem; z-index: 1030; width: 3rem; height: 3rem; background: var(--color-brand-900)"
             aria-label="Back to top">
         <x-icon name="arrow-up" class="w-5 h-5" />
     </button>

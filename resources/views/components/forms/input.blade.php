@@ -7,39 +7,38 @@
     'as' => 'input',
 ])
 
-{{-- mt-1 / shadow-sm are avoided below — Bootstrap defines both as utilities too,
-     and its .bootstrap-scope-scoped rule would win on specificity. --}}
 @php
     $errorKey = $name;
     $inputValue = old($errorKey, $value);
-    $baseClasses = 'mt-[0.25rem] block w-full rounded-lg border-slate-300 shadow-[0_1px_2px_rgba(0,0,0,0.05)] text-sm text-slate-800 '
-        . 'transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none '
-        . 'placeholder:text-slate-400 disabled:bg-slate-100 disabled:text-slate-400';
-    $errorClasses = $errors->has($errorKey) ? 'border-red-300 focus:border-red-500 focus:ring-red-500/30' : '';
+    // Bootstrap owns the look now: .form-control / .form-select, plus
+    // .is-invalid which it styles and which pairs with .invalid-feedback
+    // below. The input border colour is one SCSS dial ($input-border-color).
+    $control = $as === 'select' ? 'form-select' : 'form-control';
+    $invalid = $errors->has($errorKey) ? ' is-invalid' : '';
 @endphp
 
 <div>
     @if ($label)
-        <label for="{{ $name }}" class="block text-sm font-medium text-slate-700">{{ $label }}</label>
+        <label for="{{ $name }}" class="form-label small fw-medium">{{ $label }}</label>
     @endif
 
     @if ($as === 'textarea')
         <textarea id="{{ $name }}" name="{{ $name }}" rows="4"
-                  {{ $attributes->merge(['class' => "$baseClasses $errorClasses"]) }}>{{ $inputValue }}</textarea>
+                  {{ $attributes->merge(['class' => $control.$invalid]) }}>{{ $inputValue }}</textarea>
     @elseif ($as === 'select')
-        <select id="{{ $name }}" name="{{ $name }}" {{ $attributes->merge(['class' => "$baseClasses $errorClasses"]) }}>
+        <select id="{{ $name }}" name="{{ $name }}" {{ $attributes->merge(['class' => $control.$invalid]) }}>
             {{ $slot }}
         </select>
     @else
         <input id="{{ $name }}" type="{{ $type }}" name="{{ $name }}" value="{{ $inputValue }}"
-               {{ $attributes->merge(['class' => "$baseClasses $errorClasses"]) }}>
+               {{ $attributes->merge(['class' => $control.$invalid]) }}>
     @endif
 
     @if ($help)
-        <p class="mt-[0.25rem] text-xs text-slate-400">{{ $help }}</p>
+        <div class="form-text">{{ $help }}</div>
     @endif
 
     @error($errorKey)
-        <p class="mt-[0.25rem] text-xs text-red-600">{{ $message }}</p>
+        <div class="invalid-feedback d-block">{{ $message }}</div>
     @enderror
 </div>

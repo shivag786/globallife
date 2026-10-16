@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // One stylesheet: Bootstrap plus the project's own CSS, compiled
+            // from SCSS. Bootstrap used to be built separately and scoped under
+            // `.bootstrap-scope` to keep its utility names away from Tailwind's;
+            // with Tailwind gone there is nothing to keep it away from.
+            input: ['resources/css/app.scss', 'resources/js/app.js'],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
@@ -17,7 +20,6 @@ export default defineConfig({
                 }),
             ],
         }),
-        tailwindcss(),
     ],
     server: {
         watch: {

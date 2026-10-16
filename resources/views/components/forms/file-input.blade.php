@@ -7,28 +7,29 @@
 
 <div>
     @if ($label)
-        <label for="{{ $name }}" class="block text-sm font-medium text-slate-700">{{ $label }}</label>
+        <label for="{{ $name }}" class="form-label small fw-medium">{{ $label }}</label>
     @endif
 
-    <div class="mt-[0.25rem] flex items-center gap-[1rem]">
+    <div class="d-flex align-items-center gap-3">
         @if ($current)
             <img src="{{ asset('storage/' . $current) }}" alt="{{ $label }}"
-                 class="h-14 w-14 rounded-lg border border-slate-200 object-contain bg-white p-[0.25rem]">
+                 class="rounded border bg-body object-fit-contain p-1" width="56" height="56">
         @else
-            <span class="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-slate-300 text-[10px] text-slate-400">
+            <span class="d-flex align-items-center justify-content-center rounded border border-dashed text-secondary"
+                  style="width: 3.5rem; height: 3.5rem; font-size: 0.625rem">
                 No file
             </span>
         @endif
 
         <input id="{{ $name }}" type="file" name="{{ $name }}" accept="image/*"
-               {{ $attributes->merge(['class' => 'block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100']) }}>
+               {{ $attributes->merge(['class' => 'form-control'.($errors->has($name) ? ' is-invalid' : '')]) }}>
     </div>
 
     @if ($help)
-        <p class="mt-[0.25rem] text-xs text-slate-400">{{ $help }}</p>
+        <div class="form-text">{{ $help }}</div>
     @endif
 
     @error($name)
-        <p class="mt-[0.25rem] text-xs text-red-600">{{ $message }}</p>
+        <div class="invalid-feedback d-block">{{ $message }}</div>
     @enderror
 </div>

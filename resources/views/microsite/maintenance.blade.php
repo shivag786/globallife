@@ -13,7 +13,7 @@
     @if (! empty($settings['favicon']))
         <link rel="icon" href="{{ asset('storage/'.$settings['favicon']) }}">
     @endif
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.scss'])
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center px-4 py-12">
     <main class="w-full max-w-lg bg-white rounded-2xl shadow-sm border border-slate-100 p-8 sm:p-10 text-center">

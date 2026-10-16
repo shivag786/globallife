@@ -83,7 +83,7 @@
 
         <div class="px-6 pb-6">
             @if ($selectable)
-                    {{-- No JS: the radio's :checked state drives both labels (see app.css). --}}
+                    {{-- No JS: the radio's :checked state drives both labels (see app.scss). --}}
                 <span class="pkg-select block w-full text-center py-3 rounded-full font-semibold text-sm border border-slate-200 text-slate-500">
                     Select
                 </span>

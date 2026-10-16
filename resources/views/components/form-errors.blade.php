@@ -4,11 +4,11 @@
     or a duplicate name looked like "nothing happened".
 --}}
 @if ($errors->any())
-    <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-        <p class="text-sm font-semibold text-red-800">
+    <div class="alert alert-danger">
+        <p class="fw-semibold mb-1">
             {{ $errors->count() === 1 ? "Couldn't save — please fix this:" : "Couldn't save — please fix these ".$errors->count().' items:' }}
         </p>
-        <ul class="mt-1.5 list-disc list-inside space-y-0.5 text-sm text-red-700">
+        <ul class="mb-0 ps-3 small">
             @foreach ($errors->all() as $message)
                 <li>{{ $message }}</li>
             @endforeach
