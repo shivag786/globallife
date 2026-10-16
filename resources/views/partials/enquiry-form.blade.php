@@ -5,9 +5,18 @@
     $vipMicrositeId = $vipMicrositeId ?? null;
     $prefillCity = $prefillCity ?? null;
     $prefillMessage = $prefillMessage ?? null;
+    $productId = $productId ?? null;
+
+    // Which form this is, on which page. A failed submission refills only the
+    // form it came from: without this, old input is global, so a message typed
+    // on one product's page ("interested in: Lavender Calm") would pre-fill the
+    // enquiry box on whichever page the visitor landed on next.
+    $context = $source.($productId ? ':product:'.$productId : '').($vipMicrositeId ? ':microsite:'.$vipMicrositeId : '');
+    $ownSubmission = old('enquiry_context') === $context;
+    $refill = fn (string $key, $default = null) => $ownSubmission ? old($key, $default) : $default;
 @endphp
 
-@if ($errors->any())
+@if ($ownSubmission && $errors->any())
     <div class="mb-4 fs-sm text-danger bg-danger-subtle border border-danger-subtle rounded p-3">
         <ul class="list-disc list-inside">
             @foreach ($errors->all() as $error)
@@ -25,6 +34,14 @@
     @csrf
 
     <input type="hidden" name="source" value="{{ $source }}">
+    <input type="hidden" name="enquiry_context" value="{{ $context }}">
+    {{-- Back to this exact page afterwards, not the session's last URL. --}}
+    <input type="hidden" name="return_to" value="{{ request()->getRequestUri() }}">
+
+    @if ($productId)
+        {{-- The product this enquiry is about, recorded on the lead itself. --}}
+        <input type="hidden" name="product_id" value="{{ $productId }}">
+    @endif
 
     @if ($vipMicrositeId)
         <input type="hidden" name="vip_microsite_id" value="{{ $vipMicrositeId }}">
@@ -52,7 +69,7 @@
             <input id="name-{{ $source }}"
                    type="text"
                    name="name"
-                   value="{{ old('name') }}"
+                   value="{{ $refill('name') }}"
                    required
                    minlength="2"
                    maxlength="100"
@@ -72,7 +89,7 @@
             <input id="email-{{ $source }}"
                    type="email"
                    name="email"
-                   value="{{ old('email') }}"
+                   value="{{ $refill('email') }}"
                    required
                    maxlength="254"
                    autocomplete="email"
@@ -92,7 +109,7 @@
             <input id="phone-{{ $source }}"
                    type="tel"
                    name="phone"
-                   value="{{ old('phone') }}"
+                   value="{{ $refill('phone') }}"
                    maxlength="10"
                    minlength="10"
                    pattern="[6-9][0-9]{9}"
@@ -115,7 +132,7 @@
             <input id="city-{{ $source }}"
                    type="text"
                    name="city"
-                   value="{{ old('city', $prefillCity) }}"
+                   value="{{ $refill('city', $prefillCity) }}"
                    maxlength="100"
                    autocomplete="address-level2"
                    class="mt-1 d-block w-100 rounded-2">
@@ -140,8 +157,8 @@
 
                 @foreach ($plans as $plan)
                     @php
-                        $isSelected = old('interested_plan_id')
-                            ? (string) old('interested_plan_id') === (string) $plan->id
+                        $isSelected = $refill('interested_plan_id')
+                            ? (string) $refill('interested_plan_id') === (string) $plan->id
                             : $preselectedPlan === $plan->slug;
                     @endphp
 
@@ -165,7 +182,7 @@
                   name="message"
                   rows="4"
                   maxlength="2000"
-                  class="mt-1 d-block w-100 rounded-2">{{ old('message', $prefillMessage) }}</textarea>
+                  class="mt-1 d-block w-100 rounded-2">{{ $refill('message', $prefillMessage) }}</textarea>
     </div>
 
     <button type="submit"
@@ -203,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Only digits
         if (!/^[0-9]+$/.test(value)) {
             phoneError.textContent = 'Mobile number can contain digits only.';
-            phoneError.classList.remove('hidden');
+            phoneError.classList.remove('d-none');
             return false;
         }
 
@@ -211,12 +228,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!/^[6-9][0-9]{9}$/.test(value)) {
             phoneError.textContent =
                 'Please enter a valid 10 digit mobile number starting with 6, 7, 8 or 9.';
-            phoneError.classList.remove('hidden');
+            phoneError.classList.remove('d-none');
             return false;
         }
 
         phoneError.textContent = '';
-        phoneError.classList.add('hidden');
+        phoneError.classList.add('d-none');
 
         return true;
     }
@@ -244,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
             emailError.textContent =
                 'Please enter a valid email address, for example name@example.com.';
 
-            emailError.classList.remove('hidden');
+            emailError.classList.remove('d-none');
 
             return false;
         }
@@ -255,13 +272,13 @@ document.addEventListener('DOMContentLoaded', function () {
             emailError.textContent =
                 'Email address cannot contain consecutive dots.';
 
-            emailError.classList.remove('hidden');
+            emailError.classList.remove('d-none');
 
             return false;
         }
 
         emailError.textContent = '';
-        emailError.classList.add('hidden');
+        emailError.classList.add('d-none');
 
         return true;
     }
@@ -280,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
             nameError.textContent =
                 'Name must contain at least 2 characters.';
 
-            nameError.classList.remove('hidden');
+            nameError.classList.remove('d-none');
 
             return false;
         }
@@ -291,13 +308,13 @@ document.addEventListener('DOMContentLoaded', function () {
             nameError.textContent =
                 'Name can contain letters, spaces, dot, apostrophe and hyphen only.';
 
-            nameError.classList.remove('hidden');
+            nameError.classList.remove('d-none');
 
             return false;
         }
 
         nameError.textContent = '';
-        nameError.classList.add('hidden');
+        nameError.classList.add('d-none');
 
         return true;
     }
@@ -320,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
             validatePhone();
         } else {
             phoneError.textContent = '';
-            phoneError.classList.add('hidden');
+            phoneError.classList.add('d-none');
         }
     });
 

@@ -173,7 +173,7 @@
         <div id="enquire" class="mt-16 scroll-offset bg-body border rounded-4 premium-shadow p-8 mw-3xl mx-auto">
             <h2 class="font-display fs-2xl fw-bold text-brand-emphasis mb-1">{{ $ctaLabel }}</h2>
             <p class="fs-sm text-secondary mb-6">Share your details and a city manager will confirm availability, pricing, and delivery.</p>
-            @include('partials.enquiry-form', ['source' => 'product', 'prefillMessage' => $enquiryMessage])
+            @include('partials.enquiry-form', ['source' => 'product', 'prefillMessage' => $enquiryMessage, 'productId' => $product->id])
         </div>
 
         {{-- Related products --}}

@@ -1,4 +1,4 @@
-<div class="position-fixed bottom-6 end-6 z-3 d-flex flex-column gap-3" data-msite-float-group>
+<div class="position-fixed bottom-6 end-6 z-floating d-flex flex-column gap-3" data-msite-float-group>
     @if ($microsite->isModuleVisible('float_whatsapp') && $microsite->whatsapp_number)
         <a href="{{ route('microsite.click', [$microsite, 'whatsapp']) }}"
            class="msite-float-btn w-14 h-14 rounded-pill bg-success text-white d-flex align-items-center justify-content-center shadow"

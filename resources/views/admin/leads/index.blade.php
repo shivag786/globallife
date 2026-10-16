@@ -22,7 +22,13 @@
                             @if ($lead->phone)<div class="fs-xs text-secondary">{{ $lead->phone }}</div>@endif
                         </td>
                         <td class="px-4 py-3">{{ $lead->city ?? '—' }}</td>
-                        <td class="px-4 py-3 text-capitalize">{{ str_replace('_', ' ', $lead->source) }}</td>
+                        <td class="px-4 py-3">
+                            <span class="text-capitalize">{{ str_replace('_', ' ', $lead->source) }}</span>
+                            {{-- The product is recorded on the lead, not read from the message. --}}
+                            @if ($lead->product)
+                                <span class="d-block fs-xs text-secondary">{{ $lead->product->name }}</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3">{{ $lead->assignedManager?->name ?? '—' }}</td>
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded fs-xs bg-primary-subtle text-primary text-capitalize">{{ $lead->status }}</span>

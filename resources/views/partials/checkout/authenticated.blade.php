@@ -144,11 +144,11 @@
         function showError(message) {
             if (!errorBox) { alert(message); return; }
             errorBox.textContent = message;
-            errorBox.classList.remove('hidden');
+            errorBox.classList.remove('d-none');
         }
 
         function clearError() {
-            if (errorBox) errorBox.classList.add('hidden');
+            if (errorBox) errorBox.classList.add('d-none');
         }
 
         function setBusy(state, label) {
@@ -255,7 +255,7 @@
     var toggle = document.querySelector('[data-add-address-toggle]');
     var form = document.querySelector('[data-add-address-form]');
     if (toggle && form) {
-        toggle.addEventListener('click', function () { form.classList.toggle('hidden'); });
+        toggle.addEventListener('click', function () { form.classList.toggle('d-none'); });
     }
 })();
 </script>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\UploadsRoot;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -23,6 +25,11 @@ class StorageFileController extends Controller
 
         // Reject traversal before touching the filesystem.
         abort_if($path === '' || str_contains($path, '..') || str_contains($path, "\0"), 404);
+
+        if (! $disk->exists($path)) {
+            $this->adoptLegacyUpload($disk, $path);
+        }
+
         abort_unless($disk->exists($path), 404);
 
         // Defence in depth: whatever the path resolves to must sit under the disk
@@ -42,5 +49,43 @@ class StorageFileController extends Controller
             'X-Content-Type-Options' => 'nosniff',
             'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; sandbox",
         ]);
+    }
+
+    /**
+     * Move a file across from the old in-project upload folder on first request.
+     *
+     * Uploads used to live inside the deploy directory, and some of them are
+     * committed to git, so they still arrive there with every deploy. Once the
+     * public disk points outside the deploy directory those files are no longer
+     * where the disk looks. Rather than a migration step someone has to remember
+     * on the server, the first request for one copies it into the new location;
+     * from then on it is served from there and survives every deploy.
+     */
+    private function adoptLegacyUpload(Filesystem $disk, string $path): void
+    {
+        $legacyRoot = realpath(UploadsRoot::legacy());
+        $currentRoot = realpath($disk->path(''));
+
+        // Nothing to adopt when the disk already IS the legacy folder (local).
+        if ($legacyRoot === false || $legacyRoot === $currentRoot) {
+            return;
+        }
+
+        $source = realpath($legacyRoot.DIRECTORY_SEPARATOR.$path);
+
+        // Same containment rule as for serving: never follow a path out of the
+        // legacy folder.
+        if ($source === false
+            || ! is_file($source)
+            || ! str_starts_with($source, $legacyRoot.DIRECTORY_SEPARATOR)) {
+            return;
+        }
+
+        $stream = fopen($source, 'rb');
+
+        if ($stream !== false) {
+            $disk->writeStream($path, $stream);
+            fclose($stream);
+        }
     }
 }

@@ -11,7 +11,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
     'name', 'email', 'phone', 'city', 'message', 'source',
-    'interested_plan_id', 'status', 'assigned_manager_id', 'vip_microsite_id',
+    'interested_plan_id', 'status', 'assigned_manager_id', 'vip_microsite_id', 'product_id',
 ])]
 class Lead extends Model
 {
@@ -44,5 +44,16 @@ class Lead extends Model
     public function vipMicrosite(): BelongsTo
     {
         return $this->belongsTo(VipMicrosite::class);
+    }
+
+    /**
+     * The catalogue product a product-page enquiry was sent from. This, not the
+     * message text, is the record of which product the enquiry is about.
+     *
+     * @return BelongsTo<Product, $this>
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }

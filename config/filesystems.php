@@ -42,12 +42,13 @@ return [
             'report' => false,
         ],
 
-        // Public uploads. The root is env-driven so production can put them
-        // OUTSIDE the git deploy directory — Hostinger's auto-deploy does a clean
-        // checkout, which destroys anything the repo does not contain.
+        // Public uploads. Outside local/testing they live OUTSIDE the git deploy
+        // directory by default (a `-uploads` sibling of it), because the deploy
+        // rebuilds that directory from the repo and deletes anything uploaded
+        // since. FILESYSTEM_PUBLIC_ROOT overrides. See App\Support\UploadsRoot.
         'public' => [
             'driver' => 'local',
-            'root' => env('FILESYSTEM_PUBLIC_ROOT') ?: storage_path('app/public'),
+            'root' => App\Support\UploadsRoot::resolve(),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
@@ -84,7 +85,7 @@ return [
         // Kept in step with the `public` disk root above, so `storage:link` points
         // at wherever uploads actually live. The link is only a fast path: when it
         // is missing, `/storage/...` still resolves via the `storage.file` route.
-        public_path('storage') => env('FILESYSTEM_PUBLIC_ROOT') ?: storage_path('app/public'),
+        public_path('storage') => App\Support\UploadsRoot::resolve(),
     ],
 
 ];

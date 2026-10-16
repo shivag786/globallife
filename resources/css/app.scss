@@ -348,6 +348,12 @@ $max-widths: (xs: 20rem, sm: 24rem, md: 28rem, lg: 32rem, xl: 36rem, 2xl: 42rem,
 // Light red for warnings on those same dark banners (an expired plan).
 .text-red-light { color: #fecaca !important; }
 
+// Stacking for fixed elements, on Bootstrap's own z-index scale. Its z-0..z-3
+// utilities are for overlap within a component; a floating button or a
+// full-screen popup has to clear the sticky header (1020) and fixed bars (1030).
+.z-floating { z-index: 1030 !important; }  // WhatsApp/chat buttons, chat panel
+.z-overlay  { z-index: 1060 !important; }  // full-screen lightbox / video / benefits
+
 // Lists that do want markers say so.
 .list-disc { list-style: disc; padding-left: 1.25rem; }
 .list-decimal { list-style: decimal; padding-left: 1.25rem; }

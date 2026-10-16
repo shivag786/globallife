@@ -17,7 +17,7 @@
         </div>
     </section>
 
-    <div id="msite-lightbox" class="position-fixed top-0 start-0 w-100 h-100 z-3 d-none bg-black bg-opacity-100 align-items-center justify-content-center p-4" data-msite-lightbox>
+    <div id="msite-lightbox" class="position-fixed top-0 start-0 w-100 h-100 z-overlay d-none bg-black bg-opacity-100 align-items-center justify-content-center p-4" data-msite-lightbox>
         <button type="button" data-msite-lightbox-close aria-label="Close" class="btn btn-link p-0 text-decoration-none position-absolute top-5 end-5 text-white text-opacity-75">
             <x-icon name="x-mark" class="w-8 h-8" />
         </button>

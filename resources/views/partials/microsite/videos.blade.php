@@ -40,7 +40,7 @@
         </div>
     </section>
 
-    <div id="msite-video-modal" class="position-fixed top-0 start-0 w-100 h-100 z-3 d-none bg-black bg-opacity-100 align-items-center justify-content-center p-4" data-msite-video-modal>
+    <div id="msite-video-modal" class="position-fixed top-0 start-0 w-100 h-100 z-overlay d-none bg-black bg-opacity-100 align-items-center justify-content-center p-4" data-msite-video-modal>
         <button type="button" data-msite-video-close aria-label="Close" class="btn btn-link p-0 text-decoration-none position-absolute top-5 end-5 text-white text-opacity-75">
             <x-icon name="x-mark" class="w-8 h-8" />
         </button>
@@ -64,14 +64,14 @@
 
             function openModal(id) {
                 frame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0&playsinline=1';
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                modal.classList.remove('d-none');
+                modal.classList.add('d-flex');
                 document.body.style.overflow = 'hidden';
             }
 
             function closeModal() {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                modal.classList.add('d-none');
+                modal.classList.remove('d-flex');
                 frame.src = '';
                 document.body.style.overflow = '';
             }
@@ -91,7 +91,7 @@
             });
 
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+                if (e.key === 'Escape' && !modal.classList.contains('d-none')) closeModal();
             });
         })();
     </script>

@@ -22,6 +22,17 @@
                     <p class="fs-xs text-secondary text-uppercase tracking-wide">Source</p>
                     <p class="text-capitalize">{{ str_replace('_', ' ', $lead->source) }}</p>
                 </div>
+                {{-- Recorded from the product page the enquiry was sent on. If the
+                     message names a different product, this is the one to trust. --}}
+                @if ($lead->product)
+                    <div>
+                        <p class="fs-xs text-secondary text-uppercase tracking-wide">Product</p>
+                        <p>
+                            <a href="{{ route('products.show', $lead->product) }}" target="_blank"
+                               class="text-brand hover-underline">{{ $lead->product->name }}</a>
+                        </p>
+                    </div>
+                @endif
                 @if ($lead->interestedPlan)
                     <div>
                         <p class="fs-xs text-secondary text-uppercase tracking-wide">Interested Plan</p>

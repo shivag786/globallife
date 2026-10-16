@@ -51,7 +51,7 @@
     function updateBadge() {
         document.querySelectorAll('[data-order-badge]').forEach(function (b) {
             b.textContent = newCount > 99 ? '99+' : String(newCount);
-            b.classList.toggle('hidden', newCount <= 0);
+            b.classList.toggle('d-none', newCount <= 0);
         });
     }
 

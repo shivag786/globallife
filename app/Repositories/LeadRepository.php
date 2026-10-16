@@ -13,7 +13,7 @@ class LeadRepository
 {
     public function allPaginated(int $perPage = 20): LengthAwarePaginator
     {
-        return Lead::with(['interestedPlan', 'assignedManager'])->latest()->paginate($perPage);
+        return Lead::with(['interestedPlan', 'assignedManager', 'product'])->latest()->paginate($perPage);
     }
 
     public function forManager(User $manager, int $perPage = 20): LengthAwarePaginator

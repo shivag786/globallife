@@ -722,7 +722,7 @@
     </footer>
 
     {{-- Video testimonial modal (reuses the global modal system) --}}
-    <div id="w3-video-modal" data-modal class="d-none position-fixed top-0 start-0 w-100 h-100 z-3 align-items-center justify-content-center bg-black bg-opacity-75 p-4">
+    <div id="w3-video-modal" data-modal class="d-none position-fixed top-0 start-0 w-100 h-100 z-overlay align-items-center justify-content-center bg-black bg-opacity-75 p-4">
         <div class="position-relative w-100 mw-3xl">
             <button type="button" data-modal-close class="btn btn-link p-0 text-decoration-none position-absolute top-n10 end-0 text-white text-opacity-75 d-inline-flex align-items-center gap-1 fs-sm"><x-icon name="x-mark" class="w-5 h-5" /> Close</button>
             <div class="rounded-4 overflow-hidden shadow-lg bg-black aspect-video">

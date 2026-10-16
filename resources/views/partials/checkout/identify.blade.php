@@ -74,12 +74,12 @@
             var name = tab.dataset.tab;
             tabs.forEach(function (t) {
                 var on = t.dataset.tab === name;
-                t.classList.toggle('bg-white', on);
-                t.classList.toggle('text-brand-800', on);
+                t.classList.toggle('bg-body', on);
+                t.classList.toggle('text-brand-emphasis', on);
                 t.classList.toggle('shadow-sm', on);
-                t.classList.toggle('text-slate-500', !on);
+                t.classList.toggle('text-secondary', !on);
             });
-            panes.forEach(function (p) { p.classList.toggle('hidden', p.dataset.pane !== name); });
+            panes.forEach(function (p) { p.classList.toggle('d-none', p.dataset.pane !== name); });
         });
     });
 
@@ -91,7 +91,7 @@
             e.preventDefault();
             var box = form.querySelector('[data-errors]');
             var btn = form.querySelector('button[type="submit"]');
-            box.classList.add('hidden');
+            box.classList.add('d-none');
             btn.disabled = true;
 
             fetch(form.action, {
@@ -131,19 +131,19 @@
                             loginForm.querySelector('input[name="email"]').value = form.querySelector('input[name="email"]').value;
                             var lb = loginForm.querySelector('[data-errors]');
                             lb.innerHTML = msgs.map(function (m) { return '<div>' + m + '</div>'; }).join('');
-                            lb.classList.remove('hidden');
+                            lb.classList.remove('d-none');
                         }
                         return;
                     }
 
                     box.innerHTML = msgs.map(function (m) { return '<div>' + m + '</div>'; }).join('');
-                    box.classList.remove('hidden');
+                    box.classList.remove('d-none');
                 })
                 // Network-level failure (offline, DNS, connection reset).
                 .catch(function () {
                     btn.disabled = false;
                     box.innerHTML = '<div>Could not reach the server. Check your connection and try again.</div>';
-                    box.classList.remove('hidden');
+                    box.classList.remove('d-none');
                 });
         });
     });

@@ -443,6 +443,22 @@ typing takes the first 10**. Taking the tail while someone types would drop the
 digits they entered first. It listens to `input`, `change` and `blur`, because
 autofill often fires only `change`.
 
+### Enquiries (leads)
+
+- `partials.enquiry-form` posts to `enquiry.store`. A product page passes
+  `productId`, which is stored as **`leads.product_id`** -- the record of which
+  product an enquiry is about. Admin shows it on the leads list and detail; the
+  free-text message ("interested in ordering: X") is not authoritative.
+- The form carries `enquiry_context` (source + product/microsite id) and
+  `return_to` (the page URI). Old input refills **only** the form whose
+  context matches, so one product's failed submission cannot fill another
+  product's box, and `StoreLeadRequest::returnUrl()` sends both success and
+  validation failure back to that exact page (same-host paths only -- it is
+  not an open redirect). `back()` alone was unreliable: the session's previous
+  URL can be another tab, or an image served through `storage.file`.
+- Neither bookkeeping field is stored; `product_id` is dropped unless
+  `source` is `product`.
+
 ### Form and permission UI conventions
 
 - **Input borders.** `$input-border-color` in `resources/css/app.scss` is the
@@ -705,12 +721,17 @@ probe file: it was gone after one deploy. Three category images had already been
 lost this way, leaving `categories.image` pointing at files that no longer
 existed.
 
-Two settings make uploads survive:
+What makes uploads survive:
 
-1. **`FILESYSTEM_PUBLIC_ROOT`** (`.env`) overrides the `public` disk root and the
-   `storage:link` target together. Leave it blank locally (defaults to
-   `storage_path('app/public')`); in production set it to an absolute path
-   outside the deploy directory, e.g. `/home/<user>/app-uploads`.
+1. **`App\Support\UploadsRoot`** decides the `public` disk root (and the
+   `storage:link` target): `FILESYSTEM_PUBLIC_ROOT` if set; otherwise, outside
+   `local`/`testing`, a **sibling of the deploy directory** --
+   `.../public_html-uploads` beside `.../public_html` -- created on first use;
+   otherwise `storage/app/public`. It falls back to `storage/app/public` rather
+   than break uploads if the sibling cannot be created. This default exists
+   because the manual `FILESYSTEM_PUBLIC_ROOT` step was never applied on the
+   server, and re-uploaded product images vanished on every push while the
+   committed ones survived.
 2. **The `storage.file` route** (`StorageFileController`) serves
    `/storage/{path}` from the `public` disk whenever the `public/storage` symlink
    is missing — and a clean checkout deletes that symlink too, since it is
@@ -724,10 +745,12 @@ on, the framework registered its own `/storage/{path}` route that shadowed
 signed-URL gated so private files were never exposed, and nothing in the app
 reads that disk.
 
-The 19 upload files still force-tracked under `storage/app/public/uploads` are a
-leftover from before this fix. Do not untrack them until production is confirmed
-to be reading `FILESYSTEM_PUBLIC_ROOT`, because while uploads still live in the
-deploy directory that tracking is the only thing restoring them after a deploy.
+3. **Legacy adoption.** The 19 upload files force-tracked under
+   `storage/app/public/uploads` still arrive with every deploy, in the old
+   location. When `storage.file` is asked for a file that is not on the
+   `public` disk but is in that legacy folder, it copies it across first (same
+   containment checks as serving). So the switch needs no migration step, and
+   once production has served each of them once they can be untracked.
 
 ---
 
