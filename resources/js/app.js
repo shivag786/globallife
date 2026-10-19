@@ -42,6 +42,9 @@ if (document.querySelector('[data-mobile-input]')) {
 if (document.querySelector('[data-slug-preview]') || document.querySelector('[data-price-preview]')) {
     import('./forms/offer-pricing').then(({ initOfferPricing }) => initOfferPricing());
 }
+if (document.querySelector('[data-member-form]')) {
+    import('./forms/member-form').then(({ initMemberForm }) => initMemberForm());
+}
 if (document.querySelector('[data-profit-calc]')) {
     import('./forms/profit-calculator').then(({ initProfitCalculator }) => initProfitCalculator());
 }

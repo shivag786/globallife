@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ValidatesMemberProfile;
 use App\Support\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreSubAdminRequest extends FormRequest
 {
+    use ValidatesMemberProfile;
+
     public function authorize(): bool
     {
         // Only Super Admin creates the layer directly beneath it; a Sub Admin
@@ -25,7 +28,18 @@ class StoreSubAdminRequest extends FormRequest
             'mobile' => ['nullable', 'digits:'.MobileNumber::LENGTH, Rule::unique('users', 'mobile')],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
+
+            // Personal, address, nominee and KYC -- all optional.
+            ...$this->profileRules(),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return $this->profileMessages();
     }
 
     protected function prepareForValidation(): void
@@ -33,5 +47,7 @@ class StoreSubAdminRequest extends FormRequest
         if ($this->has('mobile')) {
             $this->merge(['mobile' => MobileNumber::normalise($this->input('mobile'))]);
         }
+
+        $this->prepareProfileForValidation();
     }
 }

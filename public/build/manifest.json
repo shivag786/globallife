@@ -248,7 +248,7 @@
     "src": "_manrope-800-normal-uHUdIJgA.woff"
   },
   "resources/css/app.scss": {
-    "file": "assets/app-BchoKDqv.css",
+    "file": "assets/app-Dv7TVIEi.css",
     "name": "app",
     "names": [
       "app.css"
@@ -275,7 +275,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-B3oZcuy6.js",
+    "file": "assets/app-DHrjtGxv.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -291,6 +291,7 @@
       "resources/js/forms/permission-matrix.js",
       "resources/js/forms/mobile-input.js",
       "resources/js/forms/offer-pricing.js",
+      "resources/js/forms/member-form.js",
       "resources/js/forms/profit-calculator.js"
     ]
   },
@@ -310,6 +311,12 @@
     "file": "assets/city-picker-CQjjzVfX.js",
     "name": "city-picker",
     "src": "resources/js/forms/city-picker.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/forms/member-form.js": {
+    "file": "assets/member-form-CexR1I5E.js",
+    "name": "member-form",
+    "src": "resources/js/forms/member-form.js",
     "isDynamicEntry": true
   },
   "resources/js/forms/mobile-input.js": {
@@ -343,7 +350,7 @@
     "isDynamicEntry": true
   },
   "resources/js/notify/init.js": {
-    "file": "assets/init-Ce4afjCR.js",
+    "file": "assets/init-CY7-gdEx.js",
     "name": "init",
     "src": "resources/js/notify/init.js",
     "isDynamicEntry": true,

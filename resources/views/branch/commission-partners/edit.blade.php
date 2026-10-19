@@ -2,7 +2,7 @@
     {{-- Changes Super Admin made to this partner, with the reason, so they are
          never a surprise. Unread ones are highlighted and can be acknowledged. --}}
     @if ($adminUpdates->isNotEmpty())
-        <div id="admin-updates" class="card border-0 shadow-sm mb-6 mw-3xl">
+        <div id="admin-updates" class="card border-0 shadow-sm mb-6 member-form-after">
             <div class="card-header bg-body d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
                     <h2 class="h6 fw-semibold mb-0">Updated by Super Admin</h2>
@@ -23,14 +23,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('branch.commission-partners.update', $partner) }}">
+    <form method="POST" action="{{ route('branch.commission-partners.update', $partner) }}" enctype="multipart/form-data">
         @include('branch.commission-partners._form')
     </form>
 
     {{-- Its own form, a sibling of the one above: nesting forms is invalid HTML,
          and a password reset should be deliberate rather than something that
          rides along with a profile save. --}}
-    <div class="mw-3xl mt-4">
+    <div class="member-form-after mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Change Password</h2>

@@ -45,5 +45,16 @@ class AppServiceProvider extends ServiceProvider
             config(['filesystems.disks.public.root' => $uploadsRoot]);
             Storage::forgetDisk('public');
         }
+
+        // Same for the private KYC disk.
+        $kycRoot = UploadsRoot::resolvePrivate(
+            config('filesystems.private_root_override'),
+            $this->app->environment(),
+        );
+
+        if (config('filesystems.disks.kyc.root') !== $kycRoot) {
+            config(['filesystems.disks.kyc.root' => $kycRoot]);
+            Storage::forgetDisk('kyc');
+        }
     }
 }

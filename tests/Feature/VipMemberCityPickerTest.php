@@ -188,7 +188,7 @@ class VipMemberCityPickerTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('data-city-picker', false);
         $response->assertDontSee('new_cities', false);
-        $response->assertSee('Commission Partner Details', false);
+        $response->assertSee('Create Commission Partner', false);
     }
 
     public function test_a_commission_partner_can_be_created_without_any_city(): void

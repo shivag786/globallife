@@ -60,6 +60,43 @@ final class UploadsRoot
         return self::legacy();
     }
 
+    /**
+     * Where PRIVATE files (KYC photos and document scans) live.
+     *
+     * Same reasoning as the public root -- outside the deploy directory, or a
+     * push deletes them -- with one more requirement: never under a URL. A
+     * `-private` sibling of public_html is neither in the deploy directory nor
+     * web-served, so files there are reachable only through KycFileController.
+     */
+    public static function resolvePrivate(?string $explicit, ?string $environment, ?string $basePath = null): string
+    {
+        $basePath ??= base_path();
+        $legacy = storage_path('app/private');
+
+        if (is_string($explicit) && trim($explicit) !== '') {
+            return rtrim($explicit, '/\\');
+        }
+
+        if ($environment === 'testing') {
+            return $legacy;
+        }
+
+        $base = rtrim($basePath, '/\\');
+        $persistent = dirname($base).DIRECTORY_SEPARATOR.basename($base).'-private';
+
+        if (is_dir($persistent) && is_writable($persistent)) {
+            return $persistent;
+        }
+
+        $parent = dirname($persistent);
+
+        if (! is_dir($persistent) && is_dir($parent) && is_writable($parent) && @mkdir($persistent, 0750, true)) {
+            return $persistent;
+        }
+
+        return $legacy;
+    }
+
     /** The sibling-of-the-deploy-directory location. */
     public static function persistentPath(string $basePath): string
     {

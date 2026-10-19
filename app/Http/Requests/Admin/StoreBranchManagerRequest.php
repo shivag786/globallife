@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ValidatesMemberProfile;
 use App\Rules\PercentageWithinCap;
 use App\Support\BranchManagerAccess;
 use App\Support\MobileNumber;
@@ -10,6 +11,8 @@ use Illuminate\Validation\Rule;
 
 class StoreBranchManagerRequest extends FormRequest
 {
+    use ValidatesMemberProfile;
+
     public function authorize(): bool
     {
         // Super Admin, or a Sub Admin granted the branch-managers module.
@@ -39,7 +42,18 @@ class StoreBranchManagerRequest extends FormRequest
             // the controller ignores it for anyone else, so a Sub Admin cannot
             // post one to park a Branch Manager under somebody else.
             'created_by' => ['nullable', 'integer', 'exists:users,id'],
+
+            // Personal, address, nominee and KYC -- all optional.
+            ...$this->profileRules(),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return $this->profileMessages();
     }
 
     /**
@@ -51,5 +65,7 @@ class StoreBranchManagerRequest extends FormRequest
         if ($this->has('mobile')) {
             $this->merge(['mobile' => MobileNumber::normalise($this->input('mobile'))]);
         }
+
+        $this->prepareProfileForValidation();
     }
 }

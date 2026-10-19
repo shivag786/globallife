@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ValidatesMemberProfile;
 use App\Rules\PercentageWithinCap;
 use App\Support\BranchManagerAccess;
 use App\Support\MobileNumber;
@@ -10,6 +11,8 @@ use Illuminate\Validation\Rule;
 
 class UpdateBranchManagerRequest extends FormRequest
 {
+    use ValidatesMemberProfile;
+
     public function authorize(): bool
     {
         // Ownership of this particular Branch Manager is checked in the
@@ -41,7 +44,18 @@ class UpdateBranchManagerRequest extends FormRequest
             'cities' => ['nullable', 'array'],
             'cities.*' => ['integer', 'exists:cities,id'],
             'commission_percentage' => ['required', 'numeric', 'min:0', new PercentageWithinCap(100)],
+
+            // Personal, address, nominee and KYC -- all optional.
+            ...$this->profileRules(),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return $this->profileMessages();
     }
 
     /**
@@ -53,5 +67,7 @@ class UpdateBranchManagerRequest extends FormRequest
         if ($this->has('mobile')) {
             $this->merge(['mobile' => MobileNumber::normalise($this->input('mobile'))]);
         }
+
+        $this->prepareProfileForValidation();
     }
 }

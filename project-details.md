@@ -465,6 +465,46 @@ autofill often fires only `change`.
   marks them read; `markUpdatesRead()` only ever touches the caller's own notes.
   Reads live in `CommissionPartnerUpdateRepository`.
 
+### Member profile & KYC (Sub Admins, Branch Managers and Commission Partners)
+
+- The add/edit forms (`admin/sub-admins/_form`, `admin/branch-managers/_form`,
+  `branch/commission-partners/_form`)
+  use **`x-member-form`**: a sticky left rail (one dot per section: grey empty,
+  green filled, red on a validation error), collapsible **`x-form-section`**
+  cards and Expand all / Collapse all. Behaviour is in
+  `resources/js/forms/member-form.js`, which also handles the `+91` mobile with a
+  `0/10` counter (`x-forms.mobile`), DOB → age, Aadhaar spacing, PAN upper-casing
+  and in-browser shrinking of large photos. VIP Member forms are untouched.
+- Shared sections live in `partials/member-profile-sections` (Personal, Photo &
+  KYC, Address, Nominee). Super Admin's read-only view of a partner is
+  `partials/member-profile-summary`.
+- Data is in **`user_profiles`** (`UserProfile`, `User::profile()`, one row per
+  user, every field optional). Validation is the
+  `Http/Requests/Concerns/ValidatesMemberProfile` trait (18+ DOB, 6-digit PIN not
+  starting with 0, alternate mobile different from the main one, Aadhaar via
+  `Rules\AadhaarNumber` = 12 digits + Verhoeff check digit, PAN `AAAAA9999A`).
+  Saving goes through `MemberProfileService::save()` inside the same transaction
+  as the user create/update. Commission Partners also gained a `mobile` field.
+- **Aadhaar and PAN** use Laravel's `encrypted` cast (unreadable in the DB and in
+  dumps; they depend on `APP_KEY` -- rotating it without re-encrypting makes them
+  unreadable). They are only ever shown masked (`XXXX XXXX 1234`,
+  `XXXXX1234X`); the edit form leaves the input blank, a blank submit keeps the
+  stored value, and a "Remove" tick clears it.
+- **Photo / Aadhaar scan / PAN scan** go to the private **`kyc`** disk, never the
+  public one. Its root is `UploadsRoot::resolvePrivate()`:
+  `FILESYSTEM_PRIVATE_ROOT` if set, else a sibling `.../public_html-private`
+  folder (outside the deploy dir and outside the web root), else
+  `storage/app/private`; re-applied at runtime in `AppServiceProvider` like the
+  public disk. `Support\KycImage` re-encodes every upload with GD to WebP
+  (passport photo cropped to 35:45, max 700px wide; documents max 2000px), which
+  also strips EXIF/location data.
+- Files are served only by `GET /kyc/{user}/{kind}` (`kyc.file`,
+  `KycFileController`), with `Cache-Control: private, no-store`. Who may view is
+  `Support\KycAccess`: the person themselves, super_admin/admin (the only ones
+  who see a Sub Admin's), a Sub Admin for
+  the Branch Managers they own, a Branch Manager for the partners they created.
+  Everyone else gets a 404.
+
 ### Enquiries (leads)
 
 - `partials.enquiry-form` posts to `enquiry.store`. A product page passes
@@ -690,6 +730,7 @@ partner and branch, and no city fields left on the partner form), `LegacyVipPlan
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
+`MemberProfileKycTest` (profile saved on create/update for both roles, Aadhaar/PAN encrypted at rest and masked on screen, blank keeps / tick clears, Verhoeff and format validation, files on the private disk only, photo cropped to 35:45, old files deleted on replace/remove, who can open a KYC file).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 

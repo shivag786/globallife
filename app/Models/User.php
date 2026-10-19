@@ -130,6 +130,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Personal, address, nominee and KYC details (Branch Managers and
+     * Commission Partners). Optional, so this may be null.
+     *
+     * @return HasOne<UserProfile, $this>
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    /**
      * This user's public business microsite (when role is vip_member).
      *
      * @return HasOne<VipMicrosite, $this>

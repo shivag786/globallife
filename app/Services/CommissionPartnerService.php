@@ -24,6 +24,7 @@ class CommissionPartnerService
             $partner = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'mobile' => $data['mobile'] ?? null,
                 'password' => Hash::make($data['password']),
                 'status' => 'active',
                 'commission_percentage' => $commissionPercentage,
@@ -120,6 +121,12 @@ class CommissionPartnerService
                 'email' => $data['email'],
                 'commission_percentage' => $commissionPercentage,
             ]);
+
+            // Only when the form sent it, so a caller that does not deal in
+            // mobiles never blanks one.
+            if (array_key_exists('mobile', $data)) {
+                $partner->update(['mobile' => $data['mobile'] ?: null]);
+            }
 
             return $partner;
         });

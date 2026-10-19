@@ -9,9 +9,11 @@ use App\Http\Requests\Branch\UpdateCommissionPartnerRequest;
 use App\Models\User;
 use App\Repositories\CommissionPartnerUpdateRepository;
 use App\Services\CommissionPartnerService;
+use App\Services\MemberProfileService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CommissionPartnerController extends Controller
 {
@@ -32,11 +34,16 @@ class CommissionPartnerController extends Controller
         return view('branch.commission-partners.create');
     }
 
-    public function store(StoreCommissionPartnerRequest $request): RedirectResponse
+    public function store(StoreCommissionPartnerRequest $request, MemberProfileService $profiles): RedirectResponse
     {
         $data = $request->validated();
 
-        $this->partners->createPartner($data, (float) $data['commission_percentage'], Auth::user());
+        // The account and its personal / KYC details land together or not at all.
+        DB::transaction(function () use ($data, $request, $profiles) {
+            $partner = $this->partners->createPartner($data, (float) $data['commission_percentage'], Auth::user());
+
+            $profiles->save($partner, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+        });
 
         return redirect()->route('branch.commission-partners.index')->with('status', 'Commission Partner created successfully.');
     }
@@ -46,17 +53,21 @@ class CommissionPartnerController extends Controller
         abort_unless($commissionPartner->created_by === Auth::id(), 403);
 
         return view('branch.commission-partners.edit', [
-            'partner' => $commissionPartner,
+            'partner' => $commissionPartner->load('profile'),
             // What Super Admin has changed on this partner, and why.
             'adminUpdates' => $updates->historyFor($commissionPartner),
         ]);
     }
 
-    public function update(UpdateCommissionPartnerRequest $request, User $commissionPartner): RedirectResponse
+    public function update(UpdateCommissionPartnerRequest $request, User $commissionPartner, MemberProfileService $profiles): RedirectResponse
     {
         $data = $request->validated();
 
-        $this->partners->updatePartner($commissionPartner, $data, (float) $data['commission_percentage']);
+        DB::transaction(function () use ($commissionPartner, $data, $request, $profiles) {
+            $this->partners->updatePartner($commissionPartner, $data, (float) $data['commission_percentage']);
+
+            $profiles->save($commissionPartner, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+        });
 
         return redirect()->route('branch.commission-partners.index')->with('status', 'Commission Partner updated successfully.');
     }

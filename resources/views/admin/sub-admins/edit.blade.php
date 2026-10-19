@@ -1,12 +1,12 @@
 <x-layouts.app title="Edit Sub Admin" heading="Edit Sub Admin">
-    <form method="POST" action="{{ route('admin.sub-admins.update', $subAdmin) }}">
+    <form method="POST" action="{{ route('admin.sub-admins.update', $subAdmin) }}" enctype="multipart/form-data">
         @include('admin.sub-admins._form')
     </form>
 
     {{-- Its own form, a sibling of the one above: nesting forms is invalid HTML,
          and a password reset should be a deliberate action rather than something
          that rides along with a profile save. --}}
-    <div class="mt-4" style="max-width: 48rem">
+    <div class="member-form-after mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Change Password</h2>

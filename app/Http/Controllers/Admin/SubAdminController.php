@@ -7,12 +7,14 @@ use App\Http\Requests\Admin\StoreSubAdminRequest;
 use App\Http\Requests\Admin\UpdateSubAdminPasswordRequest;
 use App\Http\Requests\Admin\UpdateSubAdminRequest;
 use App\Models\User;
+use App\Services\MemberProfileService;
 use App\Services\PermissionMatrixService;
 use App\Services\SubAdminService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Sub Admins — the layer between Super Admin and Branch Manager.
@@ -40,9 +42,15 @@ class SubAdminController extends Controller
         return view('admin.sub-admins.create');
     }
 
-    public function store(StoreSubAdminRequest $request): RedirectResponse
+    public function store(StoreSubAdminRequest $request, MemberProfileService $profiles): RedirectResponse
     {
-        $subAdmin = $this->subAdmins->createSubAdmin($request->validated(), Auth::user());
+        // The account and its personal / KYC details land together or not at all.
+        $subAdmin = DB::transaction(function () use ($request, $profiles) {
+            $subAdmin = $this->subAdmins->createSubAdmin($request->validated(), Auth::user());
+            $profiles->save($subAdmin, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+
+            return $subAdmin;
+        });
 
         return redirect()
             ->route('admin.sub-admins.permissions.edit', $subAdmin)
@@ -53,14 +61,17 @@ class SubAdminController extends Controller
     {
         abort_unless($subAdmin->hasRole('sub_admin'), 404);
 
-        return view('admin.sub-admins.edit', ['subAdmin' => $subAdmin]);
+        return view('admin.sub-admins.edit', ['subAdmin' => $subAdmin->load('profile')]);
     }
 
-    public function update(UpdateSubAdminRequest $request, User $subAdmin): RedirectResponse
+    public function update(UpdateSubAdminRequest $request, User $subAdmin, MemberProfileService $profiles): RedirectResponse
     {
         abort_unless($subAdmin->hasRole('sub_admin'), 404);
 
-        $this->subAdmins->updateSubAdmin($subAdmin, $request->validated());
+        DB::transaction(function () use ($request, $subAdmin, $profiles) {
+            $this->subAdmins->updateSubAdmin($subAdmin, $request->validated());
+            $profiles->save($subAdmin, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+        });
 
         return redirect()->route('admin.sub-admins.index')->with('status', 'Sub Admin updated successfully.');
     }

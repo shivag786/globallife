@@ -37,7 +37,7 @@ class CommissionPartnerController extends Controller
         abort_unless($commissionPartner->hasRole('commission_partner'), 404);
 
         return view('admin.commission-partners.edit', [
-            'partner' => $commissionPartner->load('creator'),
+            'partner' => $commissionPartner->load('creator', 'profile'),
             'cap' => (float) ($commissionPartner->creator?->commission_percentage ?? 100),
             'history' => $updates->historyFor($commissionPartner),
         ]);

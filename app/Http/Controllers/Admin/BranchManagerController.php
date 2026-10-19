@@ -10,11 +10,13 @@ use App\Models\City;
 use App\Models\User;
 use App\Services\BranchManagerService;
 use App\Services\BranchPermissionMatrixService;
+use App\Services\MemberProfileService;
 use App\Support\BranchManagerAccess;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Branch Managers.
@@ -55,7 +57,7 @@ class BranchManagerController extends Controller
         ]);
     }
 
-    public function store(StoreBranchManagerRequest $request): RedirectResponse
+    public function store(StoreBranchManagerRequest $request, MemberProfileService $profiles): RedirectResponse
     {
         $data = $request->validated();
 
@@ -65,12 +67,17 @@ class BranchManagerController extends Controller
             ? ($data['created_by'] ?? null ? User::role('sub_admin')->find($data['created_by']) : null)
             : Auth::user();
 
-        $this->branchManagers->createBranchManager(
-            $data,
-            $data['cities'] ?? [],
-            (float) $data['commission_percentage'],
-            $owner,
-        );
+        // The account and its personal / KYC details land together or not at all.
+        DB::transaction(function () use ($data, $owner, $request, $profiles) {
+            $manager = $this->branchManagers->createBranchManager(
+                $data,
+                $data['cities'] ?? [],
+                (float) $data['commission_percentage'],
+                $owner,
+            );
+
+            $profiles->save($manager, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+        });
 
         return redirect()->route('admin.branch-managers.index')->with('status', 'Branch Manager created successfully.');
     }
@@ -80,20 +87,24 @@ class BranchManagerController extends Controller
         $this->authorizeManager($branchManager);
 
         return view('admin.branch-managers.edit', [
-            'manager' => $branchManager->load('branchCities'),
+            'manager' => $branchManager->load('branchCities', 'profile'),
             'cities' => City::orderBy('name')->get(),
             'subAdmins' => $this->assignableSubAdmins(),
             'seesAll' => BranchManagerAccess::seesAll(Auth::user()),
         ]);
     }
 
-    public function update(UpdateBranchManagerRequest $request, User $branchManager): RedirectResponse
+    public function update(UpdateBranchManagerRequest $request, User $branchManager, MemberProfileService $profiles): RedirectResponse
     {
         $this->authorizeManager($branchManager);
 
         $data = $request->validated();
 
-        $this->branchManagers->updateBranchManager($branchManager, $data, $data['cities'] ?? [], (float) $data['commission_percentage']);
+        DB::transaction(function () use ($branchManager, $data, $request, $profiles) {
+            $this->branchManagers->updateBranchManager($branchManager, $data, $data['cities'] ?? [], (float) $data['commission_percentage']);
+
+            $profiles->save($branchManager, $request->profileData(), $request->profileFiles(), $request->profileRemovals());
+        });
 
         return redirect()->route('admin.branch-managers.index')->with('status', 'Branch Manager updated successfully.');
     }

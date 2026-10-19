@@ -1,44 +1,59 @@
 @csrf
 @isset($subAdmin) @method('PUT') @endisset
 
-<div class="" style="max-width: 48rem">
-    <div class="d-flex flex-column gap-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-body">
-                <h2 class="h6 mb-0 fw-semibold">Sub Admin Details</h2>
-                <p class="small text-muted mb-0">
-                    What they can actually reach is set separately, on the Permissions screen.
-                </p>
-            </div>
-            <div class="card-body">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <x-forms.input name="name" label="Name" :value="$subAdmin->name ?? ''" required />
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.input name="mobile" label="Mobile Number" :value="$subAdmin->mobile ?? ''"
-                                       data-mobile-input type="tel" inputmode="numeric" maxlength="10"
-                                       autocomplete="tel-national" placeholder="9876543210"
-                                       help="10 digits. A +91 or leading 0 is trimmed automatically." />
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.input name="email" type="email" label="Email" :value="$subAdmin->email ?? ''" required />
-                    </div>
-                    @unless (isset($subAdmin))
-                        <div class="col-md-6">
-                            <x-forms.input name="password" type="password" label="Password" required
-                                           help="At least 8 characters." />
-                        </div>
-                    @endunless
-                </div>
-            </div>
-        </div>
+@php
+    $member = $subAdmin ?? null;
+    $profile = $member?->profile;
+@endphp
 
-        <div>
-            <button type="submit" class="btn btn-primary">
-                {{ isset($subAdmin) ? 'Update Sub Admin' : 'Create Sub Admin' }}
-            </button>
-            <a href="{{ route('admin.sub-admins.index') }}" class="btn btn-link text-muted">Cancel</a>
+<x-member-form :sections="[
+    ['id' => 'section-account', 'title' => 'Account', 'icon' => 'user'],
+    ['id' => 'section-contact', 'title' => 'Contact', 'icon' => 'phone'],
+    ['id' => 'section-personal', 'title' => 'Personal details', 'icon' => 'identification'],
+    ['id' => 'section-kyc', 'title' => 'Photo & KYC', 'icon' => 'lock'],
+    ['id' => 'section-address', 'title' => 'Address', 'icon' => 'home'],
+    ['id' => 'section-nominee', 'title' => 'Nominee', 'icon' => 'users'],
+]">
+
+    {{-- ---------------------------------------------------------- Account --}}
+    <x-form-section id="section-account" title="Account" icon="user"
+                    summary="Their name and sign-in details. What they can reach is set on the Permissions screen.">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <x-forms.input name="name" label="Full name" :value="$member->name ?? ''" required autocomplete="name" />
+            </div>
+            <div class="col-md-6">
+                <x-forms.input name="email" type="email" label="Email" :value="$member->email ?? ''" required autocomplete="email" />
+            </div>
+            @unless ($member)
+                <div class="col-md-6">
+                    <x-forms.input name="password" type="password" label="Password" required autocomplete="new-password"
+                                   help="At least 8 characters. They can be given a new one later from this edit screen." />
+                </div>
+            @endunless
         </div>
+    </x-form-section>
+
+    {{-- ---------------------------------------------------------- Contact --}}
+    <x-form-section id="section-contact" title="Contact" icon="phone" summary="How the office reaches them.">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <x-forms.mobile name="mobile" label="Mobile" :value="$member->mobile ?? ''"
+                                help="A +91 or leading 0 is trimmed automatically." />
+            </div>
+            <div class="col-md-6">
+                <x-forms.mobile name="alternate_mobile" label="Alternate mobile"
+                                :value="old('alternate_mobile', $profile?->alternate_mobile)" />
+            </div>
+        </div>
+    </x-form-section>
+
+    @include('partials.member-profile-sections', ['member' => $member])
+
+    <div class="member-form-actions">
+        <button type="submit" class="btn btn-brand">
+            {{ $member ? 'Update Sub Admin' : 'Create Sub Admin' }}
+        </button>
+        <a href="{{ route('admin.sub-admins.index') }}" class="btn btn-link text-secondary">Cancel</a>
     </div>
-</div>
+</x-member-form>

@@ -1,12 +1,12 @@
 <x-layouts.app title="Edit Branch Manager" heading="Edit Branch Manager">
-    <form method="POST" action="{{ route('admin.branch-managers.update', $manager) }}">
+    <form method="POST" action="{{ route('admin.branch-managers.update', $manager) }}" enctype="multipart/form-data">
         @include('admin.branch-managers._form')
     </form>
 
     {{-- Its own form, a sibling of the one above: nesting forms is invalid HTML,
          and a password reset should be a deliberate action rather than something
          that rides along with a profile save. --}}
-    <div class="mw-3xl mt-4">
+    <div class="member-form-after mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-body">
                 <h2 class="h6 mb-0 fw-semibold">Change Password</h2>

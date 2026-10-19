@@ -49,6 +49,8 @@
             </div>
         </form>
 
+        @include('partials.member-profile-summary', ['member' => $partner])
+
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-body">
                 <h2 class="h6 fw-semibold mb-0">Change History</h2>

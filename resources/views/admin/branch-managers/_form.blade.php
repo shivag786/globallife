@@ -2,98 +2,115 @@
 @isset($manager) @method('PUT') @endisset
 
 @php
-    $assignedCityIds = isset($manager) ? $manager->branchCities->pluck('id')->all() : old('cities', []);
+    $member = $manager ?? null;
+    $assignedCityIds = old('cities', $member ? $member->branchCities->pluck('id')->all() : []);
+    $profile = $member?->profile;
 @endphp
 
-<div class="mw-3xl">
-    <div class="d-flex flex-column gap-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-body">
-                <h2 class="h6 mb-0 fw-semibold">Branch Manager Details</h2>
+<x-member-form :sections="[
+    ['id' => 'section-account', 'title' => 'Account', 'icon' => 'user'],
+    ['id' => 'section-contact', 'title' => 'Contact', 'icon' => 'phone'],
+    ['id' => 'section-role', 'title' => 'Commission & branches', 'icon' => 'briefcase'],
+    ['id' => 'section-personal', 'title' => 'Personal details', 'icon' => 'identification'],
+    ['id' => 'section-kyc', 'title' => 'Photo & KYC', 'icon' => 'lock'],
+    ['id' => 'section-address', 'title' => 'Address', 'icon' => 'home'],
+    ['id' => 'section-nominee', 'title' => 'Nominee', 'icon' => 'users'],
+]">
+
+    {{-- ---------------------------------------------------------- Account --}}
+    <x-form-section id="section-account" title="Account" icon="user"
+                    summary="Their name and sign-in details{{ ($seesAll ?? false) ? ', and which Sub Admin manages them' : '' }}.">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <x-forms.input name="name" label="Full name" :value="$member->name ?? ''" required autocomplete="name" />
             </div>
-            <div class="card-body">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <x-forms.input name="name" label="Name" :value="$manager->name ?? ''" required />
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.input name="mobile" label="Mobile Number" :value="$manager->mobile ?? ''"
-                                       data-mobile-input type="tel" inputmode="numeric" maxlength="10"
-                                       autocomplete="tel-national" placeholder="9876543210"
-                                       help="10 digits. A +91 or leading 0 is trimmed automatically." />
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.input name="email" type="email" label="Email" :value="$manager->email ?? ''" required />
-                    </div>
-                    @unless (isset($manager))
-                        <div class="col-md-6">
-                            <x-forms.input name="password" type="password" label="Password" required />
-                        </div>
-                    @endunless
-                    <div class="col-md-6">
-                        <x-forms.input name="commission_percentage" type="number" label="Commission Percentage Cap"
-                                       :value="$manager->commission_percentage ?? ''"
-                                       step="0.01" min="0" max="100" required
-                                       help="The most this Branch Manager can grant a Commission Partner (0–100%)." />
-                    </div>
-                    {{-- Which Sub Admin runs this Branch Manager. Super Admin only:
-                         a Sub Admin's own Branch Managers are always theirs, so they
-                         are never shown a field that could move one away. --}}
-                    @if ($seesAll ?? false)
-                        <div class="col-md-6">
-                            <label for="created_by" class="d-block fs-sm fw-medium text-body-secondary">Managed By</label>
-                            <select id="created_by" name="created_by"
-                                    class="form-select @error('created_by') is-invalid @enderror">
-                                <option value="">Super Admin (unassigned)</option>
-                                @foreach ($subAdmins as $subAdmin)
-                                    <option value="{{ $subAdmin->id }}"
-                                        @selected((int) old('created_by', $manager->created_by ?? null) === $subAdmin->id)>
-                                        {{ $subAdmin->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('created_by')
-                                <p class="fs-sm text-danger mt-1">{{ $message }}</p>
-                            @enderror
-                            <p class="small text-muted mb-0 mt-1">
-                                The Sub Admin who manages them. Leave as Super Admin to keep them yourself
-                                &mdash; a Sub Admin only ever sees their own.
-                            </p>
-                        </div>
-                    @endif
+            <div class="col-md-6">
+                <x-forms.input name="email" type="email" label="Email" :value="$member->email ?? ''" required autocomplete="email" />
+            </div>
+            @unless ($member)
+                <div class="col-md-6">
+                    <x-forms.input name="password" type="password" label="Password" required autocomplete="new-password"
+                                   help="At least 8 characters. They can be given a new one later from this edit screen." />
                 </div>
+            @endunless
+
+            {{-- Which Sub Admin runs this Branch Manager. Super Admin only: a Sub
+                 Admin's own Branch Managers are always theirs, so they are never
+                 shown a field that could move one away. --}}
+            @if ($seesAll ?? false)
+                <div class="col-md-6">
+                    <x-forms.input name="created_by" label="Managed By" as="select"
+                                   help="The Sub Admin who manages them. Leave as Super Admin to keep them yourself.">
+                        <option value="">Super Admin (unassigned)</option>
+                        @foreach ($subAdmins as $subAdmin)
+                            <option value="{{ $subAdmin->id }}"
+                                @selected((int) old('created_by', $member->created_by ?? null) === $subAdmin->id)>
+                                {{ $subAdmin->name }}
+                            </option>
+                        @endforeach
+                    </x-forms.input>
+                </div>
+            @endif
+        </div>
+    </x-form-section>
+
+    {{-- ---------------------------------------------------------- Contact --}}
+    <x-form-section id="section-contact" title="Contact" icon="phone" summary="How the office reaches them.">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <x-forms.mobile name="mobile" label="Mobile" :value="$member->mobile ?? ''"
+                                help="A +91 or leading 0 is trimmed automatically." />
+            </div>
+            <div class="col-md-6">
+                <x-forms.mobile name="alternate_mobile" label="Alternate mobile"
+                                :value="old('alternate_mobile', $profile?->alternate_mobile)" />
             </div>
         </div>
+    </x-form-section>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-body">
-                <h2 class="h6 mb-0 fw-semibold">Assigned Branches (Cities) <span class="fw-normal text-muted small">— optional</span></h2>
-                <p class="small text-muted mb-0">
-                    Leave empty if their territory isn't decided yet. They also pick up a city
-                    automatically whenever they assign a Commission Partner to one.
-                </p>
+    {{-- -------------------------------------------- Commission & branches --}}
+    <x-form-section id="section-role" title="Commission & branches" icon="briefcase"
+                    summary="Their commission cap, and the cities they cover.">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <x-forms.input name="commission_percentage" type="number" label="Commission percentage cap"
+                               :value="$member->commission_percentage ?? ''" step="0.01" min="0" max="100" required
+                               help="The most this Branch Manager can grant a Commission Partner (0–100%)." />
             </div>
-            <div class="card-body">
+
+            <div class="col-12">
+                <label class="form-label small fw-medium">
+                    Assigned branches (cities) <span class="text-secondary fw-normal">(optional)</span>
+                </label>
+                <p class="form-text mt-0 mb-2">
+                    Leave empty if their territory isn't decided yet. They also pick up a city automatically
+                    whenever one of their partners registers a member there.
+                </p>
                 <div class="row g-2">
                     @forelse ($cities as $city)
-                        <div class="col-md-4">
-                            <label class="d-flex align-items-center gap-2">
-                                <input type="checkbox" name="cities[]" value="{{ $city->id }}"
-                                       @checked(in_array($city->id, $assignedCityIds))>
-                                <span class="fs-sm">{{ $city->name }}, {{ $city->state }}</span>
-                            </label>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="cities[]" value="{{ $city->id }}"
+                                       id="city-{{ $city->id }}" @checked(in_array($city->id, $assignedCityIds))>
+                                <label class="form-check-label fs-sm" for="city-{{ $city->id }}">
+                                    {{ $city->name }}, {{ $city->state }}
+                                </label>
+                            </div>
                         </div>
                     @empty
-                        <p class="text-secondary fs-sm">Create a city first.</p>
+                        <p class="text-secondary fs-sm mb-0">No cities yet.</p>
                     @endforelse
                 </div>
             </div>
         </div>
+    </x-form-section>
 
-        <div>
-            <button type="submit" class="btn btn-brand btn-sm">
-                {{ isset($manager) ? 'Update Branch Manager' : 'Create Branch Manager' }}
-            </button>
-        </div>
+    @include('partials.member-profile-sections', ['member' => $member])
+
+    <div class="member-form-actions">
+        <button type="submit" class="btn btn-brand">
+            {{ $member ? 'Update Branch Manager' : 'Create Branch Manager' }}
+        </button>
+        <a href="{{ route('admin.branch-managers.index') }}" class="btn btn-link text-secondary">Cancel</a>
     </div>
-</div>
+</x-member-form>

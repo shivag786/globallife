@@ -95,6 +95,11 @@ Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store')->middleware('throttle:10,1');
 
 Route::middleware(['auth', 'active_account'])->group(function () {
+    // Private KYC photo / document scans; KycAccess decides who may see them.
+    Route::get('/kyc/{user}/{kind}', App\Http\Controllers\KycFileController::class)
+        ->where('kind', 'photo|aadhaar_file|pan_file')
+        ->name('kyc.file');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Product-commission wallet — shared by VIP members, Commission Partners, Branch Managers.

@@ -32,6 +32,7 @@ return [
     // returns nothing once the config is cached. AppServiceProvider re-resolves
     // the public disk root from this on every request.
     'public_root_override' => env('FILESYSTEM_PUBLIC_ROOT'),
+    'private_root_override' => env('FILESYSTEM_PRIVATE_ROOT'),
 
     'disks' => [
 
@@ -56,6 +57,19 @@ return [
             'root' => App\Support\UploadsRoot::resolve(env('FILESYSTEM_PUBLIC_ROOT'), env('APP_ENV', 'production')),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // KYC photos and document scans. Private: outside the deploy directory
+        // (pushes cannot delete them) and outside public_html (no URL reaches
+        // them). Served only by KycFileController, to authorised users. The
+        // root is re-resolved at runtime in AppServiceProvider.
+        'kyc' => [
+            'driver' => 'local',
+            'root' => App\Support\UploadsRoot::resolvePrivate(env('FILESYSTEM_PRIVATE_ROOT'), env('APP_ENV', 'production')),
+            'serve' => false,
+            'visibility' => 'private',
             'throw' => false,
             'report' => false,
         ],
