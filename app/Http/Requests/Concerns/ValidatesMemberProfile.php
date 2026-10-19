@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Concerns;
 
 use App\Models\UserProfile;
-use App\Rules\AadhaarNumber;
 use App\Support\MobileNumber;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
@@ -42,7 +41,7 @@ trait ValidatesMemberProfile
             'nominee_date_of_birth' => ['nullable', 'date', 'before_or_equal:today', 'after:1900-01-01'],
             'nominee_mobile' => ['nullable', 'digits:'.MobileNumber::LENGTH],
 
-            'aadhaar_number' => ['nullable', new AadhaarNumber],
+            'aadhaar_number' => ['nullable', 'digits:12'],
             'pan_number' => ['nullable', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/'],
             'clear_aadhaar_number' => ['nullable', 'boolean'],
             'clear_pan_number' => ['nullable', 'boolean'],
@@ -64,6 +63,7 @@ trait ValidatesMemberProfile
             'date_of_birth.before_or_equal' => 'They must be at least 18 years old.',
             'alternate_mobile.different' => 'The alternate mobile must be a different number.',
             'pincode.regex' => 'The PIN code must be 6 digits and cannot start with 0.',
+            'aadhaar_number.digits' => 'The Aadhaar number must be 12 digits.',
             'pan_number.regex' => 'The PAN must be five letters, four digits and one letter, e.g. ABCDE1234F.',
             'photo.max' => 'The photo must be under 8 MB.',
             'aadhaar_file.max' => 'The Aadhaar scan must be under 8 MB.',

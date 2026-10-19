@@ -482,7 +482,7 @@ autofill often fires only `change`.
   user, every field optional). Validation is the
   `Http/Requests/Concerns/ValidatesMemberProfile` trait (18+ DOB, 6-digit PIN not
   starting with 0, alternate mobile different from the main one, Aadhaar via
-  `Rules\AadhaarNumber` = 12 digits + Verhoeff check digit, PAN `AAAAA9999A`).
+  Aadhaar = any 12 digits (spaces stripped; no check-digit test, by request), PAN `AAAAA9999A`).
   Saving goes through `MemberProfileService::save()` inside the same transaction
   as the user create/update. Commission Partners also gained a `mobile` field.
 - **Aadhaar and PAN** use Laravel's `encrypted` cast (unreadable in the DB and in
@@ -730,7 +730,7 @@ partner and branch, and no city fields left on the partner form), `LegacyVipPlan
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
-`MemberProfileKycTest` (profile saved on create/update for both roles, Aadhaar/PAN encrypted at rest and masked on screen, blank keeps / tick clears, Verhoeff and format validation, files on the private disk only, photo cropped to 35:45, old files deleted on replace/remove, who can open a KYC file).
+`MemberProfileKycTest` (profile saved on create/update for both roles, Aadhaar/PAN encrypted at rest and masked on screen, blank keeps / tick clears, Aadhaar 12-digit and other format validation, files on the private disk only, photo cropped to 35:45, old files deleted on replace/remove, who can open a KYC file).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).
 

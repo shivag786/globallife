@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\UserProfile;
-use App\Rules\AadhaarNumber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -40,10 +39,9 @@ class MemberProfileKycTest extends TestCase
         return $user;
     }
 
-    /** A checksum-valid Aadhaar number, built rather than borrowed. */
-    private function aadhaar(string $prefix = '23412341234'): string
+    private function aadhaar(): string
     {
-        return $prefix.AadhaarNumber::checkDigit($prefix);
+        return '422142215344';
     }
 
     /**
@@ -73,7 +71,7 @@ class MemberProfileKycTest extends TestCase
             'nominee_name' => 'Ravi Verma',
             'nominee_relation' => 'brother',
             'nominee_mobile' => '9988776655',
-            'aadhaar_number' => '2341 2341 234'.substr($this->aadhaar(), -1),
+            'aadhaar_number' => '4221 4221 5344',
             'pan_number' => 'bqzpk4321m',
         ], $overrides);
     }
@@ -266,13 +264,22 @@ class MemberProfileKycTest extends TestCase
 
     /* ---------------------------------------------------------- validation */
 
-    public function test_a_mistyped_aadhaar_is_caught_by_its_check_digit(): void
+    public function test_any_12_digit_aadhaar_is_accepted_with_or_without_spaces(): void
     {
-        $wrongLast = ((int) substr($this->aadhaar(), -1) + 1) % 10;
-
         $this->actingAs($this->superAdmin())
             ->post('/admin/branch-managers', $this->branchManagerPayload([
-                'aadhaar_number' => '23412341234'.$wrongLast,
+                'aadhaar_number' => '4221 4221 5344',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('422142215344', User::where('email', 'asha.bm@example.com')->sole()->profile->aadhaar_number);
+    }
+
+    public function test_an_aadhaar_that_is_not_12_digits_is_refused(): void
+    {
+        $this->actingAs($this->superAdmin())
+            ->post('/admin/branch-managers', $this->branchManagerPayload([
+                'aadhaar_number' => '4221 4221 534',
             ]))
             ->assertSessionHasErrors('aadhaar_number');
     }
