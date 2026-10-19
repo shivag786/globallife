@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Branch;
 use App\Http\Controllers\Controller;
 use App\Models\CommissionEarning;
 use App\Models\CommissionTransaction;
+use App\Repositories\CommissionPartnerUpdateRepository;
 use App\Support\ChartData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(CommissionPartnerUpdateRepository $updates): View
     {
         $manager = Auth::user()->load('branchCities');
         $base = CommissionTransaction::where('branch_manager_id', $manager->id);
@@ -31,6 +32,9 @@ class DashboardController extends Controller
         return view('dashboards.branch-manager', [
             'manager' => $manager,
             'partnerCount' => $manager->commissionPartners()->count(),
+            // Super Admin's changes to this Branch Manager's partners, unseen.
+            'partnerUpdates' => $updates->unreadFor($manager),
+            'partnerUpdatesCount' => $updates->unreadCountFor($manager),
             'stats' => [
                 'earned' => round($vipRevenue + $productRevenue, 2),
                 'activations' => (clone $base)->count(),

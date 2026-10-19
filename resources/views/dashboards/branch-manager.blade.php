@@ -3,6 +3,42 @@
         <p class="text-body-secondary">Welcome back, <strong>{{ $manager->name }}</strong>.</p>
     </div>
 
+    {{-- Super Admin changed one of this Branch Manager's partners. Shown until
+         acknowledged, so a changed commission rate is never discovered later. --}}
+    @if ($partnerUpdates->isNotEmpty())
+        <div class="card shadow-sm mb-6 border-warning">
+            <div class="card-header bg-gold-subtle d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <x-icon name="sparkles" class="w-5 h-5 text-warning" />
+                    <h2 class="h6 fw-semibold mb-0">Updates from Super Admin</h2>
+                    <span class="badge rounded-pill text-bg-warning">{{ $partnerUpdatesCount }} new</span>
+                </div>
+                <form method="POST" action="{{ route('branch.partner-updates.read') }}">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Mark all as read</button>
+                </form>
+            </div>
+            <div class="card-body py-1">
+                @foreach ($partnerUpdates as $update)
+                    <div class="{{ $loop->first ? '' : 'border-top' }}">
+                        @include('partials.partner-update-note', ['update' => $update, 'canMarkRead' => true])
+                        <p class="fs-xs mb-2 ms-12">
+                            <a href="{{ route('branch.commission-partners.edit', $update->commission_partner_id) }}#admin-updates"
+                               class="text-brand hover-underline">View partner</a>
+                        </p>
+                    </div>
+                @endforeach
+                @if ($partnerUpdatesCount > $partnerUpdates->count())
+                    <p class="fs-xs text-secondary border-top pt-2 mb-2">
+                        Showing the latest {{ $partnerUpdates->count() }} of {{ $partnerUpdatesCount }}.
+                        The rest are on each partner's page.
+                    </p>
+                @endif
+            </div>
+        </div>
+    @endif
+
     <div class="d-grid grid-cols-2 grid-cols-md-4 gap-4 mb-6">
         <x-stat-tile label="Commission Cap" :value="$manager->commission_percentage" suffix="%"
             icon="tag" color="brand" hint="Your maximum share" />

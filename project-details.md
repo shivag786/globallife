@@ -443,6 +443,28 @@ typing takes the first 10**. Taking the tail while someone types would drop the
 digits they entered first. It listens to `input`, `change` and `blur`, because
 autofill often fires only `change`.
 
+### Super Admin editing Commission Partners
+
+- Partners are created and normally edited by their Branch Manager. Super Admin
+  can also edit name, email, mobile and commission from
+  `/admin/commission-partners/{id}/edit` (`Admin\CommissionPartnerController`,
+  `UpdateCommissionPartnerRequest`). Commission is capped at the partner's
+  Branch Manager's own `commission_percentage` (the same `PercentageWithinCap`
+  rule the Branch Manager works under), since the partner's share comes out of it.
+- Every such save goes through `CommissionPartnerService::adminUpdatePartner()`,
+  which updates only the fields that changed and, in the same transaction,
+  writes a **`CommissionPartnerUpdate`** note: `changed_fields`
+  (field => [old, new]), `updated_by`, an optional `note` (reason), and
+  `branch_manager_id` (the partner's Branch Manager at that moment). A save that
+  changes nothing and gives no reason writes no note.
+- The column is `changed_fields`, **not `changes`** -- Eloquent models already
+  have an internal `$changes` property that `$this->changes` would read instead.
+- The Branch Manager sees unread notes in an "Updates from Super Admin" panel on
+  `/branch/dashboard`, a badge on the partner's row, and the full history on the
+  partner's edit page. `PATCH /branch/partner-updates/read` (optional `id`)
+  marks them read; `markUpdatesRead()` only ever touches the caller's own notes.
+  Reads live in `CommissionPartnerUpdateRepository`.
+
 ### Enquiries (leads)
 
 - `partials.enquiry-form` posts to `enquiry.store`. A product page passes

@@ -1,6 +1,7 @@
 <x-layouts.app title="Commission Partners" heading="Commission Partners">
     <p class="fs-sm text-secondary mb-4">
-        Read-only oversight. Commission Partners are registered and managed by their Branch Manager.
+        Commission Partners are registered by their Branch Manager. You can edit any partner here;
+        their Branch Manager sees a note of what you changed.
     </p>
 
     <div class="bg-body rounded-2 shadow-sm border overflow-hidden">
@@ -14,6 +15,7 @@
                     <th class="px-4 py-3">Cities</th>
                     <th class="px-4 py-3">Commission</th>
                     <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3"></th>
                 </tr>
             </thead>
             <tbody>
@@ -31,9 +33,13 @@
                                 {{ $partner->status }}
                             </span>
                         </td>
+                        <td class="px-4 py-3 text-end">
+                            <a href="{{ route('admin.commission-partners.edit', $partner) }}"
+                               class="btn btn-sm btn-outline-secondary">Edit</a>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-6 text-center text-secondary">No commission partners yet.</td></tr>
+                    <tr><td colspan="7" class="px-4 py-6 text-center text-secondary">No commission partners yet.</td></tr>
                 @endforelse
             </tbody>
         </table>

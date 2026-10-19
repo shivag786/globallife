@@ -21,7 +21,17 @@
             <tbody>
                 @forelse ($partners as $partner)
                     <tr class="border-top">
-                        <td class="px-4 py-3 fw-medium">{{ $partner->name }}</td>
+                        <td class="px-4 py-3 fw-medium">
+                            {{ $partner->name }}
+                            {{-- Super Admin changed this partner and the note is unread. --}}
+                            @if ($unreadUpdates[$partner->id] ?? 0)
+                                <a href="{{ route('branch.commission-partners.edit', $partner) }}#admin-updates"
+                                   class="badge rounded-pill text-bg-warning text-decoration-none ms-1"
+                                   title="Super Admin changed this partner's details">
+                                    Updated by Super Admin
+                                </a>
+                            @endif
+                        </td>
                         <td class="px-4 py-3">{{ $partner->email }}</td>
                         <td class="px-4 py-3 text-secondary">
                             {{ $partner->cities->isEmpty() ? '—' : $partner->cities->pluck('name')->implode(', ') }}

@@ -7,6 +7,7 @@ use App\Http\Requests\Branch\StoreCommissionPartnerRequest;
 use App\Http\Requests\Branch\UpdateCommissionPartnerPasswordRequest;
 use App\Http\Requests\Branch\UpdateCommissionPartnerRequest;
 use App\Models\User;
+use App\Repositories\CommissionPartnerUpdateRepository;
 use App\Services\CommissionPartnerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -16,11 +17,14 @@ class CommissionPartnerController extends Controller
 {
     public function __construct(private readonly CommissionPartnerService $partners) {}
 
-    public function index(): View
+    public function index(CommissionPartnerUpdateRepository $updates): View
     {
         $partners = Auth::user()->commissionPartners()->with('cities')->orderBy('name')->get();
 
-        return view('branch.commission-partners.index', ['partners' => $partners]);
+        return view('branch.commission-partners.index', [
+            'partners' => $partners,
+            'unreadUpdates' => $updates->unreadCountsByPartner(Auth::user()),
+        ]);
     }
 
     public function create(): View
@@ -37,12 +41,14 @@ class CommissionPartnerController extends Controller
         return redirect()->route('branch.commission-partners.index')->with('status', 'Commission Partner created successfully.');
     }
 
-    public function edit(User $commissionPartner): View
+    public function edit(User $commissionPartner, CommissionPartnerUpdateRepository $updates): View
     {
         abort_unless($commissionPartner->created_by === Auth::id(), 403);
 
         return view('branch.commission-partners.edit', [
             'partner' => $commissionPartner,
+            // What Super Admin has changed on this partner, and why.
+            'adminUpdates' => $updates->historyFor($commissionPartner),
         ]);
     }
 

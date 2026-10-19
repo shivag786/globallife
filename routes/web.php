@@ -200,6 +200,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
             Route::get('commission-partners', [AdminCommissionPartnerController::class, 'index'])
                 ->name('commission-partners.index');
+            // Super Admin editing a partner directly; each save leaves a note for
+            // the partner's Branch Manager (see CommissionPartnerUpdate).
+            Route::get('commission-partners/{commissionPartner}/edit', [AdminCommissionPartnerController::class, 'edit'])
+                ->name('commission-partners.edit');
+            Route::put('commission-partners/{commissionPartner}', [AdminCommissionPartnerController::class, 'update'])
+                ->name('commission-partners.update');
 
             // Monthly settlement: what each Commission Partner earned that month
             // (product sales + VIP plans) and marking the month paid.
@@ -278,6 +284,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
             ->name('commission-partners.password.update');
 
         Route::get('/revenue', [App\Http\Controllers\Branch\RevenueController::class, 'index'])->name('revenue.index');
+
+        // Acknowledge Super Admin's notes about this Branch Manager's partners.
+        Route::patch('partner-updates/read', [App\Http\Controllers\Branch\PartnerUpdateController::class, 'markRead'])
+            ->name('partner-updates.read');
     });
 
     Route::middleware('role:vip_member')->prefix('vip')->name('vip.')->group(function () {

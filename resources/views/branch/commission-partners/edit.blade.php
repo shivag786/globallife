@@ -1,4 +1,28 @@
 <x-layouts.app title="Edit Commission Partner" heading="Edit Commission Partner">
+    {{-- Changes Super Admin made to this partner, with the reason, so they are
+         never a surprise. Unread ones are highlighted and can be acknowledged. --}}
+    @if ($adminUpdates->isNotEmpty())
+        <div id="admin-updates" class="card border-0 shadow-sm mb-6 mw-3xl">
+            <div class="card-header bg-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                    <h2 class="h6 fw-semibold mb-0">Updated by Super Admin</h2>
+                    <p class="fs-xs text-secondary mb-0">Changes made to this partner from the admin panel.</p>
+                </div>
+            </div>
+            <div class="card-body py-1">
+                @foreach ($adminUpdates as $update)
+                    <div class="{{ $loop->first ? '' : 'border-top' }}">
+                        @include('partials.partner-update-note', [
+                            'update' => $update,
+                            'showPartner' => false,
+                            'canMarkRead' => true,
+                        ])
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('branch.commission-partners.update', $partner) }}">
         @include('branch.commission-partners._form')
     </form>
