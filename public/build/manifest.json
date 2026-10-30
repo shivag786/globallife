@@ -247,8 +247,17 @@
     "file": "assets/manrope-800-normal-uHUdIJgA.woff",
     "src": "_manrope-800-normal-uHUdIJgA.woff"
   },
+  "node_modules/sweetalert2/dist/sweetalert2.all.js": {
+    "file": "assets/sweetalert2.all-PyBgVXs_.js",
+    "name": "sweetalert2.all",
+    "src": "node_modules/sweetalert2/dist/sweetalert2.all.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
   "resources/css/app.scss": {
-    "file": "assets/app-Dv7TVIEi.css",
+    "file": "assets/app-B-4Rt3gT.css",
     "name": "app",
     "names": [
       "app.css"
@@ -275,7 +284,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-DHrjtGxv.js",
+    "file": "assets/app-BEgvz2cP.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -292,17 +301,24 @@
       "resources/js/forms/mobile-input.js",
       "resources/js/forms/offer-pricing.js",
       "resources/js/forms/member-form.js",
+      "resources/js/vip/page-builder.js",
       "resources/js/forms/profit-calculator.js"
     ]
   },
   "resources/js/cart.js": {
-    "file": "assets/cart-B0TZwONC.js",
+    "file": "assets/cart-CuGo6dAQ.js",
     "name": "cart",
     "src": "resources/js/cart.js",
-    "isDynamicEntry": true
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "dynamicImports": [
+      "node_modules/sweetalert2/dist/sweetalert2.all.js"
+    ]
   },
   "resources/js/charts/init.js": {
-    "file": "assets/init-BlX6np0G.js",
+    "file": "assets/init-CvxmOA6Y.js",
     "name": "init",
     "src": "resources/js/charts/init.js",
     "isDynamicEntry": true
@@ -350,12 +366,13 @@
     "isDynamicEntry": true
   },
   "resources/js/notify/init.js": {
-    "file": "assets/init-CY7-gdEx.js",
+    "file": "assets/init-Cejd04Mn.js",
     "name": "init",
     "src": "resources/js/notify/init.js",
     "isDynamicEntry": true,
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "node_modules/sweetalert2/dist/sweetalert2.all.js"
     ]
   },
   "resources/js/three/network-scene.js": {
@@ -363,5 +380,15 @@
     "name": "network-scene",
     "src": "resources/js/three/network-scene.js",
     "isDynamicEntry": true
+  },
+  "resources/js/vip/page-builder.js": {
+    "file": "assets/page-builder-C2kq5vS0.js",
+    "name": "page-builder",
+    "src": "resources/js/vip/page-builder.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "node_modules/sweetalert2/dist/sweetalert2.all.js"
+    ]
   }
 }

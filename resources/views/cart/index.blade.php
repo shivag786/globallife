@@ -20,15 +20,17 @@
                 <div class="bg-body border rounded-4 divide-y">
                     @foreach ($items as $item)
                         <div data-cart-line data-key="{{ $item['key'] }}" class="d-flex gap-3 gap-sm-4 p-4 p-sm-5">
-                            <a href="{{ route('products.show', $item['product']) }}" class="w-20 h-20 w-24 h-24 rounded-3 bg-body-tertiary d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0">
-                                @if ($item['product']->main_image)
-                                    <img src="{{ asset('storage/'.$item['product']->main_image) }}" alt="" class="w-100 h-100 object-fit-contain p-2">
+                            <a href="{{ $item['url'] }}" class="w-20 h-20 w-24 h-24 rounded-3 bg-body-tertiary d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0">
+                                @if ($item['image'])
+                                    <img src="{{ asset('storage/'.$item['image']) }}" alt="" class="w-100 h-100 object-fit-contain p-2">
                                 @endif
                             </a>
                             <div class="flex-grow-1 min-w-0 d-flex flex-column">
-                                <a href="{{ route('products.show', $item['product']) }}" class="fw-medium text-brand-emphasis lh-sm line-clamp-2">{{ $item['product']->name }}</a>
+                                <a href="{{ $item['url'] }}" class="fw-medium text-brand-emphasis lh-sm line-clamp-2">{{ $item['name'] }}</a>
                                 @if ($item['seller'])
-                                    <p class="fs-xs text-secondary mt-1">Sold by {{ $item['seller']->business_name }}</p>
+                                    <p class="fs-xs text-secondary mt-1">
+                                        {{ $item['type'] === 'business' ? 'Sold & delivered by' : 'Sold by' }} {{ $item['seller']->business_name }}
+                                    </p>
                                 @endif
                                 <p class="fs-sm text-secondary mt-1">{{ $money($item['unit_price']) }} each</p>
 

@@ -11,6 +11,24 @@
 
     <div class="mb-4"><a href="{{ route('admin.orders.index') }}" class="fs-sm text-primary hover-underline">← All orders</a></div>
 
+    @if ($order->isBusinessFulfilled() && $order->fulfiller)
+        <div class="alert alert-info fs-sm d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <span>
+                <strong>{{ $order->fulfiller->business_name }}</strong> sells and delivers this order itself (its own products, no commission).
+                @if ($order->payment_method === 'online')
+                    @if ($order->settlement)
+                        The online payment was transferred to them on <x-ist :value="$order->settlement->paid_at" format="d M Y" :suffix="''" />.
+                    @else
+                        The online payment is owed to them once it is delivered.
+                    @endif
+                @else
+                    They collect the cash on delivery.
+                @endif
+            </span>
+            <a href="{{ route('admin.business-sales.show', $order->fulfiller) }}" class="btn btn-sm btn-outline-primary">Business sales</a>
+        </div>
+    @endif
+
     <div class="d-grid grid-template-lg gap-6 align-items-start" style="--cols-lg: minmax(0, 1fr) 320px">
         <div class="d-flex flex-column gap-6">
             <div class="bg-body rounded-2 shadow-sm border p-6">

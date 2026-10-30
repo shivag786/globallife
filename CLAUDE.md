@@ -58,6 +58,13 @@ Windows + XAMPP dev environment; shell is PowerShell (Bash tool also available).
    top-level public route must go *above* it.
 5. `EnsureAccountIsActive` (`active_account` middleware) logs out any user whose
    `status !== 'active'`.
+6. **A business's OWN products are a third money flow, not commission.**
+   `BusinessProduct` sales (package `selling_mode = direct`) go through the
+   company checkout, earn no upline commission, and are paid over to the
+   business via `BusinessSalesService::settle()` (delivered + paid online only).
+   The cart never mixes them with another shop's lines (`conflictFor()`).
+7. **Read `page_layout` only through `$microsite->layout()`**
+   (`BusinessPageLayout`) — it is optional and falls back to defaults.
 
 ## Before finishing a change
 

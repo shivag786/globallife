@@ -90,9 +90,10 @@ class RazorpayCheckoutController extends Controller
             'pincode' => $address->pincode,
             'delivery_notes' => $validated['delivery_notes'] ?? null,
             'items' => $this->cart->items()->map(fn (array $item) => [
-                'product_id' => $item['product']->id,
-                'product_name' => $item['product']->name,
-                'product_sku' => $item['product']->sku,
+                'product_id' => $item['product_id'],
+                'business_product_id' => $item['business_product_id'],
+                'product_name' => $item['name'],
+                'product_sku' => $item['sku'],
                 'seller_id' => $item['seller_id'],
                 'unit_price' => $item['unit_price'],
                 'quantity' => $item['quantity'],

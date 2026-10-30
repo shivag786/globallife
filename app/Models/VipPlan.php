@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
     'name', 'slug', 'monthly_price', 'yearly_price', 'joining_price', 'renewal_price', 'validity_months',
-    'product_limit', 'service_limit',
+    'product_limit', 'service_limit', 'selling_mode',
     'features', 'highlight_features', 'status', 'upgrade_priority', 'display_order',
     'microsite_limit', 'landing_page_limit', 'blog_limit', 'analytics_limit_days', 'storage_limit_mb',
 ])]
@@ -29,6 +30,14 @@ class VipPlan extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logOnlyDirty()->dontSubmitEmptyLogs();
+    }
+
+    /**
+     * @return HasMany<VipMicrosite, $this>
+     */
+    public function microsites(): HasMany
+    {
+        return $this->hasMany(VipMicrosite::class);
     }
 
     /**
@@ -54,6 +63,21 @@ class VipPlan extends Model
     public function serviceLimit(): int
     {
         return max(0, (int) $this->service_limit);
+    }
+
+    public const SELLING_MODES = [
+        'catalogue' => 'Catalogue only (orders on WhatsApp)',
+        'direct' => 'Direct sell (cart, delivery address, Razorpay / COD)',
+    ];
+
+    /**
+     * Whether members on this package sell their own products through the
+     * company checkout. Anything other than "direct" is catalogue-only, so a
+     * missing or unknown value never opens a cart.
+     */
+    public function sellsDirect(): bool
+    {
+        return $this->selling_mode === 'direct';
     }
 
     /**

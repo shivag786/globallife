@@ -1,10 +1,7 @@
 @if ($microsite->galleryItems->isNotEmpty())
-    <section id="gallery" class="msite-section bg-cream">
+    <section id="gallery" class="msite-section {{ $sectionBg ?? 'bg-cream' }}">
         <div class="msite-container">
-            <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">Take a Look</p>
-                <h2 class="msite-heading fs-3xl fs-4xl">Gallery</h2>
-            </div>
+            @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('gallery')])
             <div class="columns-2 columns-sm-3 columns-lg-4 gap-4" data-msite-gallery>
                 @foreach ($microsite->galleryItems as $index => $item)
                     <button type="button" data-msite-gallery-item="{{ $index }}"

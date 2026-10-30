@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\BusinessModules;
+use App\Support\BusinessPageLayout;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,7 +26,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
     'business_email', 'phone_number', 'alternate_number', 'whatsapp_number', 'website_url',
     'address', 'google_map_url', 'business_hours', 'holidays',
     'facebook_url', 'instagram_url', 'youtube_url', 'linkedin_url', 'twitter_url', 'telegram_url', 'pinterest_url',
-    'module_visibility',
+    'module_visibility', 'page_layout',
 ])]
 class VipMicrosite extends Model
 {
@@ -37,6 +38,7 @@ class VipMicrosite extends Model
             'business_hours' => 'array',
             'holidays' => 'array',
             'module_visibility' => 'array',
+            'page_layout' => 'array',
             'activated_at' => 'datetime',
             'plan_expires_at' => 'datetime',
         ];
@@ -152,6 +154,92 @@ class VipMicrosite extends Model
             ->first();
 
         return $row === null || (bool) $row->is_visible;
+    }
+
+    /**
+     * Card sections the owner built on the page builder ("Meet Our Doctors"...).
+     *
+     * @return HasMany<BusinessSection, $this>
+     */
+    public function customSections(): HasMany
+    {
+        return $this->hasMany(BusinessSection::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Orders for this business's own products, which it delivers itself.
+     *
+     * @return HasMany<Order, $this>
+     */
+    public function fulfilledOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'fulfilled_by_microsite_id');
+    }
+
+    /**
+     * @return HasMany<BusinessSettlement, $this>
+     */
+    public function settlements(): HasMany
+    {
+        return $this->hasMany(BusinessSettlement::class);
+    }
+
+    public function layout(): BusinessPageLayout
+    {
+        return new BusinessPageLayout($this);
+    }
+
+    /**
+     * Whether this business's own products go through the company checkout
+     * (cart, address, Razorpay / COD) or are a catalogue ordered on WhatsApp.
+     * Decided by the package, which Super Admin / Admin set.
+     */
+    public function sellsDirect(): bool
+    {
+        return (bool) $this->vipPlan?->sellsDirect();
+    }
+
+    /**
+     * The number a catalogue order goes to: the WhatsApp number, else the phone.
+     */
+    public function orderWhatsappNumber(): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) ($this->whatsapp_number ?: $this->phone_number));
+
+        if ($digits === '') {
+            return null;
+        }
+
+        // A bare 10-digit Indian mobile needs the country code for wa.me.
+        return strlen($digits) === 10 ? '91'.$digits : $digits;
+    }
+
+    /**
+     * wa.me link with the order message already typed for the customer, or NULL
+     * when the business has no number to send it to.
+     */
+    public function whatsappOrderUrl(BusinessProduct $product): ?string
+    {
+        $number = $this->orderWhatsappNumber();
+
+        if ($number === null) {
+            return null;
+        }
+
+        $price = $product->show_pricing && $product->hasPrice()
+            ? ' (₹'.number_format($product->sellingPrice(), 0).')'
+            : '';
+
+        $message = "Hello {$this->business_name}, I would like to order:
+"
+            ."• {$product->name}{$price}
+"
+            .'Quantity: 1'."
+
+"
+            .'Seen on your page: '.url($this->publicPath());
+
+        return 'https://wa.me/'.$number.'?text='.rawurlencode($message);
     }
 
     /**

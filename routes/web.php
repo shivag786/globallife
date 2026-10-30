@@ -166,6 +166,23 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::patch('orders/{order}/delivery', [App\Http\Controllers\Admin\OrderController::class, 'updateDelivery'])->name('orders.update-delivery');
 
+        // Businesses selling their own products: per-package selling mode
+        // (catalogue on WhatsApp vs direct sell), the sales report, and paying
+        // businesses what the company's Razorpay collected for them.
+        Route::middleware('role:super_admin|admin')->group(function () {
+            Route::get('settings/selling', [App\Http\Controllers\Admin\SellingSettingsController::class, 'edit'])
+                ->name('settings.selling.edit');
+            Route::put('settings/selling', [App\Http\Controllers\Admin\SellingSettingsController::class, 'update'])
+                ->name('settings.selling.update');
+
+            Route::get('business-sales', [App\Http\Controllers\Admin\BusinessSalesController::class, 'index'])
+                ->name('business-sales.index');
+            Route::get('business-sales/{microsite}', [App\Http\Controllers\Admin\BusinessSalesController::class, 'show'])
+                ->name('business-sales.show');
+            Route::post('business-sales/{microsite}/settle', [App\Http\Controllers\Admin\BusinessSalesController::class, 'settle'])
+                ->name('business-sales.settle');
+        });
+
         // Branch Managers sit one level below Sub Admin in the hierarchy, so a Sub
         // Admin granted the `branch-managers` module manages them too — scoped to
         // the ones they created, enforced in BranchManagerController via
@@ -302,6 +319,19 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
         Route::get('/modules', [ModuleVisibilityController::class, 'edit'])->name('modules.edit');
         Route::put('/modules', [ModuleVisibilityController::class, 'update'])->name('modules.update');
+
+        // Drag-and-drop page builder: the whole page saved as one document, with
+        // cropped images uploaded as soon as they are cropped.
+        Route::get('/page-builder', [App\Http\Controllers\Vip\PageBuilderController::class, 'edit'])->name('page-builder.edit');
+        Route::put('/page-builder', [App\Http\Controllers\Vip\PageBuilderController::class, 'update'])->name('page-builder.update');
+        Route::post('/page-builder/upload', [App\Http\Controllers\Vip\PageBuilderController::class, 'upload'])
+            ->middleware('throttle:60,1')
+            ->name('page-builder.upload');
+
+        // Orders for the business's own products, which it delivers itself.
+        Route::get('/orders', [App\Http\Controllers\Vip\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [App\Http\Controllers\Vip\OrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/status', [App\Http\Controllers\Vip\OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         Route::resource('banners', BannerController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('services', ServiceController::class)->except(['show']);

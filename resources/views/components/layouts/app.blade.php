@@ -8,6 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- No-flash theme init: set data-theme before first paint from saved choice or system preference. --}}
     <script>
         (function () {
@@ -106,6 +107,10 @@
                             <span data-order-badge
                                   class="d-none ms-2 badge rounded-pill text-bg-danger font-monospace"></span>
                         </a>
+
+                        <p class="admin-sidebar-heading">Business Selling</p>
+                        <a href="{{ route('admin.business-sales.index') }}">Business Sales &amp; Payouts</a>
+                        <a href="{{ route('admin.settings.selling.edit') }}">Selling Options by Package</a>
                     @endif
                 @endif
 
@@ -139,7 +144,16 @@
                 @endif
 
                 @if ($user->hasRole('vip_member'))
+                    @php
+                        $vipOpenOrders = $user->vipMicrosite
+                            ? $user->vipMicrosite->fulfilledOrders()->whereIn('status', ['confirmed', 'processing', 'dispatched'])->count()
+                            : 0;
+                    @endphp
                     <a href="{{ route('vip.dashboard') }}">Dashboard</a>
+                    <a href="{{ route('vip.page-builder.edit') }}" class="d-flex align-items-center justify-content-between">
+                        <span>Page Builder</span>
+                        <span class="badge rounded-pill text-bg-warning">Edit</span>
+                    </a>
                     <a href="{{ route('vip.profile.edit') }}">Profile</a>
                     <a href="{{ route('vip.modules.edit') }}">Section Visibility</a>
 
@@ -147,6 +161,12 @@
                     <a href="{{ route('wallet.index') }}">Wallet &amp; Withdrawals</a>
 
                     <p class="admin-sidebar-heading">Sell Products</p>
+                    <a href="{{ route('vip.orders.index') }}" class="d-flex align-items-center justify-content-between">
+                        <span>My Orders</span>
+                        @if ($vipOpenOrders > 0)
+                            <span class="badge rounded-pill text-bg-danger">{{ $vipOpenOrders }}</span>
+                        @endif
+                    </a>
                     <a href="{{ route('vip.marketplace.index') }}">My Store</a>
 
                     <p class="admin-sidebar-heading">Business Page</p>

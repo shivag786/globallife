@@ -1,8 +1,29 @@
 <x-layouts.app title="Dashboard" heading="Dashboard">
-    <div class="mb-6">
-        <p class="text-body-secondary">Welcome back, <strong>{{ $user->name }}</strong>.</p>
-        <p class="fs-sm text-secondary">Role: {{ $user->getRoleNames()->implode(', ') }}</p>
-    </div>
+    @php
+        $roleLabel = $user->getRoleNames()->map(fn ($r) => \Illuminate\Support\Str::headline($r))->implode(', ');
+    @endphp
+
+    <x-dash-hero :name="$user->name" :eyebrow="$roleLabel" subtitle="Here's how Global Life is doing today.">
+        <x-slot:meta>
+            <span class="dash-hero__chip"><x-icon name="shield-check" class="w-3.5 h-3.5" /> Role: {{ $roleLabel }}</span>
+            @if ($overview)
+                <span class="dash-hero__chip"><x-icon name="shopping-bag" class="w-3.5 h-3.5" /> {{ number_format($overview['orders_today']) }} orders today</span>
+                <span class="dash-hero__chip"><x-icon name="truck" class="w-3.5 h-3.5" /> {{ number_format($overview['pending_orders']) }} pending</span>
+            @endif
+        </x-slot:meta>
+        @if ($overview)
+            <x-slot:actions>
+                <a href="{{ route('admin.orders.index') }}" class="dash-hero__btn dash-hero__btn--gold">
+                    <x-icon name="shopping-bag" class="w-4 h-4" /> View orders
+                </a>
+                @if ($isSuperAdmin)
+                    <a href="{{ route('admin.revenue.index') }}" class="dash-hero__btn dash-hero__btn--ghost">
+                        See revenue <x-icon name="arrow-right" class="w-4 h-4" />
+                    </a>
+                @endif
+            </x-slot:actions>
+        @endif
+    </x-dash-hero>
 
     @if ($overview)
         @php
@@ -13,16 +34,10 @@
             $revenueUrl = $isSuperAdmin ? route('admin.revenue.index') : $ordersUrl;
         @endphp
 
-        <div class="mb-3 d-flex align-items-center gap-2">
-            <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-brand-subtle text-brand">
-                <x-icon name="sparkles" class="w-4 h-4" />
-            </span>
-            <h2 class="fw-semibold text-body">Sales &amp; Revenue</h2>
-            <span class="fs-xs text-secondary">— your business at a glance</span>
-        </div>
+        <x-dash-heading title="Sales & Revenue" subtitle="Your business at a glance" icon="sparkles" />
 
         {{-- Action KPIs: each box links to its related page; colour signals the action/data. --}}
-        <div class="d-grid grid-cols-1 grid-cols-sm-2 grid-cols-xl-4 gap-4 mb-4">
+        <div class="d-grid grid-cols-1 grid-cols-sm-2 grid-cols-xl-4 gap-4 mb-6">
             <x-stat-tile label="Orders Today" :value="$overview['orders_today']" icon="shopping-bag"
                 color="indigo" :href="$ordersUrl" cta="View orders"
                 :hint="$money($overview['revenue_today']).' placed today'" />
@@ -45,19 +60,13 @@
             :vip-href="$revenueUrl" :product-href="$deliveredUrl"
             vip-label="Revenue from VIP Plans"
             total-label="Total Company Revenue"
-            subheading="the two streams that make up company income"
+            subheading="The two streams that make up company income"
             :vip-hint="'Company share of '.$overview['vip']['count'].' plan'.($overview['vip']['count'] === 1 ? '' : 's').' sold'"
             :product-hint="'Company margin on '.$overview['products']['count'].' delivered order'.($overview['products']['count'] === 1 ? '' : 's')" />
     @endif
 
     @if ($withdrawals)
-        <div class="mb-3 d-flex align-items-center gap-2">
-            <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-warning-subtle text-warning">
-                <x-icon name="rupee" class="w-4 h-4" />
-            </span>
-            <h2 class="fw-semibold text-body">Payouts</h2>
-            <span class="fs-xs text-secondary">&mdash; money waiting to go out</span>
-        </div>
+        <x-dash-heading title="Payouts" subtitle="Money waiting to go out" icon="rupee" tone="gold" />
         <div class="d-grid grid-cols-1 grid-cols-sm-2 grid-cols-xl-4 gap-4 mb-8">
             <x-stat-tile label="Withdrawal Requests from VIP Members" :value="$withdrawals['pending']"
                 icon="rupee" color="amber" :href="route('admin.withdrawals.index', ['status' => 'pending'])"
@@ -69,13 +78,7 @@
     @endif
 
     @if ($stats)
-        <div class="mb-3 d-flex align-items-center gap-2">
-            <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-body-secondary text-body-secondary">
-                <x-icon name="users" class="w-4 h-4" />
-            </span>
-            <h2 class="fw-semibold text-body">Network</h2>
-            <span class="fs-xs text-secondary">— your team &amp; catalogue</span>
-        </div>
+        <x-dash-heading title="Network" subtitle="Your team & catalogue" icon="users" tone="slate" />
         <div class="d-grid grid-cols-2 grid-cols-md-3 grid-cols-xl-6 gap-4 mb-8">
             {{-- These management pages are Super Admin-only, so only link them for a Super Admin. --}}
             <x-stat-tile label="Cities" :value="$stats['cities']" icon="map-pin" color="sky"
@@ -96,52 +99,39 @@
     @endif
 
     @if ($charts)
+        <x-dash-heading title="Trends" subtitle="How the platform is growing" icon="sparkles" tone="emerald" />
         <div class="d-grid grid-cols-lg-3 gap-4 mb-4">
-            <div class="col-span-lg-2 bg-body rounded-3 shadow-sm p-5 border">
-                <h2 class="fw-semibold text-body mb-1">Company Revenue</h2>
-                <p class="fs-xs text-secondary mb-3">Company share of activations, last 6 months</p>
+            <x-dash-card class="col-span-lg-2" title="Company Revenue" subtitle="Company share of activations, last 6 months" icon="rupee">
                 <x-apex-chart id="chart-admin-revenue" type="area" :height="300"
                     :series="[['name' => 'Company Revenue', 'data' => $charts['revenue']['data']]]"
                     :categories="$charts['revenue']['categories']" :currency="true" />
-            </div>
-            <div class="bg-body rounded-3 shadow-sm p-5 border">
-                <h2 class="fw-semibold text-body mb-1">Commission Split</h2>
-                <p class="fs-xs text-secondary mb-3">All-time payout distribution</p>
+            </x-dash-card>
+            <x-dash-card title="Commission Split" subtitle="All-time payout distribution" icon="sparkles">
                 <x-apex-chart id="chart-admin-split" type="donut" :height="300"
                     :series="[$charts['split']['partners'], $charts['split']['managers'], $charts['split']['company']]"
                     :labels="['Partners', 'Managers', 'Company']"
                     :colors="['#5fa97e', '#d4af37', '#2c704c']" :currency="true" />
-            </div>
+            </x-dash-card>
         </div>
 
         <div class="d-grid grid-cols-lg-2 gap-4 mb-8">
-            <div class="bg-body rounded-3 shadow-sm p-5 border">
-                <h2 class="fw-semibold text-body mb-1">New Users</h2>
-                <p class="fs-xs text-secondary mb-3">Sign-ups per month, last 6 months</p>
+            <x-dash-card title="New Users" subtitle="Sign-ups per month, last 6 months" icon="users">
                 <x-apex-chart id="chart-admin-users" type="bar" :height="280"
                     :series="[['name' => 'New Users', 'data' => $charts['users']['data']]]"
                     :categories="$charts['users']['categories']" :colors="['#2c704c']" />
-            </div>
-            <div class="bg-body rounded-3 shadow-sm p-5 border">
-                <h2 class="fw-semibold text-body mb-1">Leads</h2>
-                <p class="fs-xs text-secondary mb-3">Enquiries received per month, last 6 months</p>
+            </x-dash-card>
+            <x-dash-card title="Leads" subtitle="Enquiries received per month, last 6 months" icon="inbox">
                 <x-apex-chart id="chart-admin-leads" type="area" :height="280"
                     :series="[['name' => 'Leads', 'data' => $charts['leads']['data']]]"
                     :categories="$charts['leads']['categories']" :colors="['#d4af37']" />
-            </div>
+            </x-dash-card>
         </div>
     @endif
 
     {{-- A Sub Admin's own network. The platform-wide figures above are not
          theirs to see, so these count only what they own. --}}
     @if ($network)
-        <div class="mb-3 d-flex align-items-center gap-2">
-            <span class="d-flex h-7 w-7 align-items-center justify-content-center rounded-2 bg-body-secondary text-body-secondary">
-                <x-icon name="users" class="w-4 h-4" />
-            </span>
-            <h2 class="fw-semibold text-body">My Network</h2>
-            <span class="fs-xs text-secondary">&mdash; the Branch Managers you run</span>
-        </div>
+        <x-dash-heading title="My Network" subtitle="The Branch Managers you run" icon="users" tone="slate" />
         <div class="d-grid grid-cols-1 grid-cols-sm-3 gap-4 mb-8">
             <x-stat-tile label="Branch Managers" :value="$network['branch_managers']" icon="users" color="indigo"
                 :href="route('admin.branch-managers.index')" cta="Manage" />
@@ -153,36 +143,38 @@
     @endif
 
     @if ($permissionMatrix)
-        <div class="bg-body rounded-3 shadow-sm p-5 border">
-            <h2 class="fw-semibold mb-3">Your Permission Matrix</h2>
-            <table class="w-100 fs-sm">
-                <thead>
-                    <tr class="text-start text-secondary">
-                        <th class="py-1">Module</th>
-                        <th class="py-1">Actions Granted</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($permissionMatrix as $module => $actions)
-                        <tr class="border-top">
-                            <td class="py-2 text-capitalize">{{ str_replace('-', ' ', $module) }}</td>
-                            <td class="py-2">
-                                @forelse ($actions as $action)
-                                    <span class="d-inline-block bg-primary-subtle text-primary fs-xs px-2 py-1 rounded me-1">{{ $action }}</span>
-                                @empty
-                                    <span class="text-body-tertiary">none</span>
-                                @endforelse
-                            </td>
+        <x-dash-card title="Your Permission Matrix" subtitle="What your Super Admin has switched on for you" icon="lock">
+            <div class="table-responsive">
+                <table class="dash-table w-100 fs-sm">
+                    <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Actions Granted</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach ($permissionMatrix as $module => $actions)
+                            <tr>
+                                <td class="fw-medium text-capitalize">{{ str_replace('-', ' ', $module) }}</td>
+                                <td>
+                                    @forelse ($actions as $action)
+                                        <span class="dash-pill">{{ $action }}</span>
+                                    @empty
+                                        <span class="text-body-tertiary">none</span>
+                                    @endforelse
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </x-dash-card>
     @endif
 
     @unless ($stats || $permissionMatrix || $network)
-        <div class="bg-body rounded-3 shadow-sm p-5 border text-secondary">
-            You don't have any modules assigned yet. Contact your Super Admin.
+        <div class="dash-empty">
+            <span class="dash-empty__icon"><x-icon name="lock" class="w-6 h-6" /></span>
+            <p class="mb-0">You don't have any modules assigned yet. Contact your Super Admin.</p>
         </div>
     @endunless
 </x-layouts.app>

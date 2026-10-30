@@ -6,7 +6,7 @@
 @endphp
 @if ($links->isNotEmpty())
     <section class="pb-20 text-center reveal">
-        <p class="fs-sm text-secondary mb-4">Follow {{ $microsite->business_name }}</p>
+        <p class="fs-sm text-secondary mb-4">{{ $microsite->layout()->heading('social_media')['title'] }}</p>
         <div class="d-flex justify-content-center gap-3">
             @foreach ($links as $field => $label)
                 <a href="{{ $microsite->{$field} }}" target="_blank"

@@ -9,14 +9,48 @@ export function initCart() {
     const cssEscape = (value) =>
         window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
 
-    async function post(form) {
+    async function post(form, extra = {}) {
+        const body = new FormData(form);
+        Object.entries(extra).forEach(([name, value]) => body.set(name, value));
+
         const response = await fetch(form.action, {
             method: 'POST',
             headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token() },
-            body: new FormData(form),
+            body,
         });
-        if (!response.ok) throw new Error('cart request failed');
+        if (!response.ok) {
+            const error = new Error('cart request failed');
+            error.payload = await response.json().catch(() => ({}));
+            error.status = response.status;
+            throw error;
+        }
         return response.json();
+    }
+
+    // A business delivers its own orders, so its products cannot share a cart
+    // with another shop's. The server answers 409; ask before emptying the cart.
+    async function postResolvingConflict(form) {
+        try {
+            return await post(form);
+        } catch (error) {
+            if (error.status !== 409 || !error.payload?.conflict) throw error;
+
+            const { default: Swal } = await import('sweetalert2');
+            const result = await Swal.fire({
+                title: 'Start a new cart?',
+                text: error.payload.message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#245a3f',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Clear cart & add',
+                cancelButtonText: 'Keep my cart',
+                reverseButtons: true,
+            });
+            if (!result.isConfirmed) return null;
+
+            return post(form, { replace_cart: '1' });
+        }
     }
 
     function bump(el) {
@@ -118,7 +152,8 @@ export function initCart() {
         const isAdd = form.dataset.role === 'add';
 
         try {
-            const data = await post(form);
+            const data = isAdd ? await postResolvingConflict(form) : await post(form);
+            if (!data) return;
             updateBadges(data.count);
             updateSummary(data.totals);
 
@@ -149,7 +184,7 @@ export function initCart() {
                 applyControls(data.key, data.quantity);
             }
         } catch (e) {
-            toast('Something went wrong. Please try again.', true);
+            toast(e.payload?.message || 'Something went wrong. Please try again.', true);
         } finally {
             delete form.dataset.busy;
         }

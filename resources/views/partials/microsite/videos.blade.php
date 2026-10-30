@@ -1,10 +1,7 @@
 @if ($microsite->videos->isNotEmpty())
-    <section id="videos" class="msite-section">
+    <section id="videos" class="msite-section {{ $sectionBg ?? '' }}">
         <div class="msite-container">
-            <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">Watch</p>
-                <h2 class="msite-heading fs-3xl fs-4xl">Videos</h2>
-            </div>
+            @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('videos')])
             <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-6">
                 @foreach ($microsite->videos as $video)
                     @php

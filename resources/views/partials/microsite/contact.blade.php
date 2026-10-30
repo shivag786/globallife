@@ -14,18 +14,10 @@
     $hasBusinessHours = !empty(array_filter($hours));
 @endphp
 
-<section id="contact" class="msite-section">
+<section id="contact" class="msite-section {{ $sectionBg ?? '' }}">
     <div class="msite-container">
 
-        <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-            <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">
-                Get In Touch
-            </p>
-
-            <h2 class="msite-heading fs-3xl fs-4xl">
-                Contact Details
-            </h2>
-        </div>
+        @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('contact')])
 
         @if ($hasContactDetails || $hasBusinessHours)
 

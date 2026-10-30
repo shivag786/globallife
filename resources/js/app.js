@@ -45,6 +45,9 @@ if (document.querySelector('[data-slug-preview]') || document.querySelector('[da
 if (document.querySelector('[data-member-form]')) {
     import('./forms/member-form').then(({ initMemberForm }) => initMemberForm());
 }
+if (document.querySelector('[data-page-builder]')) {
+    import('./vip/page-builder').then(({ initPageBuilder }) => initPageBuilder());
+}
 if (document.querySelector('[data-profit-calc]')) {
     import('./forms/profit-calculator').then(({ initProfitCalculator }) => initProfitCalculator());
 }

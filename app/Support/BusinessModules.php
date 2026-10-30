@@ -13,6 +13,8 @@ class BusinessModules
     public const SECTIONS = [
         'banner' => 'Homepage Banner',
         'about' => 'About Business',
+        'stats' => 'Highlights (numbers)',
+        'shop' => 'Company Shop',
         'services' => 'Services',
         'products' => 'Products',
         'gallery' => 'Gallery',

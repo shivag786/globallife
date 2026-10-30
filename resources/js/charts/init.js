@@ -32,7 +32,33 @@ function buildOptions(cfg) {
         options.series = cfg.series;
         options.labels = cfg.labels;
         options.dataLabels = { enabled: true, formatter: (val) => Math.round(val) + '%' };
-        options.plotOptions = { pie: { donut: { size: '68%' } } };
+        // The ring's centre shows the total; the colours come from the stylesheet.
+        options.plotOptions = {
+            pie: {
+                donut: {
+                    size: '70%',
+                    labels: {
+                        show: true,
+                        name: { fontSize: '12px', offsetY: 18 },
+                        value: {
+                            fontSize: '22px',
+                            fontWeight: 700,
+                            offsetY: -14,
+                            formatter: (v) => (cfg.currency ? inr(v) : Number(v).toLocaleString('en-IN')),
+                        },
+                        total: {
+                            show: true,
+                            label: 'Total',
+                            fontSize: '12px',
+                            formatter: (w) => {
+                                const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                return cfg.currency ? inr(sum) : sum.toLocaleString('en-IN');
+                            },
+                        },
+                    },
+                },
+            },
+        };
         options.stroke = { width: 0 };
         if (cfg.currency) {
             options.tooltip = { y: { formatter: inr } };
@@ -63,7 +89,11 @@ function buildOptions(cfg) {
     } else if (cfg.type === 'line') {
         options.stroke = { curve: 'smooth', width: 3 };
     } else if (cfg.type === 'bar') {
-        options.plotOptions = { bar: { borderRadius: 6, columnWidth: '45%' } };
+        options.plotOptions = { bar: { borderRadius: 6, borderRadiusApplication: 'end', columnWidth: '45%' } };
+        options.fill = {
+            type: 'gradient',
+            gradient: { type: 'vertical', shadeIntensity: 0.25, opacityFrom: 1, opacityTo: 0.7, stops: [0, 100] },
+        };
     }
 
     return options;

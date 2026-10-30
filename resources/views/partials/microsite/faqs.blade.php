@@ -1,10 +1,7 @@
 @if ($microsite->faqs->isNotEmpty())
-    <section id="faqs" class="msite-section bg-cream">
+    <section id="faqs" class="msite-section {{ $sectionBg ?? 'bg-cream' }}">
         <div class="msite-container mw-3xl">
-            <div class="text-center mb-14 reveal" data-reveal="zoom">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">Questions</p>
-                <h2 class="msite-heading fs-3xl fs-4xl">Frequently Asked Questions</h2>
-            </div>
+            @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('faqs')])
             <div class="d-flex flex-column gap-3">
                 @foreach ($microsite->faqs as $index => $faq)
                     <details class="msite-card p-5 reveal" style="transition-delay: {{ ($index % 5) * 0.06 }}s">

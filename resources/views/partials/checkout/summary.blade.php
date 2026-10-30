@@ -5,7 +5,7 @@
         @foreach ($items as $item)
             <div class="d-flex align-items-center gap-3 fs-sm">
                 <span class="w-6 h-6 rounded-pill bg-brand text-white fs-xs d-flex align-items-center justify-content-center flex-shrink-0">{{ $item['quantity'] }}</span>
-                <span class="flex-grow-1 min-w-0 text-truncate text-body-secondary">{{ $item['product']->name }}</span>
+                <span class="flex-grow-1 min-w-0 text-truncate text-body-secondary">{{ $item['name'] }}</span>
                 <span class="fw-medium">{{ $money($item['line_total']) }}</span>
             </div>
         @endforeach

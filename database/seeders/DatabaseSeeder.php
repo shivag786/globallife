@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             HomeSectionSeeder::class,
             LeadSeeder::class,
+            // A fully filled-in demo business page (hospital@globallife.in).
+            HospitalMicrositeSeeder::class,
         ]);
     }
 }

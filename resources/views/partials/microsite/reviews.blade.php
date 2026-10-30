@@ -1,10 +1,7 @@
 @if ($microsite->isModuleVisible('reviews'))
-    <section id="reviews" class="msite-section bg-cream">
+    <section id="reviews" class="msite-section {{ $sectionBg ?? 'bg-cream' }}">
         <div class="msite-container">
-            <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">Testimonials</p>
-                <h2 class="msite-heading fs-3xl fs-4xl">What Customers Say</h2>
-            </div>
+            @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('reviews')])
 
             @if ($microsite->reviews->isNotEmpty())
                 <div class="position-relative mw-3xl mx-auto mb-14 overflow-hidden" data-msite-review-carousel>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BusinessProduct;
 use App\Models\CommissionEarning;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -92,9 +93,10 @@ class OrderService
     private function normaliseCartItems(Collection $items): Collection
     {
         return $items->map(fn (array $item) => [
-            'product_id' => $item['product']->id,
-            'product_name' => $item['product']->name,
-            'product_sku' => $item['product']->sku,
+            'product_id' => $item['product_id'],
+            'business_product_id' => $item['business_product_id'] ?? null,
+            'product_name' => $item['name'],
+            'product_sku' => $item['sku'],
             'seller_id' => $item['seller_id'],
             'unit_price' => $item['unit_price'],
             'quantity' => $item['quantity'],
@@ -140,10 +142,16 @@ class OrderService
      */
     private function persistOrder(array $data, User $customer, Collection $items, array $totals, string $method, ?string $gateway): Order
     {
-        return DB::transaction(function () use ($items, $totals, $data, $customer, $method, $gateway) {
+        // A business's own products are delivered by that business. The cart only
+        // ever holds one business's lines (CartService::conflictFor), so the first
+        // one names the fulfiller for the whole order.
+        $fulfillerId = $items->first(fn (array $item) => ! empty($item['business_product_id']))['seller_id'] ?? null;
+
+        return DB::transaction(function () use ($items, $totals, $data, $customer, $method, $gateway, $fulfillerId) {
             $order = Order::create([
                 'order_number' => $this->generateOrderNumber(),
                 'user_id' => $customer->id,
+                'fulfilled_by_microsite_id' => $fulfillerId,
                 'customer_name' => $data['customer_name'],
                 'customer_email' => $customer->email,
                 'customer_phone' => $data['customer_phone'],
@@ -171,6 +179,7 @@ class OrderService
             foreach ($items as $item) {
                 $orderItem = $order->items()->create([
                     'product_id' => $item['product_id'],
+                    'business_product_id' => $item['business_product_id'] ?? null,
                     'seller_microsite_id' => $item['seller_id'],
                     'product_name' => $item['product_name'],
                     'product_sku' => $item['product_sku'],
@@ -181,8 +190,14 @@ class OrderService
 
                 // No live product (deleted since payment) means no commission rule
                 // to price against; the paid line itself is still recorded above.
+                // A business's own product is never a Product, so it earns no
+                // upline commission: the money is the business's, settled to it.
                 if ($item['product'] instanceof Product) {
                     $this->recordPendingEarnings($order, $orderItem, $item['product'], $item['seller']);
+                }
+
+                if (! empty($item['business_product_id'])) {
+                    $this->decrementStock((int) $item['business_product_id'], (int) $item['quantity']);
                 }
             }
 
@@ -269,6 +284,17 @@ class OrderService
                 'payment_status' => $order->payment_method === 'cod' ? 'paid' : $order->payment_status,
             ]);
         });
+    }
+
+    /**
+     * Take sold units off a tracked stock count, never below zero. A NULL stock
+     * means the owner does not track it, and stays NULL.
+     */
+    private function decrementStock(int $businessProductId, int $quantity): void
+    {
+        BusinessProduct::whereKey($businessProductId)
+            ->whereNotNull('stock')
+            ->update(['stock' => DB::raw('GREATEST(CAST(stock AS SIGNED) - '.max(0, $quantity).', 0)')]);
     }
 
     private function generateOrderNumber(): string

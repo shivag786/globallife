@@ -1496,3 +1496,9 @@ $member-rail-width: 13.5rem;
     .stat-tile__chip { background: color-mix(in srgb, var(--stat-accent) 28%, var(--bs-body-bg)); }
     .stat-tile__label { color: color-mix(in srgb, var(--stat-accent) 60%, #fff); }
 }
+
+// Panel dashboards: hero, headings, cards and the stat-tile refinements.
+@import 'dashboard';
+
+// Page builder + image cropper, last so it overrides the dark-mode input styling.
+@import 'page-builder';

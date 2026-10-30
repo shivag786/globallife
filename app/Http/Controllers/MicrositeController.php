@@ -29,8 +29,14 @@ class MicrositeController extends Controller
             'videos' => fn ($q) => $q->where('is_visible', true),
             'faqs' => fn ($q) => $q->where('is_visible', true),
             'reviews' => fn ($q) => $q->where('status', 'approved')->latest(),
+            'customSections' => fn ($q) => $q->where('is_active', true),
+            'customSections.cards' => fn ($q) => $q->where('is_active', true),
             'vipPlan', 'city',
         ]);
+
+        // Each product card asks its microsite whether it can be bought; hand
+        // them this one rather than loading it again per card.
+        $microsite->products->each->setRelation('vipMicrosite', $microsite);
 
         $microsite->events()->create(['event_type' => 'page_view']);
 

@@ -1,12 +1,25 @@
 <x-layouts.app title="Commission Partner Dashboard" heading="Commission Partner Dashboard">
-    <div class="mb-6">
-        <p class="text-body-secondary">Welcome back, <strong>{{ $manager->name }}</strong>.</p>
-    </div>
+    {{-- A partner whose Branch Manager has not set a rate yet would otherwise
+         get a blank tile and a bare "%" below; say so plainly instead. --}}
+    @php $rateSet = $manager->commission_percentage !== null; @endphp
 
-    <div class="d-grid grid-cols-2 grid-cols-md-4 gap-4 mb-6">
-        {{-- A partner whose Branch Manager has not set a rate yet would otherwise
-             get a blank tile and a bare "%" below; say so plainly instead. --}}
-        @php $rateSet = $manager->commission_percentage !== null; @endphp
+    <x-dash-hero :name="$manager->name" eyebrow="Commission Partner" subtitle="Here's what your members have earned you.">
+        <x-slot:meta>
+            <span class="dash-hero__chip"><x-icon name="tag" class="w-3.5 h-3.5" /> {{ $rateSet ? $manager->commission_percentage.'% commission' : 'Commission not set yet' }}</span>
+            <span class="dash-hero__chip"><x-icon name="users" class="w-3.5 h-3.5" /> {{ number_format($stats['vip_members']) }} VIP members</span>
+        </x-slot:meta>
+        <x-slot:actions>
+            <a href="{{ route('manager.vip-members.index') }}" class="dash-hero__btn dash-hero__btn--gold">
+                <x-icon name="users" class="w-4 h-4" /> Manage members
+            </a>
+            <a href="{{ route('manager.revenue.index') }}" class="dash-hero__btn dash-hero__btn--ghost">
+                View revenue <x-icon name="arrow-right" class="w-4 h-4" />
+            </a>
+        </x-slot:actions>
+    </x-dash-hero>
+
+    <x-dash-heading title="At a Glance" subtitle="Your members and earnings in numbers" icon="sparkles" />
+    <div class="d-grid grid-cols-2 grid-cols-md-4 gap-4 mb-8">
         <x-stat-tile label="Your Commission" :value="$rateSet ? $manager->commission_percentage : null" suffix="%"
             icon="tag" color="brand"
             :hint="$rateSet ? 'Your share of each activation' : 'Not set yet — ask your Branch Manager'" />
@@ -25,28 +38,36 @@
         vip-hint="Your share of VIP-plan activations"
         product-hint="Commission on product sales" />
 
-    <div class="bg-body rounded-3 shadow-sm p-5 border mb-6">
-        <h2 class="fw-semibold text-body mb-1">Your Earnings</h2>
-        <p class="fs-xs text-secondary mb-3">Commission earned per month, last 6 months</p>
-        <x-apex-chart id="chart-partner-earnings" type="area" :height="300"
-            :series="[['name' => 'Earnings', 'data' => $earningsChart['data']]]"
-            :categories="$earningsChart['categories']" :currency="true" />
-    </div>
+    <div class="d-grid grid-cols-lg-3 gap-4">
+        <x-dash-card class="col-span-lg-2" title="Your Earnings" subtitle="Commission earned per month, last 6 months" icon="rupee">
+            <x-apex-chart id="chart-partner-earnings" type="area" :height="300"
+                :series="[['name' => 'Earnings', 'data' => $earningsChart['data']]]"
+                :categories="$earningsChart['categories']" :currency="true" />
+        </x-dash-card>
 
-    <div class="bg-body rounded-3 shadow-sm p-5 border">
-        <h2 class="fw-semibold mb-3">Your Assigned Cities</h2>
-        @forelse ($manager->cities as $city)
-            <div class="d-flex align-items-center justify-content-between border-top py-2">
-                <span>{{ $city->name }}, {{ $city->state }}</span>
+        <x-dash-card title="Your Assigned Cities" subtitle="Where you add VIP members" icon="map-pin">
+            @forelse ($manager->cities as $city)
+                @if ($loop->first)<div class="dash-places dash-places--stack">@endif
+                <div class="dash-place">
+                    <span class="dash-place__icon"><x-icon name="map-pin" class="w-4 h-4" /></span>
+                    <span class="min-w-0">
+                        <span class="dash-place__name">{{ $city->name }}</span>
+                        <span class="dash-place__state">{{ $city->state }}</span>
+                    </span>
+                </div>
+                @if ($loop->last)</div>@endif
+            @empty
+                <p class="text-secondary fs-sm mb-0">No cities assigned yet. Contact your Branch Manager.</p>
+            @endforelse
+            <div class="dash-note mt-4">
+                <x-icon name="tag" class="w-4 h-4 flex-shrink-0" />
+                <span>
+                    Commission: <strong class="text-brand">{{ $rateSet ? $manager->commission_percentage.'%' : 'not set yet' }}</strong>
+                    @if ($manager->creator)
+                        &mdash; set by {{ $manager->creator->name }}
+                    @endif
+                </span>
             </div>
-        @empty
-            <p class="text-secondary fs-sm">No cities assigned yet. Contact your Branch Manager.</p>
-        @endforelse
-        <div class="border-top pt-3 mt-3 fs-sm text-secondary">
-            Commission: <strong class="text-brand">{{ $manager->commission_percentage !== null ? $manager->commission_percentage.'%' : 'not set yet' }}</strong>
-            @if ($manager->creator)
-                &mdash; set by {{ $manager->creator->name }}
-            @endif
-        </div>
+        </x-dash-card>
     </div>
 </x-layouts.app>

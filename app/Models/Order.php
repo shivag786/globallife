@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'order_number', 'user_id', 'customer_name', 'customer_email', 'customer_phone',
+    'order_number', 'user_id', 'fulfilled_by_microsite_id', 'business_settlement_id', 'customer_name', 'customer_email', 'customer_phone',
     'address', 'city', 'state', 'pincode', 'delivery_notes',
     'payment_method', 'payment_gateway', 'payment_status', 'status',
     'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
@@ -66,6 +66,25 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The business that delivers this order itself, when it is one of a
+     * business's own-product orders. NULL for company catalogue orders.
+     */
+    public function fulfiller(): BelongsTo
+    {
+        return $this->belongsTo(VipMicrosite::class, 'fulfilled_by_microsite_id');
+    }
+
+    public function settlement(): BelongsTo
+    {
+        return $this->belongsTo(BusinessSettlement::class, 'business_settlement_id');
+    }
+
+    public function isBusinessFulfilled(): bool
+    {
+        return $this->fulfilled_by_microsite_id !== null;
     }
 
     public function isDelivered(): bool

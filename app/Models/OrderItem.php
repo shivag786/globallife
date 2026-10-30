@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'order_id', 'product_id', 'seller_microsite_id',
+    'order_id', 'product_id', 'business_product_id', 'seller_microsite_id',
     'product_name', 'product_sku', 'unit_price', 'quantity', 'line_total',
 ])]
 class OrderItem extends Model
@@ -32,6 +32,14 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * The business's own product, when this line is one (product_id is then NULL).
+     */
+    public function businessProduct(): BelongsTo
+    {
+        return $this->belongsTo(BusinessProduct::class);
     }
 
     public function seller(): BelongsTo

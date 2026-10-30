@@ -6,8 +6,13 @@
             $microsite->products->count() ? [$microsite->products->count(), 'Products'] : null,
             $microsite->reviews->count() ? [$microsite->reviews->count(), 'Reviews'] : null,
         ]);
+        // The owner's own Highlights replace these automatic counts.
+        if ($microsite->layout()->hasCustomStats()) {
+            $stats = [];
+        }
+        $heading = $microsite->layout()->heading('about');
     @endphp
-    <section id="about" class="msite-section">
+    <section id="about" class="msite-section {{ $sectionBg ?? '' }}">
         <div class="msite-container d-grid grid-cols-lg-2 gap-14 align-items-center">
             <div class="reveal" data-reveal="left">
                 @if ($microsite->cover_banner_path)
@@ -22,8 +27,10 @@
             </div>
 
             <div class="reveal" data-reveal="right">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">About Us</p>
-                <h2 class="msite-heading fs-3xl fs-4xl mb-5">About {{ $microsite->business_name }}</h2>
+                @if ($heading['eyebrow'] !== '')
+                    <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">{{ $heading['eyebrow'] }}</p>
+                @endif
+                <h2 class="msite-heading fs-3xl fs-4xl mb-5">{{ $heading['title'] }}</h2>
                 @if ($microsite->short_description)
                     <p class="fs-lg text-body-secondary mb-4">{{ $microsite->short_description }}</p>
                 @endif

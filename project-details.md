@@ -1,7 +1,7 @@
 # Global Life — Project Details
 
 > Living document. **Keep this file updated** whenever roles, routes, models, the
-> commission engine, or major flows change. Last updated: 2026-07-25.
+> commission engine, or major flows change. Last updated: 2026-10-30.
 
 ## 1. What this project is
 
@@ -152,7 +152,10 @@ dashboard (admin/branch/manager/vip) or, for customers, to `account.orders`.
   `products` (free-text), `catalogProducts` (Super-Admin products resold via
   `vip_products` pivot), `galleryItems`, `videos`, `faqs`, `reviews`, `events`
   (`BusinessProfileEvent` = click analytics), `commissionTransaction`.
-- `Business*` models: `BusinessBanner/Service/Product/GalleryItem/Video/Faq/Review/ProfileEvent`.
+- `Business*` models: `BusinessBanner/Service/Product/GalleryItem/Video/Faq/Review/ProfileEvent`,
+  plus `BusinessSection` / `BusinessSectionCard` (page-builder card sections, §5f)
+  and `BusinessSettlement` (company → business transfers, §5g). `page_layout`
+  JSON on the microsite is read through `Support\BusinessPageLayout`.
 - `CommissionTransaction` — VIP-activation (joining) commission, one per microsite.
 
 **E-commerce catalog & orders**
@@ -317,6 +320,71 @@ hides anything**: the member keeps what they have and simply cannot add more.
 
 Approving a renewal switches `vip_microsites.vip_plan_id` to the chosen package,
 which is what moves the member's caps, and sets the new expiry from *today*.
+
+## 5f. VIP page builder (`/vip/page-builder`)
+
+One drag-and-drop screen where a business owner edits their public page as it
+looks: reorder sections, rename their headings, show/hide them, and edit the
+cards inside (image + crop, short and long description, prices, stock).
+
+- **Storage.** `vip_microsites.page_layout` (JSON) holds `order` (section keys),
+  `headings` (only fields that differ from the default) and `stats` (the
+  "Highlights" counters: label / value / suffix / is_active). Read it **only**
+  through `App\Support\BusinessPageLayout` (`$microsite->layout()`): a page never
+  saved through the builder has no layout and renders exactly as before.
+  Show/hide still lives in `module_visibility` (new keys `stats`, `shop`).
+- **Owner-built sections** — `business_sections` + `business_section_cards`
+  (`BusinessSection`, `BusinessSectionCard`), style `cards` or `people` (round
+  photos, e.g. doctors). Layout key `custom-{id}`.
+- Banner is pinned first, the enquiry form last. Gallery / videos / reviews /
+  contact / social / company shop are reorderable and renameable on the builder
+  but their content is edited on their own pages (linked).
+- **Save is one document, one transaction** (`PageBuilderService::save`, via
+  `UpdatePageBuilderRequest`). A card missing from a sent section was deleted
+  (the editor confirms first); a section sent without `items` is left alone.
+  New sections arrive as `new-xxxx` keys and get real ids back in the response.
+  The package cap (`contentQuota`) blocks adding services/products — an id that
+  is not the member's own counts as new, so forged ids cannot bypass it.
+- **Images** are cropped in the browser (`resources/js/vip/image-cropper.js`,
+  no library) and uploaded immediately to `uploads/builder/{microsite}/` via
+  `POST /vip/page-builder/upload`; the path is remembered in the session and a
+  save only accepts paths this session uploaded (or the row's current one).
+  Replaced builder images are deleted after the save commits.
+- Front end: `resources/js/vip/page-builder.js` (SortableJS for drag, touch
+  included), styles in `resources/css/_page-builder.scss`. Any change marks the
+  page dirty: status turns amber, Save lights up, leaving asks first, Ctrl+S
+  saves. 422 errors come back keyed `sections.N.items.M.field` and the editor
+  highlights that field.
+
+## 5g. Businesses selling their own products
+
+Separate from both commission systems: a business's **own** products
+(`business_products`) earn **no** upline commission. The money is the
+business's; the company only collects it.
+
+- **Per package** `vip_plans.selling_mode` = `catalogue` (default) | `direct`,
+  set by super_admin/admin at `/admin/settings/selling`.
+  - *catalogue*: product cards show **Order on WhatsApp**
+    (`VipMicrosite::whatsappOrderUrl()`, wa.me with the order pre-typed; falls
+    back to the phone number, then to the enquiry form).
+  - *direct*: Add to cart / Buy now → normal checkout (address, Razorpay, COD).
+- **Cart** lines have a `type`: `catalog` (old lines have none) or `business`
+  (key `b{id}:{microsite}`). A business line can only share the cart with the
+  same business's lines — `CartService::conflictFor()`; the add endpoint answers
+  **409** and the JS offers "Clear cart & add" (`replace_cart=1`).
+  `BusinessProduct::isPurchasable()` (published, priced, in stock, page live,
+  package direct) is re-checked on every cart read. Stock clamps quantity and is
+  decremented when the order is placed.
+- **Orders** carry `fulfilled_by_microsite_id`; lines carry
+  `business_product_id` (product_id NULL). The business moves them forward at
+  `/vip/orders` (processing → dispatched → delivered, `BusinessOrderService`);
+  cancelling/refunding stays with admin, since the company holds online money.
+- **Settlement** (`BusinessSalesService`, `/admin/business-sales`,
+  super_admin|admin): payable = online + paid + **delivered** + not yet settled.
+  COD is collected by the business and never owed. "Record transfer" needs a UTR
+  or a screenshot, computes the amount from the locked orders (never typed), and
+  stamps them with `business_settlement_id` so an order cannot be paid twice.
+  The business sees each transfer and its proof on `/vip/orders`.
 
 ## 5c. VIP member withdrawals
 
@@ -655,8 +723,11 @@ autofill often fires only `change`.
     settings/payment (payment gateway).
   - `/manager/*` (`commission_partner`) — dashboard, leads, vip-members, revenue.
   - `/branch/*` (`branch_manager`) — dashboard, commission-partners, revenue.
-  - `/vip/*` (`vip_member`) — dashboard, profile, module visibility, banners,
-    services, products, marketplace, gallery, videos, faqs, reviews, leads.
+  - `/vip/*` (`vip_member`) — dashboard, **page-builder** (+ upload), profile,
+    module visibility, banners, services, products, **orders** (own-product
+    fulfilment), marketplace, gallery, videos, faqs, reviews, leads.
+  - `/admin` `super_admin|admin` sub-group: `settings/selling` (catalogue vs
+    direct per package) and `business-sales` (+ `{microsite}`, `settle`).
 - **Microsite (registered last, tight regex constraints so it never shadows other
   routes)**: `/{citySlug}/{businessSlug}/{secureId}` (`microsite.show`),
   review POST, and `/microsite/{id}/click/{type}` analytics redirect.
@@ -688,6 +759,8 @@ Password for all demo accounts: `Password!123` (Super Admin from `.env`).
 | `branch.manager@globallife.in` | branch_manager (Jhansi, Delhi) |
 | `jhansi.managerA/B@`, `delhi.managerA@globallife.in` | commission_partner |
 | `vip-member@globallife.in` | vip_member |
+| `hospital@globallife.in` | vip_member — fully filled demo page "Lifeline Multi-Speciality Hospital", Jhansi, Premium (`HospitalMicrositeSeeder`, re-runnable; SVG demo images under `uploads/demo/hospital`) |
+| `patient.demo@globallife.in` | customer with 3 sample orders from the hospital's store |
 
 Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → Testimonials
 → Events → Settings → HomeSections → Leads.
@@ -730,6 +803,8 @@ partner and branch, and no city fields left on the partner form), `LegacyVipPlan
 commission history keeps its money with a nulled plan), `VipWithdrawalTest`
 (the ₹500 floor, the 24-hour cooldown message, wallet debited only on mark-paid,
 UTR/screenshot required, View Detail hidden while pending, RBAC).
+`PageBuilderTest` (owner-only, unchanged save is a no-op, reorder/rename/hide/highlights on the public page, add/update/reorder/delete cards in one save, custom people section created then deleted, plan cap incl. forged ids, field-level 422 keys, only self-uploaded images, foreign ids not editable),
+`BusinessProductSellingTest` (catalogue → WhatsApp and no cart, direct → DB price, mode switch empties the cart, stock/draft/unpriced/expired refused, one-shop 409 + replace, COD order with no commission and stock decrement, Razorpay snapshot keeps the business line, business moves status forward only, other businesses 404, payable = delivered online only, settle needs proof and pays once, RBAC, selling settings).
 `MemberProfileKycTest` (profile saved on create/update for both roles, Aadhaar/PAN encrypted at rest and masked on screen, blank keeps / tick clears, Aadhaar 12-digit and other format validation, files on the private disk only, photo cropped to 35:45, old files deleted on replace/remove, who can open a KYC file).
 Helper: `tests/Support/BuildsCommissionChain`.
 Run: `php artisan test` (or `composer test`).

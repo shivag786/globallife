@@ -1,10 +1,7 @@
 @if ($microsite->services->isNotEmpty())
-    <section id="services" class="msite-section bg-cream">
+    <section id="services" class="msite-section {{ $sectionBg ?? 'bg-cream' }}">
         <div class="msite-container">
-            <div class="text-center mw-2xl mx-auto mb-14 reveal" data-reveal="zoom">
-                <p class="fs-sm fw-semibold text-gold text-uppercase tracking-wide mb-2">What We Offer</p>
-                <h2 class="msite-heading fs-3xl fs-4xl">Our Services</h2>
-            </div>
+            @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('services')])
             <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-8">
                 @foreach ($microsite->services as $index => $service)
                     <div class="msite-card msite-card-img overflow-hidden reveal" data-reveal="up" style="transition-delay: {{ ($index % 3) * 0.1 }}s">
@@ -48,6 +45,11 @@
                                 @else
                                     <span></span>
                                 @endif
+                                @if ($service->long_description)
+                                    <button type="button" data-modal-open="#service-detail-{{ $service->id }}" class="btn btn-link p-0 fs-sm fw-semibold text-brand text-decoration-none ms-auto me-3">
+                                        Details
+                                    </button>
+                                @endif
                                 @if ($service->show_book_now)
                                     <a href="{{ route('microsite.click', [$microsite, 'booking']) }}" class="msite-btn msite-btn-primary h-10 px-5 fs-sm">
                                         Book Now
@@ -56,6 +58,10 @@
                             </div>
                         </div>
                     </div>
+                    @if ($service->long_description)
+                        <x-microsite.detail-modal :id="'service-detail-'.$service->id" :title="$service->name" :subtitle="$service->category"
+                                                  :image="$service->image_path" :short="$service->short_description" :long="$service->long_description" />
+                    @endif
                 @endforeach
             </div>
         </div>
