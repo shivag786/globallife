@@ -201,6 +201,9 @@
                             <x-forms.input name="contact_email" type="email" label="Contact Email" :value="$settings['contact_email'] ?? ''" />
                         </div>
                         <div class="col-md-6">
+                            <x-forms.input name="contact_email_hr" type="email" label="HR Email" :value="$settings['contact_email_hr'] ?? ''" />
+                        </div>
+                        <div class="col-md-6">
                             <x-forms.input name="contact_whatsapp" label="WhatsApp / Phone Number" :value="$settings['contact_whatsapp'] ?? ''" />
                         </div>
                         <div class="col-12">

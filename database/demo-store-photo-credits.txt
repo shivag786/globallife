@@ -1,0 +1,83 @@
+Demo store photos - source credits
+
+All photos are from Pexels (https://www.pexels.com) under the Pexels License:
+free for commercial use, no attribution required (https://www.pexels.com/license/).
+Cropped and resized for the demo stores. Logos (logo.svg) are generated, not photos.
+
+
+[rangoli-boutique]  storage/app/public/uploads/demo/rangoli-boutique/
+  about.jpg                                                  https://www.pexels.com/photo/12792004/
+  banner-0.jpg                                               https://www.pexels.com/photo/10213950/
+  banner-1.jpg                                               https://www.pexels.com/photo/8751927/
+  banner-2.jpg                                               https://www.pexels.com/photo/6461195/
+  service-designer-blouse-stitching.jpg                      https://www.pexels.com/photo/8844393/
+  service-suit-and-kurti-stitching.jpg                       https://www.pexels.com/photo/6461199/
+  service-bridal-lehenga-customisation.jpg                   https://www.pexels.com/photo/13022612/
+  service-saree-fall-pico-and-draping.jpg                    https://www.pexels.com/photo/5926090/
+  service-alterations.jpg                                    https://www.pexels.com/photo/28885975/
+  service-personal-styling-session.jpg                       https://www.pexels.com/photo/6766353/
+  product-pure-banarasi-silk-saree-maroon-and-gold.jpg       https://www.pexels.com/photo/9419108/
+  product-chanderi-silk-cotton-saree-mint-green.jpg          https://www.pexels.com/photo/28943572/
+  product-kanjeevaram-silk-saree-royal-blue.jpg              https://www.pexels.com/photo/8751927/
+  product-georgette-party-wear-saree-wine.jpg                https://www.pexels.com/photo/36721897/
+  product-chikankari-anarkali-suit-set.jpg                   https://www.pexels.com/photo/9036925/
+  product-georgette-kurti-with-dupatta-powder-blue.jpg       https://www.pexels.com/photo/1193942/
+  product-ivory-printed-lehenga-set.jpg                      https://www.pexels.com/photo/13156196/
+  product-embroidered-bridal-lehenga-red.jpg                 https://www.pexels.com/photo/12411105/
+  product-festive-lehenga-choli-blush-pink.jpg               https://www.pexels.com/photo/11726610/
+  product-phulkari-dupatta-bottle-green.jpg                  https://www.pexels.com/photo/21783022/
+  product-readymade-bridal-blouse-red-and-gold.jpg           https://www.pexels.com/photo/27212065/
+  product-kundan-jewellery-set.jpg                           https://www.pexels.com/photo/29228980/
+  collection-bridal.jpg                                      https://www.pexels.com/photo/12792004/
+  collection-festive.jpg                                     https://www.pexels.com/photo/11726610/
+  collection-office-wear.jpg                                 https://www.pexels.com/photo/5926090/
+  collection-party-and-reception.jpg                         https://www.pexels.com/photo/36721897/
+  gallery-0.jpg                                              https://www.pexels.com/photo/6461199/
+  gallery-1.jpg                                              https://www.pexels.com/photo/28943572/
+  gallery-2.jpg                                              https://www.pexels.com/photo/27212065/
+  gallery-3.jpg                                              https://www.pexels.com/photo/30799276/
+  gallery-4.jpg                                              https://www.pexels.com/photo/17298688/
+  gallery-5.jpg                                              https://www.pexels.com/photo/5383194/
+
+[gitanjali-store]  storage/app/public/uploads/demo/gitanjali-store/
+  about.jpg                                                  https://www.pexels.com/photo/135620/
+  banner-0.jpg                                               https://www.pexels.com/photo/21897118/
+  banner-1.jpg                                               https://www.pexels.com/photo/4627902/
+  banner-2.jpg                                               https://www.pexels.com/photo/910122/
+  service-free-gift-wrapping.jpg                             https://www.pexels.com/photo/6102143/
+  service-name-initials-monogram.jpg                         https://www.pexels.com/photo/4452642/
+  service-bag-repair-and-zip-replacement.jpg                 https://www.pexels.com/photo/3814573/
+  service-corporate-and-bulk-gifting.jpg                     https://www.pexels.com/photo/7561034/
+  product-structured-office-tote-taupe.jpg                   https://www.pexels.com/photo/36367484/
+  product-quilted-shoulder-bag-black.jpg                     https://www.pexels.com/photo/20591024/
+  product-satchel-handbag-with-sling-maroon.jpg              https://www.pexels.com/photo/22434759/
+  product-croc-embossed-handbag-red.jpg                      https://www.pexels.com/photo/7953286/
+  product-genuine-leather-handbag-cognac.jpg                 https://www.pexels.com/photo/1936848/
+  product-mini-round-bag-pastel.jpg                          https://www.pexels.com/photo/8335273/
+  product-crossbody-sling-bag-pink.jpg                       https://www.pexels.com/photo/22432984/
+  product-mini-top-handle-bag-bottle-green.jpg               https://www.pexels.com/photo/23223830/
+  product-embellished-party-clutch-gold.jpg                  https://www.pexels.com/photo/4627902/
+  product-handcrafted-leather-sling-purse.jpg                https://www.pexels.com/photo/36933384/
+  product-croc-textured-top-handle-purse-blush.jpg           https://www.pexels.com/photo/20086706/
+  product-zip-around-long-wallet-pink.jpg                    https://www.pexels.com/photo/910122/
+  product-slim-leather-wallet-tan.jpg                        https://www.pexels.com/photo/6127090/
+  product-leather-card-holder-tan.jpg                        https://www.pexels.com/photo/5963183/
+  product-coin-pouch-blush.jpg                               https://www.pexels.com/photo/3808249/
+  product-mini-backpack-black.jpg                            https://www.pexels.com/photo/443417/
+  product-weekender-travel-duffle-navy.jpg                   https://www.pexels.com/photo/6773813/
+  product-jute-shopping-tote-printed.jpg                     https://www.pexels.com/photo/3185223/
+  collection-handbags.jpg                                    https://www.pexels.com/photo/22432991/
+  collection-slings-and-clutches.jpg                         https://www.pexels.com/photo/4627902/
+  collection-wallets-and-purses.jpg                          https://www.pexels.com/photo/910122/
+  collection-travel-and-backpacks.jpg                        https://www.pexels.com/photo/1058959/
+  gallery-0.jpg                                              https://www.pexels.com/photo/135620/
+  gallery-1.jpg                                              https://www.pexels.com/photo/36933384/
+  gallery-2.jpg                                              https://www.pexels.com/photo/21897118/
+  gallery-3.jpg                                              https://www.pexels.com/photo/4452610/
+  gallery-4.jpg                                              https://www.pexels.com/photo/29873592/
+  gallery-5.jpg                                              https://www.pexels.com/photo/1627820/
+
+[blog]  storage/app/public/uploads/demo/blog/
+  5-daily-wellness-habits-backed-by-tradition.jpg            https://www.pexels.com/photo/9871626/
+  how-to-choose-the-right-fragrance-for-every-season.jpg     https://www.pexels.com/photo/8166613/
+  becoming-a-global-life-distributor-what-to-expect.jpg      https://www.pexels.com/photo/4623508/

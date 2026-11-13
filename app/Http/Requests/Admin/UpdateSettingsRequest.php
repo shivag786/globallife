@@ -52,6 +52,7 @@ class UpdateSettingsRequest extends FormRequest
 
             // Contact
             'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_email_hr' => ['nullable', 'email', 'max:255'],
             'contact_whatsapp' => ['nullable', 'string', 'max:30'],
             'contact_address' => ['nullable', 'string', 'max:255'],
 

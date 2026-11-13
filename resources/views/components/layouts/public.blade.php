@@ -292,6 +292,11 @@
                                 <a href="mailto:{{ $settings['contact_email'] }}" class="text-reset text-decoration-none">{{ $settings['contact_email'] }}</a>
                             </li>
                         @endif
+                        @if ($settings['contact_email_hr'] ?? null)
+                            <li class="mb-2">
+                                <a href="mailto:{{ $settings['contact_email_hr'] }}" class="text-reset text-decoration-none">HR: {{ $settings['contact_email_hr'] }}</a>
+                            </li>
+                        @endif
                         @if ($settings['contact_whatsapp'] ?? null)
                             <li>
                                 <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}"

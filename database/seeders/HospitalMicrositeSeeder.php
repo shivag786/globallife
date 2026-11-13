@@ -32,7 +32,7 @@ use Spatie\Permission\Models\Role;
  * this one microsite's content and touches nothing else.
  *
  *   php artisan db:seed --class=HospitalMicrositeSeeder
- *   Login: hospital@globallife.in / Password!123
+ *   Login: hospital@globallife.co.in / Password!123
  */
 class HospitalMicrositeSeeder extends Seeder
 {
@@ -42,7 +42,7 @@ class HospitalMicrositeSeeder extends Seeder
     {
         $city = City::where('slug', 'jhansi')->first() ?? City::first();
         $plan = VipPlan::where('slug', 'premium')->first() ?? VipPlan::orderByDesc('product_limit')->first();
-        $partner = User::where('email', 'jhansi.managerA@globallife.in')->first()
+        $partner = User::where('email', 'jhansi.managerA@globallife.co.in')->first()
             ?? User::role('commission_partner')->first();
 
         if (! $city || ! $plan || ! $partner) {
@@ -53,7 +53,7 @@ class HospitalMicrositeSeeder extends Seeder
 
         DB::transaction(function () use ($city, $plan, $partner) {
             $owner = User::updateOrCreate(
-                ['email' => 'hospital@globallife.in'],
+                ['email' => 'hospital@globallife.co.in'],
                 [
                     'name' => 'Dr. Rajesh Agarwal',
                     'mobile' => '9876500001',
@@ -132,7 +132,7 @@ class HospitalMicrositeSeeder extends Seeder
             $this->seedOrders($microsite);
         });
 
-        $this->command?->info('Lifeline Multi-Speciality Hospital seeded. Login: hospital@globallife.in / Password!123');
+        $this->command?->info('Lifeline Multi-Speciality Hospital seeded. Login: hospital@globallife.co.in / Password!123');
     }
 
     private function resetContent(VipMicrosite $microsite): void
@@ -388,7 +388,7 @@ class HospitalMicrositeSeeder extends Seeder
     {
         Role::findOrCreate('customer', 'web');
 
-        $customer = User::updateOrCreate(['email' => 'patient.demo@globallife.in'], [
+        $customer = User::updateOrCreate(['email' => 'patient.demo@globallife.co.in'], [
             'name' => 'Amit Patel',
             'mobile' => '9876511111',
             'password' => Hash::make('Password!123'),

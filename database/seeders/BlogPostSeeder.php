@@ -13,13 +13,14 @@ class BlogPostSeeder extends Seeder
      */
     public function run(): void
     {
-        $author = User::where('email', 'admin@globallife.in')->first();
+        $author = User::where('email', 'admin@globallife.co.in')->first();
 
         $posts = [
             [
                 'title' => '5 Daily Wellness Habits Backed by Tradition',
                 'slug' => '5-daily-wellness-habits-backed-by-tradition',
                 'category' => 'Wellness',
+                'featured_image' => 'uploads/demo/blog/5-daily-wellness-habits-backed-by-tradition.jpg',
                 'tags' => ['wellness', 'habits', 'health'],
                 'excerpt' => 'Simple, traditional daily habits that support long-term family wellness.',
                 'content' => "<p>Wellness isn't built in a day — it's built through small, consistent habits.</p><p>In this post we walk through five daily habits, inspired by traditional Indian wellness practices, that are easy to start today and support long-term health for the whole family.</p>",
@@ -33,6 +34,7 @@ class BlogPostSeeder extends Seeder
                 'title' => 'How to Choose the Right Fragrance for Every Season',
                 'slug' => 'how-to-choose-the-right-fragrance-for-every-season',
                 'category' => 'Fragrance',
+                'featured_image' => 'uploads/demo/blog/how-to-choose-the-right-fragrance-for-every-season.jpg',
                 'tags' => ['fragrance', 'perfume', 'guide'],
                 'excerpt' => 'A simple guide to picking fragrances that match the season and your mood.',
                 'content' => "<p>Fragrance is personal, but the season can guide your choice.</p><p>Lighter florals like jasmine work beautifully in warmer months, while calming notes like lavender suit cooler, slower days. Here's how to choose what fits you.</p>",
@@ -46,6 +48,7 @@ class BlogPostSeeder extends Seeder
                 'title' => 'Becoming a Global Life Distributor: What to Expect',
                 'slug' => 'becoming-a-global-life-distributor-what-to-expect',
                 'category' => 'Business Opportunity',
+                'featured_image' => 'uploads/demo/blog/becoming-a-global-life-distributor-what-to-expect.jpg',
                 'tags' => ['business', 'distributor', 'opportunity'],
                 'excerpt' => 'A first-hand look at onboarding, training, and mentorship for new distributors.',
                 'content' => "<p>Starting as a distributor begins with becoming a customer first — so you genuinely understand the products you'll share.</p><p>From there, onboarding includes step-by-step training, marketing materials, and a mentorship-driven community to help you grow.</p>",
@@ -59,6 +62,11 @@ class BlogPostSeeder extends Seeder
 
         foreach ($posts as $post) {
             $created = BlogPost::firstOrCreate(['slug' => $post['slug']], [...$post, 'author_id' => $author?->id]);
+
+            // Posts seeded before images existed get one; an image an admin uploaded is kept.
+            if (! $created->featured_image) {
+                $created->update(['featured_image' => $post['featured_image']]);
+            }
 
             if ($created->wasRecentlyCreated) {
                 $created->likes()->createMany([

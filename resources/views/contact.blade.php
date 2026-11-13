@@ -18,6 +18,12 @@
                         <a href="mailto:{{ $settings['contact_email'] }}" class="">{{ $settings['contact_email'] }}</a>
                     </div>
                 @endif
+                @if ($settings['contact_email_hr'] ?? null)
+                    <div class="d-flex align-items-start gap-3">
+                        <x-icon name="envelope" class="w-5 h-5 text-brand flex-shrink-0 mt-1" />
+                        <span>HR: <a href="mailto:{{ $settings['contact_email_hr'] }}" class="">{{ $settings['contact_email_hr'] }}</a></span>
+                    </div>
+                @endif
                 @if ($settings['contact_whatsapp'] ?? null)
                     <div class="d-flex align-items-start gap-3">
                         <x-icon name="phone" class="w-5 h-5 text-brand flex-shrink-0 mt-1" />

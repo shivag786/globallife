@@ -28,13 +28,13 @@ class UserSeeder extends Seeder
         $superAdmin->syncRoles(['super_admin']);
 
         $admin = User::firstOrCreate(
-            ['email' => 'admin@globallife.in'],
+            ['email' => 'admin@globallife.co.in'],
             ['name' => 'Demo Admin', 'password' => Hash::make('Password!123'), 'status' => 'active', 'email_verified_at' => now()]
         );
         $admin->syncRoles(['admin']);
 
         $subAdmin = User::firstOrCreate(
-            ['email' => 'blog-subadmin@globallife.in'],
+            ['email' => 'blog-subadmin@globallife.co.in'],
             ['name' => 'Blog Sub Admin', 'password' => Hash::make('Password!123'), 'status' => 'active', 'email_verified_at' => now()]
         );
         $subAdmin->syncRoles(['sub_admin']);
@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
         // hierarchy rather than content. Granted the branch-managers module, so
         // the demo Branch Manager below has somebody above them.
         $networkSubAdmin = User::firstOrCreate(
-            ['email' => 'network-subadmin@globallife.in'],
+            ['email' => 'network-subadmin@globallife.co.in'],
             [
                 'name' => 'Network Sub Admin',
                 'password' => Hash::make('Password!123'),
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
         $delhi = City::where('slug', 'delhi')->first();
 
         $branchManager = User::firstOrCreate(
-            ['email' => 'branch.manager@globallife.in'],
+            ['email' => 'branch.manager@globallife.co.in'],
             [
                 'name' => 'Demo Branch Manager',
                 'mobile' => '+91 90000 11111',
@@ -81,9 +81,9 @@ class UserSeeder extends Seeder
         }
 
         $partners = [
-            ['email' => 'jhansi.managerA@globallife.in', 'name' => 'Jhansi Manager A', 'city' => $jhansi],
-            ['email' => 'jhansi.managerB@globallife.in', 'name' => 'Jhansi Manager B', 'city' => $jhansi],
-            ['email' => 'delhi.managerA@globallife.in', 'name' => 'Delhi Manager A', 'city' => $delhi],
+            ['email' => 'jhansi.managerA@globallife.co.in', 'name' => 'Jhansi Manager A', 'city' => $jhansi],
+            ['email' => 'jhansi.managerB@globallife.co.in', 'name' => 'Jhansi Manager B', 'city' => $jhansi],
+            ['email' => 'delhi.managerA@globallife.co.in', 'name' => 'Delhi Manager A', 'city' => $delhi],
         ];
 
         foreach ($partners as $partnerData) {
@@ -106,7 +106,7 @@ class UserSeeder extends Seeder
         }
 
         $vipMember = User::firstOrCreate(
-            ['email' => 'vip-member@globallife.in'],
+            ['email' => 'vip-member@globallife.co.in'],
             ['name' => 'Demo VIP Member', 'password' => Hash::make('Password!123'), 'status' => 'active', 'email_verified_at' => now()]
         );
         $vipMember->syncRoles(['vip_member']);

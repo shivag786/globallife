@@ -13,8 +13,10 @@ class SettingsSeeder extends Seeder
     public function run(): void
     {
         $defaults = [
-            'contact_email' => 'cmd@globallife.in',
-            'contact_whatsapp' => '+91 90000 00000',
+            'contact_email' => 'info@globallife.co.in',
+            'contact_email_hr' => 'hr@globallife.co.in',
+            // Keep the +91: the wa.me link is built from these digits and needs the country code.
+            'contact_whatsapp' => '+91 88699 11138',
             'contact_address' => 'Patel Nagar, Gurgaon, Haryana, India',
             'social_facebook' => '',
             'social_instagram' => '',

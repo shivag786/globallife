@@ -85,7 +85,7 @@ Roles are seeded by `RolesAndPermissionsSeeder` (const `ROLES`). Eight roles:
 | Role | Prefix / area | How created | Notes |
 |------|---------------|-------------|-------|
 | `super_admin` | `/admin` | Seeded from `.env` (`SUPER_ADMIN_*`) | **Gate::before bypass** — passes every gate (`AppServiceProvider`) |
-| `admin` | `/admin` | Seeded (`admin@globallife.in`) | Has ALL content-module permissions by default |
+| `admin` | `/admin` | Seeded (`admin@globallife.co.in`) | Has ALL content-module permissions by default |
 | `sub_admin` | `/admin` | Created by Super Admin | Starts with NO permissions; granted per-module via matrix. With `branch-managers` granted, runs its own Branch Managers |
 | `branch_manager` | `/branch` | Created by Sub Admin, or Super Admin | Assigned cities; granted `branch.*` perms per-user |
 | `commission_partner` | `/manager` | Created by Branch Manager | Serves cities; creates VIP members |
@@ -784,14 +784,33 @@ Password for all demo accounts: `Password!123` (Super Admin from `.env`).
 | Email | Role |
 |-------|------|
 | `.env SUPER_ADMIN_EMAIL` | super_admin |
-| `admin@globallife.in` | admin |
-| `blog-subadmin@globallife.in` | sub_admin (blog only) |
-| `network-subadmin@globallife.in` | sub_admin (branch-managers; owns the demo Branch Manager) |
-| `branch.manager@globallife.in` | branch_manager (Jhansi, Delhi) |
-| `jhansi.managerA/B@`, `delhi.managerA@globallife.in` | commission_partner |
-| `vip-member@globallife.in` | vip_member |
-| `hospital@globallife.in` | vip_member — fully filled demo page "Lifeline Multi-Speciality Hospital", Jhansi, Premium (`HospitalMicrositeSeeder`, re-runnable; SVG demo images under `uploads/demo/hospital`) |
-| `patient.demo@globallife.in` | customer with 3 sample orders from the hospital's store |
+| `admin@globallife.co.in` | admin |
+| `blog-subadmin@globallife.co.in` | sub_admin (blog only) |
+| `network-subadmin@globallife.co.in` | sub_admin (branch-managers; owns the demo Branch Manager) |
+| `branch.manager@globallife.co.in` | branch_manager (Jhansi, Delhi) |
+| `jhansi.managerA/B@`, `delhi.managerA@globallife.co.in` | commission_partner |
+| `vip-member@globallife.co.in` | vip_member |
+| `hospital@globallife.co.in` | vip_member — fully filled demo page "Lifeline Multi-Speciality Hospital", Jhansi, Premium (`HospitalMicrositeSeeder`, re-runnable; SVG demo images under `uploads/demo/hospital`) |
+| `patient.demo@globallife.co.in` | customer with 3 sample orders from the hospital's store |
+| `boutique@globallife.co.in` | vip_member — "Rangoli Designer Boutique" (ethnic wear), Jhansi, Professional. SQL import only: `database/boutique-gitanjali-demo-data.sql` |
+| `gitanjali@globallife.co.in` | vip_member — "Gitanjali Store" (ladies handbags & purses), Jhansi, Growth Plus. Same SQL file |
+
+The company email domain is **`globallife.co.in`** (moved from `globallife.in`;
+`database/rename-email-domain.sql` migrates an existing database).
+
+**SQL-only demo/data files in `database/`** (for the live server, run in phpMyAdmin):
+`hospital-demo-data.sql`, `boutique-gitanjali-demo-data.sql` (re-runnable: deletes
+its two demo users first, which cascades to their pages), `blog-images.sql` (fills
+only posts without an image), `update-contact-details.sql`, `rename-email-domain.sql`.
+Demo photos live in `storage/app/public/uploads/demo/{hospital,rangoli-boutique,gitanjali-store,blog}`
+and are **force-added** to git (that folder is otherwise ignored). Store and blog
+photos are Pexels-licensed; sources in `database/demo-store-photo-credits.txt`.
+
+**Contact settings** (`settings` table, Admin → Site Settings → Contact):
+`contact_email` (footer + contact page), `contact_email_hr` (HR email, footer +
+contact page), `contact_whatsapp` (store with `+91`; the wa.me links are built
+from its digits). Settings are cached forever under `site-settings`; saving the
+settings page clears it, a direct SQL edit does not.
 
 Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → Testimonials
 → Events → Settings → HomeSections → Leads.
