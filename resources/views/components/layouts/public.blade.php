@@ -312,7 +312,10 @@
         <div style="border-top: 1px solid rgb(31 72 52 / 0.7)">
             <div class="container-lg py-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    @foreach (['SSL Secured', 'FSSAI Certified', 'Lab Tested', '100% Genuine'] as $trust)
+                    @php
+                        $fssaiBadge = filled($settings['fssai_license'] ?? null) ? 'FSSAI Lic. No. '.$settings['fssai_license'] : 'FSSAI Certified';
+                    @endphp
+                    @foreach (['SSL Secured', $fssaiBadge, 'Lab Tested', '100% Genuine'] as $trust)
                         <span class="d-inline-flex align-items-center gap-1 rounded-pill px-3 py-1"
                               style="font-size: 0.75rem; color: var(--color-brand-200); background: var(--color-brand-900); border: 1px solid var(--color-brand-800)">
                             <x-icon name="shield-check" class="w-3.5 h-3.5" style="color: var(--color-gold-400)" /> {{ $trust }}

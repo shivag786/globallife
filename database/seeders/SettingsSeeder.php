@@ -18,6 +18,7 @@ class SettingsSeeder extends Seeder
             // Keep the +91: the wa.me link is built from these digits and needs the country code.
             'contact_whatsapp' => '+91 88699 11138',
             'contact_address' => 'Patel Nagar, Gurgaon, Haryana, India',
+            'fssai_license' => '22726619000081',
             'social_facebook' => '',
             'social_instagram' => '',
             'social_youtube' => '',

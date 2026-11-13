@@ -7,7 +7,7 @@ trait ParsesHomeSectionItems
     /**
      * Parse a "one entry per line" textarea into structured items for the given section type.
      * features, business_opportunity, process_steps: "Title | Description" -> [{title, description}]
-     * stats: "Label | Value" -> [{label, value}]
+     * stats, who_we_are: "Label | Value" -> [{label, value}]
      * team: "Name | Role" -> [{name, role}]
      * hero: "Trust badge label" per line -> [{title, ''}]
      *
@@ -17,11 +17,11 @@ trait ParsesHomeSectionItems
     {
         $titleDescriptionTypes = ['features', 'business_opportunity', 'process_steps', 'hero', 'certifications', 'quality'];
 
-        if (! in_array($type, [...$titleDescriptionTypes, 'stats', 'team'], true) || ! $text) {
+        if (! in_array($type, [...$titleDescriptionTypes, 'stats', 'who_we_are', 'team'], true) || ! $text) {
             return null;
         }
 
-        $keysByType = ['stats' => ['label', 'value'], 'team' => ['name', 'role']];
+        $keysByType = ['stats' => ['label', 'value'], 'who_we_are' => ['label', 'value'], 'team' => ['name', 'role']];
         [$firstKey, $secondKey] = $keysByType[$type] ?? ['title', 'description'];
 
         return collect(explode("\n", $text))

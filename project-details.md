@@ -789,11 +789,11 @@ Password for all demo accounts: `Password!123` (Super Admin from `.env`).
 | `network-subadmin@globallife.co.in` | sub_admin (branch-managers; owns the demo Branch Manager) |
 | `branch.manager@globallife.co.in` | branch_manager (Jhansi, Delhi) |
 | `jhansi.managerA/B@`, `delhi.managerA@globallife.co.in` | commission_partner |
-| `vip-member@globallife.co.in` | vip_member |
-| `hospital@globallife.co.in` | vip_member — fully filled demo page "Lifeline Multi-Speciality Hospital", Jhansi, Premium (`HospitalMicrositeSeeder`, re-runnable; SVG demo images under `uploads/demo/hospital`) |
-| `patient.demo@globallife.co.in` | customer with 3 sample orders from the hospital's store |
-| `boutique@globallife.co.in` | vip_member — "Rangoli Designer Boutique" (ethnic wear), Jhansi, Professional. SQL import only: `database/boutique-gitanjali-demo-data.sql` |
-| `gitanjali@globallife.co.in` | vip_member — "Gitanjali Store" (ladies handbags & purses), Jhansi, Growth Plus. Same SQL file |
+| `globallife.vipdemo@gmail.com` | vip_member |
+| `lifelinehospital.globallife@gmail.com` | vip_member — fully filled demo page "Lifeline Multi-Speciality Hospital", Jhansi, Premium (`HospitalMicrositeSeeder`, re-runnable; SVG demo images under `uploads/demo/hospital`) |
+| `amitpatel.globallife@gmail.com` | customer with 3 sample orders from the hospital's store |
+| `rangoliboutique.globallife@gmail.com` | vip_member — "Rangoli Designer Boutique" (ethnic wear), Jhansi, Professional. SQL import only: `database/boutique-gitanjali-demo-data.sql` |
+| `gitanjalistore.globallife@gmail.com` | vip_member — "Gitanjali Store" (ladies handbags & purses), Jhansi, Growth Plus. Same SQL file |
 
 The company email domain is **`globallife.co.in`** (moved from `globallife.in`;
 `database/rename-email-domain.sql` migrates an existing database).
@@ -809,8 +809,16 @@ photos are Pexels-licensed; sources in `database/demo-store-photo-credits.txt`.
 **Contact settings** (`settings` table, Admin → Site Settings → Contact):
 `contact_email` (footer + contact page), `contact_email_hr` (HR email, footer +
 contact page), `contact_whatsapp` (store with `+91`; the wa.me links are built
-from its digits). Settings are cached forever under `site-settings`; saving the
+from its digits), `fssai_license` (shown as "FSSAI Lic. No. …" in the footer trust
+badges). Settings are cached forever under `site-settings`; saving the
 settings page clears it, a direct SQL edit does not.
+
+**Homepage "Who We Are" section** (`HomeSection` type `who_we_are`, replaced the old
+`team` section): photo (`image_path`, owner photo at `uploads/home/owner-photo.webp`,
+force-added to git) with a quote card (`quote`, `quote_author` columns), `subtitle` =
+small label, `content` = body, `items` = "Label | Value" stat chips, `cta_*` = first
+button; the "Talk to Us" button opens WhatsApp from `contact_whatsapp`. Live-DB
+upgrade: `database/who-we-are-section.sql`.
 
 Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → Testimonials
 → Events → Settings → HomeSections → Leads.

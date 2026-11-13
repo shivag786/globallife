@@ -106,7 +106,7 @@ class UserSeeder extends Seeder
         }
 
         $vipMember = User::firstOrCreate(
-            ['email' => 'vip-member@globallife.co.in'],
+            ['email' => 'globallife.vipdemo@gmail.com'],
             ['name' => 'Demo VIP Member', 'password' => Hash::make('Password!123'), 'status' => 'active', 'email_verified_at' => now()]
         );
         $vipMember->syncRoles(['vip_member']);

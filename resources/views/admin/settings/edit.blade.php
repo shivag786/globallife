@@ -209,6 +209,9 @@
                         <div class="col-12">
                             <x-forms.input name="contact_address" label="Address" :value="$settings['contact_address'] ?? ''" />
                         </div>
+                        <div class="col-md-6">
+                            <x-forms.input name="fssai_license" label="FSSAI License No. (shown in the footer)" :value="$settings['fssai_license'] ?? ''" />
+                        </div>
                     </div>
                 </div>
             </div>

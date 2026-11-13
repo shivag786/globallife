@@ -1,7 +1,7 @@
 -- Demo data: Rangoli Designer Boutique + Gitanjali Store (ladies handbags & purses).
 -- Run AFTER the business-page migrations (same as hospital-demo-data.sql).
 -- Images ship in storage/app/public/uploads/demo/{rangoli-boutique,gitanjali-store}/.
--- Logins: boutique@globallife.co.in / Password!123  and  gitanjali@globallife.co.in / Password!123
+-- Logins: rangoliboutique.globallife@gmail.com / Password!123  and  gitanjalistore.globallife@gmail.com / Password!123
 SET NAMES utf8mb4;
 START TRANSACTION;
 
@@ -16,16 +16,16 @@ SET @partner = COALESCE((SELECT id FROM users WHERE email = 'jhansi.managerA@glo
 INSERT IGNORE INTO `roles` (`name`, `guard_name`, `created_at`, `updated_at`) VALUES ('vip_member', 'web', NOW(), NOW());
 
 -- Safe to re-run: first remove any earlier copy of THESE TWO demo stores (and nothing else).
--- Also clears the copy left under the old @globallife.in addresses by an earlier failed import.
+-- Also clears copies left under earlier addresses (@globallife.in, @globallife.co.in) by older imports.
 -- Deleting the owner cascades to their business page and all its banners, services, products,
 -- gallery, FAQs, reviews and sections. The role link has no foreign key, so it is removed by hand.
-DELETE FROM `model_has_roles` WHERE `model_type` = 'App\\Models\\User' AND `model_id` IN (SELECT `id` FROM `users` WHERE `email` IN ('boutique@globallife.co.in', 'gitanjali@globallife.co.in', 'boutique@globallife.in', 'gitanjali@globallife.in'));
-DELETE FROM `users` WHERE `email` IN ('boutique@globallife.co.in', 'gitanjali@globallife.co.in', 'boutique@globallife.in', 'gitanjali@globallife.in');
+DELETE FROM `model_has_roles` WHERE `model_type` = 'App\\Models\\User' AND `model_id` IN (SELECT `id` FROM `users` WHERE `email` IN ('rangoliboutique.globallife@gmail.com', 'gitanjalistore.globallife@gmail.com', 'boutique@globallife.co.in', 'gitanjali@globallife.co.in', 'boutique@globallife.in', 'gitanjali@globallife.in'));
+DELETE FROM `users` WHERE `email` IN ('rangoliboutique.globallife@gmail.com', 'gitanjalistore.globallife@gmail.com', 'boutique@globallife.co.in', 'gitanjali@globallife.co.in', 'boutique@globallife.in', 'gitanjali@globallife.in');
 
 -- ===================== Rangoli Designer Boutique =====================
--- Owner login: boutique@globallife.co.in / Password!123
+-- Owner login: rangoliboutique.globallife@gmail.com / Password!123
 INSERT INTO `users` (`name`, `email`, `mobile`, `email_verified_at`, `password`, `status`, `commission_percentage`, `created_by`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`)
-VALUES ('Neha Srivastava', 'boutique@globallife.co.in', '9876500021', '2026-11-13 10:00:00', '$2y$12$kfQHKor0vJMyQSr.oGfhwOustAyXYfzslkgN61qWJmrUu7YX6bFQ2', 'active', NULL, @partner, NULL, NULL, NULL, NULL, '2026-11-13 10:00:00', '2026-11-13 10:00:00');
+VALUES ('Neha Srivastava', 'rangoliboutique.globallife@gmail.com', '9876500021', '2026-11-13 10:00:00', '$2y$12$kfQHKor0vJMyQSr.oGfhwOustAyXYfzslkgN61qWJmrUu7YX6bFQ2', 'active', NULL, @partner, NULL, NULL, NULL, NULL, '2026-11-13 10:00:00', '2026-11-13 10:00:00');
 SET @b_owner = LAST_INSERT_ID();
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) SELECT id, 'App\\Models\\User', @b_owner FROM roles WHERE name = 'vip_member' AND guard_name = 'web';
 
@@ -139,9 +139,9 @@ VALUES (@b_sec, 'uploads/demo/rangoli-boutique/collection-party-and-reception.jp
 UPDATE `vip_microsites` SET `page_layout` = REPLACE('{"order": ["about", "stats", "custom-X", "products", "services", "shop", "gallery", "reviews", "faqs", "videos", "contact", "social_media"], "headings": {"about": {"eyebrow": "Welcome to Rangoli", "title": "Designed by hand, fitted to you"}, "stats": {"eyebrow": "Since 2014", "title": "Rangoli in numbers"}, "services": {"eyebrow": "Stitching & Styling", "title": "Our Services", "subtitle": "Starting prices shown. Final price depends on fabric and design."}, "products": {"eyebrow": "Boutique Collection", "title": "Sarees, Suits & Lehengas", "subtitle": "Handpicked from weavers across India. Exchange within 7 days on ready-made items."}, "reviews": {"eyebrow": "Happy Customers", "title": "What our brides say"}, "faqs": {"eyebrow": "Need help?", "title": "Frequently asked questions"}, "contact": {"eyebrow": "Visit the boutique", "title": "Sadar Bazar, Jhansi"}}, "stats": [{"label": "Happy brides", "value": "1,200", "suffix": "+", "is_active": true}, {"label": "Outfits stitched every month", "value": "600", "suffix": "+", "is_active": true}, {"label": "Master tailors", "value": "14", "suffix": "", "is_active": true}, {"label": "Years of craft", "value": "12", "suffix": "", "is_active": true}]}', '"custom-X"', CONCAT('"custom-', @b_sec, '"')) WHERE id = @b_ms;
 
 -- ===================== Gitanjali Store =====================
--- Owner login: gitanjali@globallife.co.in / Password!123
+-- Owner login: gitanjalistore.globallife@gmail.com / Password!123
 INSERT INTO `users` (`name`, `email`, `mobile`, `email_verified_at`, `password`, `status`, `commission_percentage`, `created_by`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`)
-VALUES ('Gitanjali Agrawal', 'gitanjali@globallife.co.in', '9876500031', '2026-11-13 10:00:00', '$2y$12$kfQHKor0vJMyQSr.oGfhwOustAyXYfzslkgN61qWJmrUu7YX6bFQ2', 'active', NULL, @partner, NULL, NULL, NULL, NULL, '2026-11-13 10:00:00', '2026-11-13 10:00:00');
+VALUES ('Gitanjali Agrawal', 'gitanjalistore.globallife@gmail.com', '9876500031', '2026-11-13 10:00:00', '$2y$12$kfQHKor0vJMyQSr.oGfhwOustAyXYfzslkgN61qWJmrUu7YX6bFQ2', 'active', NULL, @partner, NULL, NULL, NULL, NULL, '2026-11-13 10:00:00', '2026-11-13 10:00:00');
 SET @g_owner = LAST_INSERT_ID();
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) SELECT id, 'App\\Models\\User', @g_owner FROM roles WHERE name = 'vip_member' AND guard_name = 'web';
 

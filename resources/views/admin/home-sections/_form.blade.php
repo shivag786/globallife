@@ -4,7 +4,7 @@
 @php
     $itemsText = '';
     if (isset($section) && $section->items) {
-        $keysByType = ['stats' => ['label', 'value'], 'team' => ['name', 'role']];
+        $keysByType = ['stats' => ['label', 'value'], 'who_we_are' => ['label', 'value'], 'team' => ['name', 'role']];
         $keys = $keysByType[$section->type] ?? ['title', 'description'];
         $itemsText = collect($section->items)
             ->map(fn ($item) => ($item[$keys[0]] ?? '').' | '.($item[$keys[1]] ?? ''))
@@ -29,19 +29,32 @@
     </div>
 
     <div>
-        <label for="subtitle" class="d-block fs-sm fw-medium text-body-secondary">Subtitle <span class="text-secondary">(hero, cta, founder quote: role/title)</span></label>
+        <label for="subtitle" class="d-block fs-sm fw-medium text-body-secondary">Subtitle <span class="text-secondary">(hero, cta, founder quote: role/title &middot; who we are: small label above the heading)</span></label>
         <input id="subtitle" type="text" name="subtitle" value="{{ old('subtitle', $section->subtitle ?? '') }}"
                class="mt-1 d-block w-100 rounded-2 shadow-sm">
     </div>
 
     <div>
-        <label for="editor-content" class="d-block fs-sm fw-medium text-body-secondary mb-1">Body Content <span class="text-secondary">(about, founder quote, business opportunity)</span></label>
+        <label for="editor-content" class="d-block fs-sm fw-medium text-body-secondary mb-1">Body Content <span class="text-secondary">(about, who we are, founder quote, business opportunity)</span></label>
         <x-ckeditor name="content" :value="$section->content ?? ''" :rows="6" />
+    </div>
+
+    <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
+        <div>
+            <label for="quote" class="d-block fs-sm fw-medium text-body-secondary">Photo Quote <span class="text-secondary">(who we are: card over the photo)</span></label>
+            <textarea id="quote" name="quote" rows="3" maxlength="500"
+                      class="mt-1 d-block w-100 rounded-2">{{ old('quote', $section->quote ?? '') }}</textarea>
+        </div>
+        <div>
+            <label for="quote_author" class="d-block fs-sm fw-medium text-body-secondary">Quote By <span class="text-secondary">(who we are)</span></label>
+            <input id="quote_author" type="text" name="quote_author" maxlength="150" value="{{ old('quote_author', $section->quote_author ?? '') }}"
+                   class="mt-1 d-block w-100 rounded-2 shadow-sm">
+        </div>
     </div>
 
     <div>
         <label for="items" class="d-block fs-sm fw-medium text-body-secondary">
-            Items <span class="text-secondary">(features/business opportunity/process steps/quality: "Title | Description" per line &middot; stats: "Label | Value" per line &middot; team: "Name | Role" per line &middot; certifications: "Badge | Detail" per line &middot; hero: trust badge label per line, optional)</span>
+            Items <span class="text-secondary">(features/business opportunity/process steps/quality: "Title | Description" per line &middot; stats, who we are: "Label | Value" per line &middot; team: "Name | Role" per line &middot; certifications: "Badge | Detail" per line &middot; hero: trust badge label per line, optional)</span>
         </label>
         <textarea id="items" name="items" rows="5"
                   class="mt-1 d-block w-100 rounded-2">{{ old('items', $itemsText) }}</textarea>
@@ -49,19 +62,19 @@
 
     <div class="d-grid grid-cols-1 grid-cols-sm-2 gap-4">
         <div>
-            <label for="cta_label" class="d-block fs-sm fw-medium text-body-secondary">CTA Button Label <span class="text-secondary">(hero, cta)</span></label>
+            <label for="cta_label" class="d-block fs-sm fw-medium text-body-secondary">CTA Button Label <span class="text-secondary">(hero, cta, who we are)</span></label>
             <input id="cta_label" type="text" name="cta_label" value="{{ old('cta_label', $section->cta_label ?? '') }}"
                    class="mt-1 d-block w-100 rounded-2 shadow-sm">
         </div>
         <div>
-            <label for="cta_url" class="d-block fs-sm fw-medium text-body-secondary">CTA Button URL <span class="text-secondary">(hero, cta)</span></label>
+            <label for="cta_url" class="d-block fs-sm fw-medium text-body-secondary">CTA Button URL <span class="text-secondary">(hero, cta, who we are)</span></label>
             <input id="cta_url" type="text" name="cta_url" value="{{ old('cta_url', $section->cta_url ?? '') }}"
                    class="mt-1 d-block w-100 rounded-2 shadow-sm">
         </div>
     </div>
 
     <div>
-        <label for="image" class="d-block fs-sm fw-medium text-body-secondary">Image <span class="text-secondary">(hero, about, founder quote: photo)</span></label>
+        <label for="image" class="d-block fs-sm fw-medium text-body-secondary">Image <span class="text-secondary">(hero, about, who we are, founder quote: photo)</span></label>
         @if (isset($section) && $section->image_path)
             <img src="{{ asset('storage/'.$section->image_path) }}" alt="" class="h-16 mt-1 mb-2 rounded">
         @endif

@@ -9,7 +9,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
-    'type', 'title', 'subtitle', 'content', 'image_path', 'cta_label', 'cta_url',
+    'type', 'title', 'subtitle', 'content', 'quote', 'quote_author', 'image_path', 'cta_label', 'cta_url',
     'items', 'status', 'display_order',
 ])]
 class HomeSection extends Model
@@ -25,6 +25,7 @@ class HomeSection extends Model
         'hero' => 'Hero Banner',
         'founder_quote' => 'Founder Quote',
         'about' => 'About Us',
+        'who_we_are' => 'Who We Are (photo + quote card, stats, buttons)',
         'features' => 'Features / Why Choose Us',
         'products_showcase' => 'Product Showcase (live, pulls featured products)',
         'category_products' => 'Shop by Category (live, category image tiles linking to each category page)',
