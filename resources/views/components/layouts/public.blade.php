@@ -160,6 +160,7 @@
                             </div>
                             <hr class="dropdown-divider">
                             <a href="{{ route('dashboard') }}" class="dropdown-item">Dashboard</a>
+                            <a href="{{ route('account.password.edit') }}" class="dropdown-item">Change Password</a>
                             <hr class="dropdown-divider">
                             <form method="POST" action="{{ route('logout', [], false) }}">
                                 @csrf
@@ -188,6 +189,7 @@
                 <a href="{{ route('contact') }}" class="text-secondary text-decoration-none">Contact</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="text-secondary text-decoration-none">Dashboard</a>
+                    <a href="{{ route('account.password.edit') }}" class="text-secondary text-decoration-none">Change Password</a>
                     <form method="POST" action="{{ route('logout', [], false) }}">
                         @csrf
                         <button type="submit" class="btn btn-link btn-sm text-danger p-0">Logout</button>

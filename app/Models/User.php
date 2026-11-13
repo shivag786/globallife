@@ -12,7 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -36,6 +40,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Send the branded forgot-password email.
+     *
+     * Unlike the informational account emails, this one IS the request: if the
+     * mail server rejects it the user must be told, not shown "link sent". A
+     * transport failure becomes a validation error on the email field, which
+     * Fortify renders back on the forgot-password form.
+     *
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        try {
+            $this->notify(new ResetPasswordNotification($token));
+        } catch (TransportExceptionInterface $e) {
+            Log::error('Password reset email could not be sent', ['user_id' => $this->id, 'error' => $e->getMessage()]);
+
+            throw ValidationException::withMessages([
+                'email' => 'We could not send the reset email right now. Please try again in a few minutes or contact support.',
+            ]);
+        }
     }
 
     public function getActivitylogOptions(): LogOptions

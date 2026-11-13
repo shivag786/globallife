@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class CommissionPartnerService
 {
+    public function __construct(private readonly AccountMailService $mail) {}
+
     /**
      * Create a Commission Partner account owned by the given Branch Manager.
      *
@@ -20,7 +22,7 @@ class CommissionPartnerService
      */
     public function createPartner(array $data, float $commissionPercentage, User $branchManager): User
     {
-        return DB::transaction(function () use ($data, $commissionPercentage, $branchManager) {
+        $partner = DB::transaction(function () use ($data, $commissionPercentage, $branchManager) {
             $partner = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -36,6 +38,10 @@ class CommissionPartnerService
 
             return $partner;
         });
+
+        $this->mail->accountCreated($partner, $branchManager);
+
+        return $partner;
     }
 
     /**
@@ -142,7 +148,7 @@ class CommissionPartnerService
      */
     public function setPassword(User $partner, string $password): User
     {
-        return DB::transaction(function () use ($partner, $password) {
+        DB::transaction(function () use ($partner, $password) {
             $partner->forceFill([
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
@@ -150,9 +156,11 @@ class CommissionPartnerService
 
             // The session driver is `database`, so this is where a live login lives.
             DB::table('sessions')->where('user_id', $partner->id)->delete();
-
-            return $partner;
         });
+
+        $this->mail->passwordChanged($partner, 'your Branch Manager');
+
+        return $partner;
     }
 
     public function toggleStatus(User $partner): User

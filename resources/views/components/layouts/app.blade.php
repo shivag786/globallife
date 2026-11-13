@@ -210,6 +210,11 @@
                     <x-icon name="moon" class="w-5 h-5" data-icon-light />
                     <x-icon name="sun" class="w-5 h-5 d-none" data-icon-dark />
                 </button>
+                <a href="{{ route('account.password.edit') }}" class="text-secondary text-decoration-none"
+                   title="Change Password" aria-label="Change Password">
+                    <x-icon name="lock" class="w-5 h-5 d-sm-none" />
+                    <span class="d-none d-sm-inline">Change Password</span>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-link text-danger p-0">Logout</button>

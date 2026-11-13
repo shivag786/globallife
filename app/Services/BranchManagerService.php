@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 
 class BranchManagerService
 {
+    public function __construct(private readonly AccountMailService $mail) {}
+
     /**
      * Create a Branch Manager account, assign it to one or more cities, and cap its
      * commission percentage (up to, but never over, 100%).
@@ -23,7 +25,7 @@ class BranchManagerService
      */
     public function createBranchManager(array $data, array $cityIds, float $commissionPercentage, ?User $owner = null): User
     {
-        return DB::transaction(function () use ($data, $cityIds, $commissionPercentage, $owner) {
+        $manager = DB::transaction(function () use ($data, $cityIds, $commissionPercentage, $owner) {
             $manager = User::create([
                 'name' => $data['name'],
                 'mobile' => $data['mobile'] ?? null,
@@ -40,6 +42,11 @@ class BranchManagerService
 
             return $manager;
         });
+
+        // After commit: never email about an account that was rolled back.
+        $this->mail->accountCreated($manager, $owner);
+
+        return $manager;
     }
 
     /**
@@ -79,7 +86,7 @@ class BranchManagerService
      */
     public function setPassword(User $manager, string $password): User
     {
-        return DB::transaction(function () use ($manager, $password) {
+        DB::transaction(function () use ($manager, $password) {
             $manager->forceFill([
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
@@ -87,9 +94,11 @@ class BranchManagerService
 
             // The session driver is `database`, so this is where a live login lives.
             DB::table('sessions')->where('user_id', $manager->id)->delete();
-
-            return $manager;
         });
+
+        $this->mail->passwordChanged($manager, 'an administrator');
+
+        return $manager;
     }
 
     public function toggleStatus(User $manager): User

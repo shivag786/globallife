@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Account\OrderController;
+use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BranchManagerController;
@@ -112,8 +113,14 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         ->middleware(['role:vip_member', 'throttle:10,1'])
         ->name('withdrawals.store');
 
+    // Change your own password — every role.
+    Route::get('/account/password', [PasswordController::class, 'edit'])->name('account.password.edit');
+    Route::put('/account/password', [PasswordController::class, 'update'])
+        ->middleware('throttle:10,1')
+        ->name('account.password.update');
+
     // Customer account area.
-    Route::get('/account/orders', [OrderController::class, 'index'])->name('account.orders.index');
+    Route::get('/account/orders',[OrderController::class, 'index'])->name('account.orders.index');
     Route::get('/account/orders/{order}', [OrderController::class, 'show'])->name('account.orders.show');
 
     // Saved delivery addresses (address book).

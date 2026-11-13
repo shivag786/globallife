@@ -16,12 +16,14 @@ use Illuminate\Support\Str;
  */
 class SubAdminService
 {
+    public function __construct(private readonly AccountMailService $mail) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
     public function createSubAdmin(array $data, User $owner): User
     {
-        return DB::transaction(function () use ($data, $owner) {
+        $subAdmin = DB::transaction(function () use ($data, $owner) {
             $subAdmin = User::create([
                 'name' => $data['name'],
                 'mobile' => $data['mobile'] ?? null,
@@ -36,6 +38,10 @@ class SubAdminService
 
             return $subAdmin;
         });
+
+        $this->mail->accountCreated($subAdmin, $owner);
+
+        return $subAdmin;
     }
 
     /**
@@ -64,16 +70,18 @@ class SubAdminService
      */
     public function setPassword(User $subAdmin, string $password): User
     {
-        return DB::transaction(function () use ($subAdmin, $password) {
+        DB::transaction(function () use ($subAdmin, $password) {
             $subAdmin->forceFill([
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
             ])->save();
 
             DB::table('sessions')->where('user_id', $subAdmin->id)->delete();
-
-            return $subAdmin;
         });
+
+        $this->mail->passwordChanged($subAdmin, 'an administrator');
+
+        return $subAdmin;
     }
 
     public function toggleStatus(User $subAdmin): User

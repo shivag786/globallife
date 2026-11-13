@@ -148,7 +148,9 @@ return [
         Features::resetPasswords(),
         // Features::emailVerification(),
         Features::updateProfileInformation(),
-        Features::updatePasswords(),
+        // Features::updatePasswords() is intentionally off: changing your own
+        // password goes through account.password.* (Account\PasswordController),
+        // which also signs out other devices and emails a security notice.
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,

@@ -3,7 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\AccountPasswordService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
@@ -25,8 +25,9 @@ class ResetUserPassword implements ResetsUserPasswords
             'password' => $this->passwordRules(),
         ])->validate();
 
-        $user->forceFill([
-            'password' => Hash::make($input['password']),
-        ])->save();
+        // Reached from the emailed link while logged out, so every existing
+        // session for the account is dropped (the old password may be the very
+        // reason for the reset) and a security notice is emailed.
+        app(AccountPasswordService::class)->setOwnPassword($user, $input['password']);
     }
 }

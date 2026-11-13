@@ -12,7 +12,10 @@ use RuntimeException;
 
 class VipMemberService
 {
-    public function __construct(private readonly VipActivationService $activations) {}
+    public function __construct(
+        private readonly VipActivationService $activations,
+        private readonly AccountMailService $mail,
+    ) {}
 
     /**
      * Create a VIP Member account with its public microsite, owned by the given
@@ -35,7 +38,7 @@ class VipMemberService
      */
     public function createMember(array $data, User $commissionPartner, City $city): User
     {
-        return DB::transaction(function () use ($data, $commissionPartner, $city) {
+        $member = DB::transaction(function () use ($data, $commissionPartner, $city) {
             $member = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -69,6 +72,11 @@ class VipMemberService
 
             return $member;
         });
+
+        // After commit, so a failed activation never sends a welcome email.
+        $this->mail->accountCreated($member, $commissionPartner);
+
+        return $member;
     }
 
     /**

@@ -489,8 +489,39 @@ manager can only reset a partner they created, and the controller `abort_unless`
 the target holds `commission_partner`. `CommissionPartnerService::setPassword()`
 mirrors the Branch Manager one — sessions dropped, remember-me token rotated.
 
-These two screens are the only places in the app where one account can set
-another's password.
+These screens (plus the Sub Admin one, `PUT admin/sub-admins/{subAdmin}/password`)
+are the only places in the app where one account can set another's password.
+Each `setPassword()` now also emails the target a "password changed by …" notice.
+
+### Own password, forgot password & account emails
+
+- **Change Password (every role)**: `GET|PUT /account/password`
+  (`account.password.edit|update`, `Account\PasswordController`,
+  `ChangePasswordRequest`). Needs the current password; new one min 8,
+  confirmed, different. `AccountPasswordService::setOwnPassword()` rotates
+  `remember_token`, drops every *other* `sessions` row (keeps the current one,
+  then regenerates its id) and emails `PasswordChangedNotification`. Linked from
+  the dashboard header (`layouts.app`) and the storefront user menu. Dashboard
+  roles see it in `layouts.app`, customers in `layouts.public`.
+  Fortify's own `Features::updatePasswords()` (`PUT /user/password`) is **off** so
+  there is one path.
+- **Forgot password**: Fortify `resetPasswords()` (`/forgot-password`,
+  `/reset-password/{token}`). `User::sendPasswordResetNotification()` sends the
+  branded `ResetPasswordNotification`; an SMTP transport failure becomes a
+  validation error on `email` instead of a 500 / false "link sent".
+  `ResetUserPassword` goes through `setOwnPassword()` (no session kept) so a reset
+  also signs out every device and sends the notice.
+- **Welcome email**: `AccountCreatedNotification` after commit from
+  `create*()` in `SubAdminService`, `BranchManagerService`,
+  `CommissionPartnerService`, `VipMemberService`. It never contains the password.
+- `AccountMailService` sends the informational emails and **swallows + logs**
+  failures, so a mail outage never blocks creating an account or changing a
+  password. Templates: `resources/views/emails/{layout,reset-password,
+  password-changed,account-created}.blade.php`.
+- **Mail transport**: Hostinger SMTP (`smtp.hostinger.com`, 465, `MAIL_SCHEME=smtps`;
+  `MAIL_FROM_ADDRESS` must equal `MAIL_USERNAME`). `MAIL_TIMEOUT` (default 15s)
+  bounds the SMTP connection. Verify with `php artisan mail:test you@example.com`.
+  All mail is sent synchronously (no queue worker needed on shared hosting).
 
 ### Mobile numbers
 
@@ -714,7 +745,7 @@ autofill often fires only `change`.
   `/products`, `/products/category/{slug}`, `/blog`, `/events`, `/contact`,
   cart/wishlist/checkout.
 - **Authed (`auth` + `active_account`)**: `/dashboard` (role redirect), `/wallet`,
-  `/account/orders`, `/account/addresses`.
+  `/account/orders`, `/account/addresses`, `/account/password` (every role).
   - `/admin/*` (`super_admin|admin|sub_admin`) — products, blog, testimonials,
     events, media, leads, orders. **Super-Admin-only** sub-group: cities,
     categories, brands, commissions, branch-managers, commission-partners,
@@ -797,6 +828,9 @@ bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
 optional), `CommissionPartnerPasswordTest` (branch-side only, ownership enforced,
 non-partner ids 404, sessions cleared), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset
 clears sessions and rotates the token, non-branch-manager ids 404, RBAC),
+`PasswordManagementTest` (forgot-password email + token reset drops sessions,
+every role can open/use Change Password, wrong current / mismatch rejected,
+Fortify `/user/password` gone, welcome + password-changed emails),
 `VipMemberCityPickerTest` (the cascade on the add-member form, typed cities,
 dedupe by name+state, slug collisions across states, territory granted to both
 partner and branch, and no city fields left on the partner form), `LegacyVipPlansRemovedTest` (only four plans remain, the admin screens 404,
