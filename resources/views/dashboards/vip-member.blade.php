@@ -179,9 +179,4 @@
             </a>
         </div>
     @endif
-
-    <div class="dash-note">
-        <x-icon name="sparkles" class="w-4 h-4 flex-shrink-0" />
-        <span>Bookings, Offers/Coupons, Team Members, Certifications, and a Download Center ship in Phase 2.</span>
-    </div>
 </x-layouts.app>

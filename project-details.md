@@ -813,6 +813,16 @@ from its digits), `fssai_license` (shown as "FSSAI Lic. No. …" in the footer t
 badges). Settings are cached forever under `site-settings`; saving the
 settings page clears it, a direct SQL edit does not.
 
+**Typography settings** (Admin → Site Settings → Typography): `font_body`,
+`font_heading`, `font_display` (picked from the curated Google Fonts list in
+`TypographyService::FONTS` — free text is rejected) and `font_size_base` (14–18px).
+`partials/typography.blade.php` is included right **after** `@vite` in every
+layout (app, guest, public, shop, microsite); it loads the chosen families from
+Google Fonts and overrides `--bs-font-sans-serif` / `--bs-body-font-family`,
+`--font-heading`, `--font-display` and `--bs-body-font-size` on `:root`. The SCSS
+`$font-family-*` values remain only as build-time defaults. Dashboards show no
+"Phase 2 / soon" placeholder menus — only links with a real page.
+
 **Homepage "Who We Are" section** (`HomeSection` type `who_we_are`, replaced the old
 `team` section): photo (`image_path`, owner photo at `uploads/home/owner-photo.webp`,
 force-added to git) with a quote card (`quote`, `quote_author` columns), `subtitle` =
@@ -850,7 +860,9 @@ the page live, one booking only, legacy rows still activatable by hand),
 `MicrositeGoesLiveOnActivationTest` (not public before activation, goes live on
 it, contact shortcuts and reviews shut until then), `MobileNumberTest` (every input shape normalises to 10 digits, duplicates
 refused across both forms and across formats, optional, self-ignore on edit),
-`AdminFormUsabilityTest` (permission grid lists only live modules and offers
+`TypographySettingsTest` (font defaults, admin save reaches dashboard + public
+layouts, off-list fonts and sizes rejected, no coming-soon menus on the VIP
+dashboard), `AdminFormUsabilityTest` (permission grid lists only live modules and offers
 bulk toggles, no Phase 2 rows in the branch sidebar, Branch Manager cities
 optional), `CommissionPartnerPasswordTest` (branch-side only, ownership enforced,
 non-partner ids 404, sessions cleared), `BranchManagerPasswordTest` (the form is on edit only and nowhere else, reset

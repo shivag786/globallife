@@ -60,11 +60,9 @@
         <link rel="icon" href="{{ asset('storage/'.$settings['favicon']) }}">
     @endif
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    @include('partials.typography')
 
     @if (! empty($settings['gtm_id']))
         <script>

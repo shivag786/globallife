@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Services\TypographyService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateSettingsRequest extends FormRequest
 {
@@ -22,6 +24,12 @@ class UpdateSettingsRequest extends FormRequest
             'site_tagline' => ['nullable', 'string', 'max:255'],
             'site_logo' => ['nullable', 'image', 'max:2048'],
             'favicon' => ['nullable', 'image', 'max:1024'],
+
+            // Typography — only fonts from the curated list.
+            'font_body' => ['nullable', Rule::in(TypographyService::fontNames())],
+            'font_heading' => ['nullable', Rule::in(TypographyService::fontNames())],
+            'font_display' => ['nullable', Rule::in(TypographyService::fontNames())],
+            'font_size_base' => ['nullable', 'integer', 'min:'.TypographyService::MIN_SIZE, 'max:'.TypographyService::MAX_SIZE],
 
             // SEO
             'meta_description' => ['nullable', 'string', 'max:500'],

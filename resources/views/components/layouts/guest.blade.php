@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? config('app.name') }}</title>
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    @include('partials.typography')
 </head>
 <body class="bg-body-tertiary min-vh-100 d-flex align-items-center justify-content-center px-3 py-4">
     <div class="w-100" style="max-width: 28rem">

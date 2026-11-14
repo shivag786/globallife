@@ -26,6 +26,7 @@
         <link rel="icon" href="{{ asset('storage/'.$adminSettings['favicon']) }}">
     @endif
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    @include('partials.typography')
 </head>
 <body class="admin-shell">
     <div id="sidebar-overlay" class="admin-sidebar-backdrop d-none" data-sidebar-overlay></div>
@@ -134,13 +135,6 @@
                     <a href="{{ route('manager.vip-members.index') }}">VIP Members</a>
                     <a href="{{ route('manager.revenue.index') }}">Revenue Tracking</a>
                     <a href="{{ route('wallet.index') }}">Product Wallet</a>
-                    <!--<p class="admin-sidebar-heading">Partner Tools (Phase 2)</p>-->
-                    <!--@foreach (['Sales Tracking', 'Discount Management', 'Customer Management'] as $item)-->
-                    <!--    <span class="d-flex align-items-center justify-content-between px-3 py-2 rounded text-secondary">-->
-                    <!--        {{ $item }}-->
-                    <!--        <span class="badge text-bg-dark">soon</span>-->
-                    <!--    </span>-->
-                    <!--@endforeach-->
                 @endif
 
                 @if ($user->hasRole('vip_member'))
@@ -180,14 +174,6 @@
                     <p class="admin-sidebar-heading">Customers</p>
                     <a href="{{ route('vip.reviews.index') }}">Reviews</a>
                     <a href="{{ route('vip.leads.index') }}">Leads</a>
-
-                    <p class="admin-sidebar-heading">VIP Tools (Phase 2)</p>
-                    @foreach (['Offers & Coupons', 'Team Members', 'Bookings'] as $item)
-                        <span class="d-flex align-items-center justify-content-between px-3 py-2 rounded text-secondary">
-                            {{ $item }}
-                            <span class="badge text-bg-dark">soon</span>
-                        </span>
-                    @endforeach
                 @endif
         </nav>
     </aside>

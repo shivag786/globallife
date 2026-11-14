@@ -70,6 +70,48 @@
                 </div>
             </div>
 
+            {{-- Typography --}}
+            @php
+                $fontGroups = \App\Services\TypographyService::groupedOptions();
+                $fontNow = app(\App\Services\TypographyService::class)->current();
+                $fontFields = [
+                    'font_body' => ['Body Font', 'body', 'Paragraphs, forms, tables and menus — public site and every dashboard.'],
+                    'font_heading' => ['Heading Font', 'heading', 'Section titles, cards and dashboard headings.'],
+                    'font_display' => ['Display Font', 'display', 'Large hero titles, logo text and article headings.'],
+                ];
+            @endphp
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-body">
+                    <h2 class="h6 mb-0 fw-semibold">Typography</h2>
+                    <p class="small text-muted mb-0">Fonts used across the public site, microsites, shop and all dashboards. Loaded from Google Fonts.</p>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        @foreach ($fontFields as $key => [$label, $slot, $help])
+                            <div class="col-md-6">
+                                <x-forms.input :name="$key" :label="$label" as="select" :help="$help">
+                                    @foreach ($fontGroups as $group => $names)
+                                        <optgroup label="{{ $group }}">
+                                            @foreach ($names as $name)
+                                                <option value="{{ $name }}" @selected(old($key, $fontNow[$slot]) === $name)>{{ $name }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </x-forms.input>
+                            </div>
+                        @endforeach
+                        <div class="col-md-6">
+                            <x-forms.input name="font_size_base" label="Base Font Size" as="select"
+                                           help="Scales body text everywhere. 16px is the browser default.">
+                                @foreach (range(\App\Services\TypographyService::MIN_SIZE, \App\Services\TypographyService::MAX_SIZE) as $px)
+                                    <option value="{{ $px }}" @selected((int) old('font_size_base', $fontNow['size']) === $px)>{{ $px }}px{{ $px === \App\Services\TypographyService::DEFAULT_SIZE ? ' (default)' : '' }}</option>
+                                @endforeach
+                            </x-forms.input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Homepage & Announcement --}}
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-body">
