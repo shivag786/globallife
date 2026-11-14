@@ -54,7 +54,9 @@ class UpdateSettingsRequest extends FormRequest
 
             // Homepage & Announcement
             'announcement_text' => ['nullable', 'string', 'max:160'],
-            'announcement_link' => ['nullable', 'url', 'max:255'],
+            // A full http(s) URL or a site path like /products ("//" and
+            // javascript: are refused).
+            'announcement_link' => ['nullable', 'string', 'max:255', 'regex:#^(https?://\S+|/(?!/)\S*)$#i'],
             'hero_rating' => ['nullable', 'string', 'max:10'],
             'hero_rating_count' => ['nullable', 'string', 'max:30'],
 

@@ -124,8 +124,9 @@
                                            help="Shown in a thin bar at the very top of the public site. Leave blank to hide it." />
                         </div>
                         <div class="col-md-4">
-                            <x-forms.input name="announcement_link" type="url" label="Announcement Link" :value="$settings['announcement_link'] ?? ''"
-                                           placeholder="https://…" />
+                            <x-forms.input name="announcement_link" label="Announcement Link" :value="$settings['announcement_link'] ?? ''"
+                                           placeholder="/products or https://…"
+                                           help="A page on this site (e.g. /products) or a full URL." />
                         </div>
                         <div class="col-md-6">
                             <x-forms.input name="hero_rating" label="Hero Rating" :value="$settings['hero_rating'] ?? ''"

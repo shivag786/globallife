@@ -86,6 +86,22 @@ class TypographySettingsTest extends TestCase
         $this->assertNull(app(SettingsService::class)->get('font_body'));
     }
 
+    public function test_announcement_link_accepts_a_site_path_or_full_url_only(): void
+    {
+        $admin = $this->root();
+
+        foreach (['/products', 'https://example.com/offer'] as $ok) {
+            $this->actingAs($admin)->put('/admin/settings', ['announcement_link' => $ok])
+                ->assertSessionHasNoErrors();
+            $this->assertSame($ok, app(SettingsService::class)->get('announcement_link'));
+        }
+
+        foreach (['javascript:alert(1)', '//evil.com', 'products'] as $bad) {
+            $this->actingAs($admin)->put('/admin/settings', ['announcement_link' => $bad])
+                ->assertSessionHasErrors('announcement_link');
+        }
+    }
+
     public function test_vip_dashboard_shows_no_coming_soon_menus(): void
     {
         $partner = $this->makeCommissionPartner($this->makeBranchManager(30), 25);
