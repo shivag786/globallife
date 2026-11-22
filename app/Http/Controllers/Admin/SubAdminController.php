@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\MemberProfileService;
 use App\Services\PermissionMatrixService;
 use App\Services\SubAdminService;
+use App\Support\PermissionSync;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -121,7 +122,7 @@ class SubAdminController extends Controller
         $submitted = array_keys($request->input('permissions', []));
         $valid = array_intersect($submitted, PermissionMatrixService::allPermissions());
 
-        $subAdmin->syncPermissions($valid);
+        PermissionSync::sync($subAdmin, array_values($valid));
 
         return redirect()
             ->route('admin.sub-admins.permissions.edit', $subAdmin)

@@ -12,6 +12,7 @@ use App\Services\BranchManagerService;
 use App\Services\BranchPermissionMatrixService;
 use App\Services\MemberProfileService;
 use App\Support\BranchManagerAccess;
+use App\Support\PermissionSync;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -156,7 +157,7 @@ class BranchManagerController extends Controller
         $submitted = array_keys($request->input('permissions', []));
         $valid = array_intersect($submitted, BranchPermissionMatrixService::allPermissions());
 
-        $branchManager->syncPermissions($valid);
+        PermissionSync::sync($branchManager, array_values($valid));
 
         return redirect()
             ->route('admin.branch-managers.permissions.edit', $branchManager)

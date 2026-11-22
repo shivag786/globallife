@@ -439,6 +439,35 @@ class SubAdminHierarchyTest extends TestCase
             ->assertDontSee(route('admin.branch-managers.index'), false);
     }
 
+    public function test_granting_permissions_survives_a_stale_cache_or_missing_rows(): void
+    {
+        $subAdmin = $this->makeSubAdmin();
+        $superAdmin = $this->superAdmin();
+
+        // Live-site situation: the permission list is cached, then the HR
+        // permissions are removed/added behind spatie's back (SQL import with
+        // no cache reset, or the migration not run yet).
+        app(\Spatie\Permission\PermissionRegistrar::class)->getPermissions();
+        \Spatie\Permission\Models\Permission::where('name', 'like', 'employees.%')->delete();
+
+        $this->actingAs($superAdmin)
+            ->put("/admin/sub-admins/{$subAdmin->id}/permissions", [
+                'permissions' => ['employees.create' => 'on', 'employees.edit' => 'on', 'blog.create' => 'on'],
+            ])
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $subAdmin->refresh();
+        $this->assertTrue($subAdmin->hasPermissionTo('employees.create'));
+        $this->assertTrue($subAdmin->hasPermissionTo('blog.create'));
+        $this->assertNotContains('employees.export', $subAdmin->getAllPermissions()->pluck('name'));
+
+        // A name that is not on the matrix is still never created or granted.
+        $this->actingAs($superAdmin)
+            ->put("/admin/sub-admins/{$subAdmin->id}/permissions", ['permissions' => ['made.up' => 'on']]);
+        $this->assertDatabaseMissing('permissions', ['name' => 'made.up']);
+    }
+
     public function test_the_permission_matrix_is_never_shown_on_a_sub_admin_dashboard(): void
     {
         $granted = $this->makeSubAdmin(['blog', 'products']);
