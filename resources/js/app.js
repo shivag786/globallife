@@ -162,6 +162,43 @@ document.querySelectorAll('[data-sidebar-open]').forEach((btn) => btn.addEventLi
 document.querySelectorAll('[data-sidebar-close]').forEach((btn) => btn.addEventListener('click', closeSidebar));
 sidebarOverlay?.addEventListener('click', closeSidebar);
 
+// Highlight the sidebar link of the current page. The link whose path is the
+// longest match wins, on whole path segments: /admin/hr/employees/5/edit lights
+// up "Employees" (/admin/hr/employees), not "HR Dashboard" (/admin/hr).
+(function markActiveSidebarLink() {
+    if (!sidebar) return;
+
+    const trim = (p) => p.replace(/\/+$/, '') || '/';
+    const here = trim(window.location.pathname);
+    let best = null;
+    let bestLength = -1;
+
+    sidebar.querySelectorAll('nav a[href]').forEach((link) => {
+        const url = new URL(link.getAttribute('href'), window.location.origin);
+        if (url.origin !== window.location.origin) return;
+
+        const path = trim(url.pathname);
+        const matches = here === path || here.startsWith(path === '/' ? '/' : path + '/');
+
+        if (matches && path.length > bestLength) {
+            best = link;
+            bestLength = path.length;
+        }
+    });
+
+    if (best) {
+        best.classList.add('is-active');
+        best.setAttribute('aria-current', 'page');
+        // Long menus: scroll the sidebar itself (never the page) so the active
+        // link is in view.
+        const linkBox = best.getBoundingClientRect();
+        const barBox = sidebar.getBoundingClientRect();
+        if (linkBox.bottom > barBox.bottom || linkBox.top < barBox.top) {
+            sidebar.scrollTop += linkBox.top - barBox.top - sidebar.clientHeight / 2;
+        }
+    }
+})();
+
 // Public header mobile nav toggle
 const mobileNav = document.getElementById('mobile-nav');
 document.querySelectorAll('[data-mobile-nav-open]').forEach((btn) => {

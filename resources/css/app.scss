@@ -1413,10 +1413,17 @@ $member-rail-width: 13.5rem;
     text-decoration: none;
     transition: background-color 150ms ease, color 150ms ease;
 
-    &:hover,
-    &.is-active {
+    &:hover {
         background-color: rgba(255, 255, 255, 0.08);
         color: #fff;
+    }
+
+    // The current page (set by the sidebar script in resources/js/app.js).
+    &.is-active {
+        background-color: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 $gold-400;
     }
 }
 
