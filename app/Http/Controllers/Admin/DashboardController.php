@@ -69,9 +69,11 @@ class DashboardController extends Controller
                 ]
                 : null,
             'network' => $network,
-            'permissionMatrix' => $user->hasRole('sub_admin')
-                ? PermissionMatrixService::groupByModule($user->getAllPermissions()->pluck('name'))
-                : null,
+            // The permission matrix is Super Admin's business only: it is
+            // managed (and seen) on Sub Admins → Permissions, never shown to a
+            // Sub Admin on their own dashboard. This only decides whether to
+            // show the "no modules assigned yet" note.
+            'hasModules' => $user->getAllPermissions()->isNotEmpty(),
         ]);
     }
 

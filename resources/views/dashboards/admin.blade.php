@@ -152,36 +152,9 @@
         </div>
     @endif
 
-    @if ($permissionMatrix)
-        <x-dash-card title="Your Permission Matrix" subtitle="What your Super Admin has switched on for you" icon="lock">
-            <div class="table-responsive">
-                <table class="dash-table w-100 fs-sm">
-                    <thead>
-                        <tr>
-                            <th>Module</th>
-                            <th>Actions Granted</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($permissionMatrix as $module => $actions)
-                            <tr>
-                                <td class="fw-medium text-capitalize">{{ str_replace('-', ' ', $module) }}</td>
-                                <td>
-                                    @forelse ($actions as $action)
-                                        <span class="dash-pill">{{ $action }}</span>
-                                    @empty
-                                        <span class="text-body-tertiary">none</span>
-                                    @endforelse
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </x-dash-card>
-    @endif
-
-    @unless ($stats || $permissionMatrix || $network)
+    {{-- The permission matrix itself is never shown here: only Super Admin
+         sees it, on Sub Admins → Permissions. --}}
+    @unless ($stats || $hasModules || $network)
         <div class="dash-empty">
             <span class="dash-empty__icon"><x-icon name="lock" class="w-6 h-6" /></span>
             <p class="mb-0">You don't have any modules assigned yet. Contact your Super Admin.</p>

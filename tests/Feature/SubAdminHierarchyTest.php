@@ -439,6 +439,29 @@ class SubAdminHierarchyTest extends TestCase
             ->assertDontSee(route('admin.branch-managers.index'), false);
     }
 
+    public function test_the_permission_matrix_is_never_shown_on_a_sub_admin_dashboard(): void
+    {
+        $granted = $this->makeSubAdmin(['blog', 'products']);
+        $nothing = $this->makeSubAdmin();
+
+        $this->actingAs($granted)->get('/admin/dashboard')
+            ->assertOk()
+            ->assertDontSee('Permission Matrix')
+            ->assertDontSee('switched on for you')
+            ->assertDontSee("You don't have any modules assigned yet", false);
+
+        // With nothing granted they still get a pointer to their Super Admin.
+        $this->actingAs($nothing)->get('/admin/dashboard')
+            ->assertOk()
+            ->assertDontSee('Permission Matrix')
+            ->assertSee("You don't have any modules assigned yet", false);
+
+        // Super Admin still manages the matrix on the Sub Admin permissions page.
+        $this->actingAs($this->superAdmin())
+            ->get("/admin/sub-admins/{$granted->id}/permissions")
+            ->assertOk();
+    }
+
     public function test_a_sub_admin_dashboard_counts_only_their_own_network(): void
     {
         $subAdmin = $this->makeSubAdmin(['branch-managers']);
