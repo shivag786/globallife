@@ -69,7 +69,10 @@ class DataResetController extends Controller
         }
 
         $phrase = (string) config('data_reset.confirmation_phrase');
-        $request->validate(['confirmation' => ['required', 'string']]);
+        $request->validate(
+            ['confirmation' => ['required', 'string'], 'understood' => ['accepted']],
+            ['understood.accepted' => 'Tick the box to confirm you understand the data will be deleted.'],
+        );
 
         if ($request->input('confirmation') !== $phrase) {
             return back()->withErrors(['confirmation' => "Type exactly: {$phrase}"]);

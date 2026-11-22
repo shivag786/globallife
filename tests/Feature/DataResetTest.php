@@ -68,7 +68,7 @@ class DataResetTest extends TestCase
 
         $this->actingAs($super)->get('/admin/system/reset')->assertOk()->assertSee('switched off');
         $this->actingAs($super)->post('/admin/system/reset/unlock', ['reset_password' => ''])->assertSessionHasErrors('reset_password');
-        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA'])->assertSessionHasErrors('reset_password');
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA', 'understood' => '1'])->assertSessionHasErrors('reset_password');
     }
 
     public function test_a_wrong_password_or_phrase_erases_nothing(): void
@@ -78,12 +78,16 @@ class DataResetTest extends TestCase
 
         $this->actingAs($super)->post('/admin/system/reset/unlock', ['reset_password' => 'wrong-password'])
             ->assertSessionHasErrors('reset_password');
-        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA'])
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA', 'understood' => '1'])
             ->assertSessionHasErrors('reset_password');
 
         $this->actingAs($super)->post('/admin/system/reset/unlock', ['reset_password' => self::PASSWORD])->assertSessionHasNoErrors();
-        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'erase all data'])
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'erase all data', 'understood' => '1'])
             ->assertSessionHasErrors('confirmation');
+
+        // Right phrase, but the "I understand" box was not ticked.
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA'])
+            ->assertSessionHasErrors('understood');
 
         $this->assertSame(1, Lead::count());
         $this->assertSame([], app(DataResetService::class)->backups());
@@ -112,7 +116,7 @@ class DataResetTest extends TestCase
         Storage::disk('kyc')->put('hr/1/documents/aadhaar.pdf', 'kyc');
 
         $this->actingAs($super)->post('/admin/system/reset/unlock', ['reset_password' => self::PASSWORD]);
-        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA'])
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA', 'understood' => '1'])
             ->assertRedirect(route('admin.system.reset'))
             ->assertSessionHas('status');
 
@@ -148,7 +152,7 @@ class DataResetTest extends TestCase
         $this->get('/')->assertOk();
 
         // The unlock was used up.
-        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA'])
+        $this->actingAs($super)->delete('/admin/system/reset', ['confirmation' => 'ERASE ALL DATA', 'understood' => '1'])
             ->assertSessionHasErrors('reset_password');
     }
 }

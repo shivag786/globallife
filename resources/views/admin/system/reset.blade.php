@@ -89,8 +89,7 @@
                     <x-icon name="trash" class="w-4 h-4" /> Step 2 &middot; Erase
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.system.reset.erase') }}" class="d-flex flex-column gap-2"
-                          onsubmit="return confirm('Erase ALL business data now? A backup is taken first, but this cannot be undone from the panel.')">
+                    <form method="POST" action="{{ route('admin.system.reset.erase') }}" class="d-flex flex-column gap-2" id="erase-form">
                         @csrf @method('DELETE')
                         <label class="form-label small fw-medium mb-0" for="confirmation">
                             Type <code>{{ $phrase }}</code> to confirm
@@ -98,10 +97,52 @@
                         <input type="text" name="confirmation" id="confirmation" autocomplete="off" @disabled(! $unlocked)
                                class="form-control @error('confirmation') is-invalid @enderror" data-erase-phrase="{{ $phrase }}">
                         @error('confirmation') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        <button class="btn btn-danger fw-semibold" data-erase-button disabled>
+
+                        <label class="form-check small mt-1">
+                            <input type="checkbox" name="understood" value="1" class="form-check-input @error('understood') is-invalid @enderror"
+                                   @disabled(! $unlocked) data-erase-understood>
+                            <span class="form-check-label">
+                                I understand that all users, orders, leads, VIP pages and HR records will be permanently deleted.
+                            </span>
+                        </label>
+                        @error('understood') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+
+                        {{-- Opens the final confirmation window; that window submits the form. --}}
+                        <button type="button" class="btn btn-danger fw-semibold" data-erase-button disabled
+                                data-bs-toggle="modal" data-bs-target="#erase-confirm">
                             Back up &amp; erase all business data
                         </button>
                     </form>
+
+                    <div class="modal fade" id="erase-confirm" tabindex="-1" aria-labelledby="erase-confirm-title" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-danger">
+                                <div class="modal-header bg-danger text-white">
+                                    <h2 class="modal-title h5" id="erase-confirm-title">Are you absolutely sure?</h2>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cancel"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="fw-semibold mb-2">This will permanently delete:</p>
+                                    <ul class="small mb-3">
+                                        @foreach ($summary as $label => $count)
+                                            @if ($count > 0)
+                                                <li>{{ number_format($count) }} &times; {{ $label }}</li>
+                                            @endif
+                                        @endforeach
+                                        <li>and all other business records listed on this page.</li>
+                                    </ul>
+                                    <p class="small mb-0">
+                                        A backup is taken first, but the data cannot be brought back from the panel.
+                                        Everyone except Super Admins will be logged out.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, cancel</button>
+                                    <button type="submit" form="erase-form" class="btn btn-danger fw-semibold">Yes, erase everything</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,11 +185,17 @@
 
     <script>
         (function () {
+            // The button opens the final confirmation only once the phrase is
+            // typed exactly AND the "I understand" box is ticked.
             const input = document.querySelector('[data-erase-phrase]');
+            const tick = document.querySelector('[data-erase-understood]');
             const button = document.querySelector('[data-erase-button]');
-            if (!input || !button) return;
-            const sync = () => { button.disabled = input.disabled || input.value !== input.dataset.erasePhrase; };
+            if (!input || !tick || !button) return;
+            const sync = () => {
+                button.disabled = input.disabled || input.value !== input.dataset.erasePhrase || !tick.checked;
+            };
             input.addEventListener('input', sync);
+            tick.addEventListener('change', sync);
             sync();
         })();
     </script>
