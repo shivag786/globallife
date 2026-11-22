@@ -525,6 +525,27 @@ a state with no cities yet — can be typed in.
   when `[data-city-picker]` is present. Without JS the chips still post
   correctly, so a failed submit never loses what was entered.
 
+### Erase all data (Super Admin)
+
+`/admin/system/reset` (`Admin\DataResetController` + `DataResetService`,
+super_admin only, sidebar "Erase All Data"). Off unless the server `.env` has
+`DATA_RESET_PASSWORD` (≥ 8 chars, `config/data_reset.php`). Flow: that
+password unlocks the page for 10 minutes (session) → type `ERASE ALL DATA` →
+a full SQL backup is written to `storage/app/private/backups/reset-…/database.sql`
+→ business tables are emptied in **one transaction** → files nothing kept
+refers to (matched by file name against the kept tables) are **moved** into the
+backup's `files/` folder → caches cleared. Throttled (unlock 5/min, erase 3/min,
+separate counters).
+- Tables are classified in `DataResetService::WIPE / PARTIAL / KEEP`;
+  `DataResetTest` fails when a new table is not classified. **Add every new
+  table to one list.**
+- Kept: Super Admins (+ the acting user), roles/permissions, settings, products,
+  categories, brands, cities, VIP plans, commission rules, home sections, blog
+  posts (author re-pointed to the acting admin), events, testimonials, media,
+  HR setup tables. Everything else (users, orders, money, leads, VIP pages, HR
+  records, activity log, other sessions) is wiped; auto-increment restarts at 1.
+- Backups are listed on the page (download SQL / delete).
+
 ### Admin-set passwords
 
 `PUT admin/branch-managers/{branchManager}/password` is the **only** place in the

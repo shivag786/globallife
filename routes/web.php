@@ -326,6 +326,18 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
             Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
+            // Erase all business data (password from .env + typed phrase + backup first).
+            Route::get('system/reset', [App\Http\Controllers\Admin\DataResetController::class, 'show'])->name('system.reset');
+            Route::post('system/reset/unlock', [App\Http\Controllers\Admin\DataResetController::class, 'unlock'])
+                ->middleware('throttle:5,1,data-reset-unlock')->name('system.reset.unlock');
+            Route::post('system/reset/lock', [App\Http\Controllers\Admin\DataResetController::class, 'lock'])->name('system.reset.lock');
+            Route::delete('system/reset', [App\Http\Controllers\Admin\DataResetController::class, 'erase'])
+                ->middleware('throttle:3,1,data-reset-erase')->name('system.reset.erase');
+            Route::get('system/backups/{backup}', [App\Http\Controllers\Admin\DataResetController::class, 'download'])
+                ->where('backup', 'reset-\d{8}-\d{6}')->name('system.backups.download');
+            Route::delete('system/backups/{backup}', [App\Http\Controllers\Admin\DataResetController::class, 'destroyBackup'])
+                ->where('backup', 'reset-\d{8}-\d{6}')->name('system.backups.destroy');
+
             Route::get('revenue', [RevenueController::class, 'index'])->name('revenue.index');
 
             // VIP-member withdrawal queue + the manual "mark as paid" action.

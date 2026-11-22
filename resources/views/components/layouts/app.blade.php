@@ -80,6 +80,7 @@
                         <a href="{{ route('admin.settings.edit') }}">Site Settings</a>
                         <a href="{{ route('admin.settings.payment.edit') }}">Payment Gateway</a>
                         <a href="{{ route('admin.activity-logs.index') }}">Activity Log</a>
+                        <a href="{{ route('admin.system.reset') }}" class="text-danger">Erase All Data</a>
                     @endif
 
                     {{-- A Sub Admin granted the branch-managers module runs the
