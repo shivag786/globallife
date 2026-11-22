@@ -168,6 +168,16 @@ class User extends Authenticatable
     }
 
     /**
+     * HR record (when role is employee).
+     *
+     * @return HasOne<\App\Models\Hr\Employee, $this>
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(\App\Models\Hr\Employee::class);
+    }
+
+    /**
      * This user's public business microsite (when role is vip_member).
      *
      * @return HasOne<VipMicrosite, $this>

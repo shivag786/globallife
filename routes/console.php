@@ -29,3 +29,14 @@ Artisan::command('mail:test {to}', function (string $to) {
 
     return 0;
 })->purpose('Send a test email using the configured mailer');
+
+// HR: close yesterday's attendance (a check-in with no check-out becomes a
+// half day). Needs the scheduler cron on the server:
+//   * * * * * php /path/to/artisan schedule:run
+Artisan::command('hr:close-attendance {date?}', function (App\Services\Hr\AttendanceService $attendance, ?string $date = null) {
+    $day = $date ? Carbon\Carbon::parse($date) : Carbon\Carbon::yesterday();
+    $count = $attendance->closeDay($day);
+    $this->info("Closed {$count} open attendance record(s) for {$day->toDateString()}.");
+})->purpose('Mark check-ins without a check-out as half days');
+
+Illuminate\Support\Facades\Schedule::command('hr:close-attendance')->dailyAt('00:30');

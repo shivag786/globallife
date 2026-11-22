@@ -14,7 +14,18 @@ class PermissionMatrixService
      *
      * @var list<string>
      */
-    public const MODULES = ['blog', 'products', 'leads', 'events', 'media', 'testimonials', 'branch-managers'];
+    public const MODULES = [
+        'blog', 'products', 'leads', 'events', 'media', 'testimonials', 'branch-managers',
+        // Employee Management (HR). Company-wide, not part of the user hierarchy.
+        'employees', 'attendance', 'leaves', 'payroll', 'assets', 'expenses',
+    ];
+
+    /**
+     * The HR modules of the matrix, in sidebar order.
+     *
+     * @var list<string>
+     */
+    public const HR_MODULES = ['employees', 'attendance', 'leaves', 'payroll', 'assets', 'expenses'];
 
     /**
      * Actions assignable per module.
@@ -34,6 +45,15 @@ class PermissionMatrixService
      */
     private const MODULE_ACTIONS = [
         'branch-managers' => ['create', 'edit', 'delete'],
+        // `employees.edit` also covers the HR masters (departments, shifts,
+        // holidays, leave types, announcements).
+        'employees' => ['create', 'edit', 'export'],
+        'attendance' => ['edit', 'approve', 'export'],
+        'leaves' => ['approve'],
+        // `create` generates a draft payroll, `approve` finalises it.
+        'payroll' => ['create', 'approve', 'export'],
+        'assets' => ['create', 'edit', 'delete'],
+        'expenses' => ['approve'],
     ];
 
     /**

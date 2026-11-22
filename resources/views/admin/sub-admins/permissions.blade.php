@@ -38,10 +38,22 @@
             'events' => 'calendar',
             'media' => 'share',
             'testimonials' => 'star',
+            'employees' => 'identification',
+            'attendance' => 'check-circle',
+            'leaves' => 'calendar',
+            'payroll' => 'rupee',
+            'assets' => 'briefcase',
+            'expenses' => 'inbox',
         ];
 
         $moduleHints = [
             'branch-managers' => 'Create and run their own Branch Managers',
+            'employees' => 'HR: employee records; Edit also covers departments, shifts, holidays, leave types, announcements',
+            'attendance' => 'HR: day sheet and report; Approve = attendance corrections',
+            'leaves' => 'HR: approve or reject leave requests',
+            'payroll' => 'HR: Create = draft payroll and advances, Approve = finalize and email payslips',
+            'assets' => 'HR: company assets and who holds them',
+            'expenses' => 'HR: approve and pay expense claims',
         ];
     @endphp
 

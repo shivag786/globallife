@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 class PasswordController extends Controller
 {
     /** Roles that have a dashboard shell (layouts.app); anyone else gets the storefront. */
-    private const DASHBOARD_ROLES = ['super_admin', 'admin', 'sub_admin', 'branch_manager', 'commission_partner', 'vip_member'];
+    private const DASHBOARD_ROLES = ['super_admin', 'admin', 'sub_admin', 'branch_manager', 'commission_partner', 'vip_member', 'employee'];
 
     public function __construct(private readonly AccountPasswordService $passwords) {}
 

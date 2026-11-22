@@ -21,8 +21,8 @@
         @csrf
 
         <div>
-            <label for="email" class="d-block fs-sm fw-medium text-body-secondary">Email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+            <label for="email" class="d-block fs-sm fw-medium text-body-secondary">Email or Employee ID</label>
+            <input id="email" type="text" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
                    class="mt-1 d-block w-100 rounded-2">
         </div>
 

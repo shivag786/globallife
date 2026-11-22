@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\CommissionPartnerController as AdminCommissionPar
 use App\Http\Controllers\Admin\EditorUploadController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\HomeSectionController;
+use App\Http\Controllers\Admin\Hr;
+use App\Http\Controllers\Employee;
+use App\Http\Controllers\HrFileController;
 use App\Http\Controllers\Admin\LeadController as AdminLeadController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\PartnerPayoutController;
@@ -103,6 +106,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Private HR files (photo, documents, receipts): the employee themselves
+    // or HR with the matching module — HrFileController decides.
+    Route::get('/hr-files/photo/{employee}', [HrFileController::class, 'photo'])->name('hr.files.photo');
+    Route::get('/hr-files/document/{document}', [HrFileController::class, 'document'])->name('hr.files.document');
+    Route::get('/hr-files/receipt/{claim}', [HrFileController::class, 'receipt'])->name('hr.files.receipt');
+
     // Product-commission wallet — shared by VIP members, Commission Partners, Branch Managers.
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
 
@@ -172,6 +181,71 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::get('orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::patch('orders/{order}/delivery', [App\Http\Controllers\Admin\OrderController::class, 'updateDelivery'])->name('orders.update-delivery');
+
+        // Employee Management (HR). Open to Super Admin, Admin and any Sub Admin;
+        // each controller checks the HR module of the permission matrix
+        // (App\Support\HrAccess), so the role here only opens the door.
+        Route::prefix('hr')->name('hr.')->group(function () {
+            Route::get('/', [Hr\HrDashboardController::class, 'index'])->name('dashboard');
+
+            Route::get('employees/export', [Hr\EmployeeController::class, 'export'])->name('employees.export');
+            Route::resource('employees', Hr\EmployeeController::class)->except(['destroy']);
+            Route::put('employees/{employee}/password', [Hr\EmployeeController::class, 'resetPassword'])->name('employees.password');
+            Route::patch('employees/{employee}/status', [Hr\EmployeeController::class, 'updateStatus'])->name('employees.status');
+            Route::post('employees/{employee}/documents', [Hr\EmployeeController::class, 'storeDocument'])->name('employees.documents.store');
+            Route::delete('employees/{employee}/documents/{document}', [Hr\EmployeeController::class, 'destroyDocument'])->name('employees.documents.destroy');
+
+            Route::get('organisation', [Hr\OrganisationController::class, 'index'])->name('organisation.index');
+            Route::post('departments', [Hr\OrganisationController::class, 'storeDepartment'])->name('departments.store');
+            Route::put('departments/{department}', [Hr\OrganisationController::class, 'updateDepartment'])->name('departments.update');
+            Route::delete('departments/{department}', [Hr\OrganisationController::class, 'destroyDepartment'])->name('departments.destroy');
+            Route::post('designations', [Hr\OrganisationController::class, 'storeDesignation'])->name('designations.store');
+            Route::put('designations/{designation}', [Hr\OrganisationController::class, 'updateDesignation'])->name('designations.update');
+            Route::delete('designations/{designation}', [Hr\OrganisationController::class, 'destroyDesignation'])->name('designations.destroy');
+
+            Route::put('settings', [Hr\ShiftController::class, 'updateSettings'])->name('settings.update');
+            Route::resource('shifts', Hr\ShiftController::class)->only(['index', 'store', 'update', 'destroy']);
+            Route::resource('holidays', Hr\HolidayController::class)->only(['index', 'store', 'update', 'destroy']);
+            Route::resource('leave-types', Hr\LeaveTypeController::class)->only(['index', 'store', 'update'])
+                ->parameters(['leave-types' => 'leaveType']);
+            Route::resource('announcements', Hr\AnnouncementController::class)->only(['index', 'store', 'update', 'destroy']);
+
+            Route::get('attendance', [Hr\AttendanceController::class, 'index'])->name('attendance.index');
+            Route::post('attendance', [Hr\AttendanceController::class, 'store'])->name('attendance.store');
+            Route::get('attendance/report', [Hr\AttendanceController::class, 'report'])->name('attendance.report');
+            Route::get('attendance/report/export', [Hr\AttendanceController::class, 'export'])->name('attendance.export');
+            Route::get('attendance/corrections', [Hr\AttendanceController::class, 'regularizations'])->name('regularizations.index');
+            Route::patch('attendance/corrections/{regularization}/approve', [Hr\AttendanceController::class, 'approveRegularization'])->name('regularizations.approve');
+            Route::patch('attendance/corrections/{regularization}/reject', [Hr\AttendanceController::class, 'rejectRegularization'])->name('regularizations.reject');
+
+            Route::get('leaves', [Hr\LeaveRequestController::class, 'index'])->name('leaves.index');
+            Route::patch('leaves/{leaveRequest}/approve', [Hr\LeaveRequestController::class, 'approve'])->name('leaves.approve');
+            Route::patch('leaves/{leaveRequest}/reject', [Hr\LeaveRequestController::class, 'reject'])->name('leaves.reject');
+
+            Route::get('payroll/advances', [Hr\PayrollController::class, 'advances'])->name('advances.index');
+            Route::post('payroll/advances', [Hr\PayrollController::class, 'storeAdvance'])->name('advances.store');
+            Route::patch('payroll/advances/{advance}/close', [Hr\PayrollController::class, 'closeAdvance'])->name('advances.close');
+            Route::get('payroll/payslips/{payslip}', [Hr\PayrollController::class, 'payslip'])->name('payslips.show');
+            Route::patch('payroll/payslips/{payslip}', [Hr\PayrollController::class, 'adjust'])->name('payslips.adjust');
+            Route::get('payroll', [Hr\PayrollController::class, 'index'])->name('payroll.index');
+            Route::post('payroll', [Hr\PayrollController::class, 'store'])->name('payroll.store');
+            Route::get('payroll/{payroll}', [Hr\PayrollController::class, 'show'])->name('payroll.show');
+            Route::post('payroll/{payroll}/finalize', [Hr\PayrollController::class, 'finalize'])->name('payroll.finalize');
+            Route::get('payroll/{payroll}/export', [Hr\PayrollController::class, 'export'])->name('payroll.export');
+            Route::delete('payroll/{payroll}', [Hr\PayrollController::class, 'destroy'])->name('payroll.destroy');
+
+            Route::get('assets', [Hr\AssetController::class, 'index'])->name('assets.index');
+            Route::post('assets', [Hr\AssetController::class, 'store'])->name('assets.store');
+            Route::put('assets/{asset}', [Hr\AssetController::class, 'update'])->name('assets.update');
+            Route::delete('assets/{asset}', [Hr\AssetController::class, 'destroy'])->name('assets.destroy');
+            Route::post('assets/{asset}/assign', [Hr\AssetController::class, 'assign'])->name('assets.assign');
+            Route::post('assets/{asset}/return', [Hr\AssetController::class, 'returnAsset'])->name('assets.return');
+
+            Route::get('expenses', [Hr\ExpenseClaimController::class, 'index'])->name('expenses.index');
+            Route::patch('expenses/{claim}/approve', [Hr\ExpenseClaimController::class, 'approve'])->name('expenses.approve');
+            Route::patch('expenses/{claim}/reject', [Hr\ExpenseClaimController::class, 'reject'])->name('expenses.reject');
+            Route::patch('expenses/{claim}/paid', [Hr\ExpenseClaimController::class, 'markPaid'])->name('expenses.paid');
+        });
 
         // Businesses selling their own products: per-package selling mode
         // (catalogue on WhatsApp vs direct sell), the sales report, and paying
@@ -317,6 +391,32 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         // Acknowledge Super Admin's notes about this Branch Manager's partners.
         Route::patch('partner-updates/read', [App\Http\Controllers\Branch\PartnerUpdateController::class, 'markRead'])
             ->name('partner-updates.read');
+    });
+
+    // Employee self-service portal.
+    Route::middleware('role:employee')->prefix('employee')->name('employee.')->group(function () {
+        Route::get('/dashboard', [Employee\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [Employee\ProfileController::class, 'show'])->name('profile');
+
+        Route::get('/attendance', [Employee\AttendanceController::class, 'index'])->name('attendance.index');
+        Route::post('/attendance/check-in', [Employee\AttendanceController::class, 'checkIn'])->middleware('throttle:10,1')->name('attendance.check-in');
+        Route::post('/attendance/check-out', [Employee\AttendanceController::class, 'checkOut'])->middleware('throttle:10,1')->name('attendance.check-out');
+        Route::post('/attendance/correction', [Employee\AttendanceController::class, 'regularize'])->middleware('throttle:10,1')->name('attendance.regularize');
+
+        Route::get('/leaves', [Employee\LeaveController::class, 'index'])->name('leaves.index');
+        Route::post('/leaves', [Employee\LeaveController::class, 'store'])->middleware('throttle:20,1')->name('leaves.store');
+        Route::patch('/leaves/{leaveRequest}/cancel', [Employee\LeaveController::class, 'cancel'])->name('leaves.cancel');
+
+        // Reporting managers approve their direct reports' leave.
+        Route::get('/team-leaves', [Employee\LeaveController::class, 'team'])->name('team-leaves.index');
+        Route::patch('/team-leaves/{leaveRequest}/approve', [Employee\LeaveController::class, 'approve'])->name('team-leaves.approve');
+        Route::patch('/team-leaves/{leaveRequest}/reject', [Employee\LeaveController::class, 'reject'])->name('team-leaves.reject');
+
+        Route::get('/payslips', [Employee\PayslipController::class, 'index'])->name('payslips.index');
+        Route::get('/payslips/{payslip}', [Employee\PayslipController::class, 'show'])->name('payslips.show');
+
+        Route::get('/expenses', [Employee\ExpenseController::class, 'index'])->name('expenses.index');
+        Route::post('/expenses', [Employee\ExpenseController::class, 'store'])->middleware('throttle:20,1')->name('expenses.store');
     });
 
     Route::middleware('role:vip_member')->prefix('vip')->name('vip.')->group(function () {

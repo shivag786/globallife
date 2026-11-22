@@ -82,6 +82,41 @@
                         <a href="{{ route('admin.branch-managers.index') }}">Branch Managers</a>
                     @endif
 
+                    @if (\App\Support\HrAccess::any($user))
+                        @php $pm = \App\Services\PermissionMatrixService::class; @endphp
+                        <p class="admin-sidebar-heading">HR &amp; Payroll</p>
+                        <a href="{{ route('admin.hr.dashboard') }}">HR Dashboard</a>
+                        @if ($pm::userCanAccessModule($user, 'employees'))
+                            <a href="{{ route('admin.hr.employees.index') }}">Employees</a>
+                        @endif
+                        @if ($pm::userCanAccessModule($user, 'attendance'))
+                            <a href="{{ route('admin.hr.attendance.index') }}">Attendance</a>
+                            <a href="{{ route('admin.hr.attendance.report') }}">Attendance Report</a>
+                            <a href="{{ route('admin.hr.regularizations.index') }}">Attendance Corrections</a>
+                        @endif
+                        @if ($pm::userCanAccessModule($user, 'leaves'))
+                            <a href="{{ route('admin.hr.leaves.index') }}">Leave Requests</a>
+                        @endif
+                        @if ($pm::userCanAccessModule($user, 'payroll'))
+                            <a href="{{ route('admin.hr.payroll.index') }}">Payroll</a>
+                            <a href="{{ route('admin.hr.advances.index') }}">Salary Advances</a>
+                        @endif
+                        @if ($pm::userCanAccessModule($user, 'assets'))
+                            <a href="{{ route('admin.hr.assets.index') }}">Assets</a>
+                        @endif
+                        @if ($pm::userCanAccessModule($user, 'expenses'))
+                            <a href="{{ route('admin.hr.expenses.index') }}">Expense Claims</a>
+                        @endif
+                        @can('employees.edit')
+                            <p class="admin-sidebar-heading">HR Setup</p>
+                            <a href="{{ route('admin.hr.organisation.index') }}">Departments &amp; Designations</a>
+                            <a href="{{ route('admin.hr.shifts.index') }}">Shifts &amp; HR Settings</a>
+                            <a href="{{ route('admin.hr.holidays.index') }}">Holidays</a>
+                            <a href="{{ route('admin.hr.leave-types.index') }}">Leave Types</a>
+                            <a href="{{ route('admin.hr.announcements.index') }}">Announcements</a>
+                        @endcan
+                    @endif
+
                     <p class="admin-sidebar-heading">Content</p>
                     @if (\App\Services\PermissionMatrixService::userCanAccessModule($user, 'blog'))
                         <a href="{{ route('admin.blog.index') }}">Blog</a>
@@ -135,6 +170,24 @@
                     <a href="{{ route('manager.vip-members.index') }}">VIP Members</a>
                     <a href="{{ route('manager.revenue.index') }}">Revenue Tracking</a>
                     <a href="{{ route('wallet.index') }}">Product Wallet</a>
+                @endif
+
+                @if ($user->hasRole('employee'))
+                    @php
+                        $portalEmployee = $user->employee;
+                        $hasTeam = $portalEmployee && $portalEmployee->directReports()->exists();
+                    @endphp
+                    <a href="{{ route('employee.dashboard') }}">Dashboard</a>
+                    <a href="{{ route('employee.profile') }}">My Profile</a>
+                    <p class="admin-sidebar-heading">Work</p>
+                    <a href="{{ route('employee.attendance.index') }}">Attendance</a>
+                    <a href="{{ route('employee.leaves.index') }}">Leaves &amp; Holidays</a>
+                    @if ($hasTeam)
+                        <a href="{{ route('employee.team-leaves.index') }}">Team Leave Approvals</a>
+                    @endif
+                    <p class="admin-sidebar-heading">Money</p>
+                    <a href="{{ route('employee.payslips.index') }}">Payslips</a>
+                    <a href="{{ route('employee.expenses.index') }}">Expense Claims</a>
                 @endif
 
                 @if ($user->hasRole('vip_member'))
