@@ -123,13 +123,8 @@
 
     <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
         <div class="container-lg py-2 d-flex align-items-center justify-content-between gap-3">
-            <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
-               style="color: var(--color-brand-800)">
-                @if (! empty($settings['site_logo']))
-                    <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="site-logo">
-                @else
-                    {{ $siteName }}
-                @endif
+            <a href="{{ url('/') }}" class="text-decoration-none min-w-0" aria-label="{{ $siteName }} home">
+                <x-brand-logo />
             </a>
             <nav class="d-none d-md-flex align-items-center gap-4 fw-medium">
                 @foreach ($navItems as $item)

@@ -53,14 +53,8 @@
                     @include('partials.cart-icon')
                 </div>
             @else
-                <a href="{{ url('/') }}"
-                   class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
-                   style="color: var(--color-brand-800)">
-                    @if (! empty($settings['site_logo']))
-                        <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="site-logo">
-                    @else
-                        {{ $siteName }}
-                    @endif
+                <a href="{{ url('/') }}" class="text-decoration-none min-w-0" aria-label="{{ $siteName }} home">
+                    <x-brand-logo />
                 </a>
                 <div class="d-flex align-items-center gap-3 gap-sm-4">
                     <a href="{{ route('products.index') }}"

@@ -23,6 +23,8 @@ class UpdateSettingsRequest extends FormRequest
             'site_title' => ['nullable', 'string', 'max:255'],
             'site_tagline' => ['nullable', 'string', 'max:255'],
             'site_logo' => ['nullable', 'image', 'max:2048'],
+            // Emblem only (no text), shown beside the site name in every header.
+            'site_logo_icon' => ['nullable', 'image', 'max:1024'],
             'favicon' => ['nullable', 'image', 'max:1024'],
 
             // Typography — only fonts from the curated list.

@@ -60,7 +60,11 @@
                         </div>
                         <div class="col-md-6">
                             <x-forms.file-input name="site_logo" label="Logo" :current="$settings['site_logo'] ?? null"
-                                                 help="PNG or SVG with transparent background works best. Max 2MB." />
+                                                 help="Full logo (used on payslips and other print pages). PNG or SVG with transparent background works best. Max 2MB." />
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.file-input name="site_logo_icon" label="Header logo icon (emblem only)" :current="$settings['site_logo_icon'] ?? null"
+                                                 help="Just the emblem, without the company name. Shown large in the website and dashboard headers, with the Site Title written beside it. Leave empty to use the built-in GLW emblem. Max 1MB." />
                         </div>
                         <div class="col-md-6">
                             <x-forms.file-input name="favicon" label="Favicon" :current="$settings['favicon'] ?? null"

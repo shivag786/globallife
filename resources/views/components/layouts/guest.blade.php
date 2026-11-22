@@ -10,7 +10,7 @@
 <body class="bg-body-tertiary min-vh-100 d-flex align-items-center justify-content-center px-3 py-4">
     <div class="w-100" style="max-width: 28rem">
         <div class="text-center mb-4">
-            <a href="{{ url('/') }}" class="fs-3 fw-bold text-body text-decoration-none">{{ config('app.name') }}</a>
+            <a href="{{ url('/') }}" class="text-decoration-none d-inline-block"><x-brand-logo class="brand-logo--stacked" /></a>
         </div>
         <div class="card shadow-sm border-0">
             <div class="card-body p-4 p-sm-5">

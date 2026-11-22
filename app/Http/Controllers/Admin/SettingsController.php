@@ -27,7 +27,7 @@ class SettingsController extends Controller
         ]);
     }
 
-    private const FILE_KEYS = ['site_logo', 'favicon', 'og_image'];
+    private const FILE_KEYS = ['site_logo', 'site_logo_icon', 'favicon', 'og_image'];
 
     public function update(UpdateSettingsRequest $request): RedirectResponse
     {

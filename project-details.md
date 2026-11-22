@@ -898,6 +898,13 @@ from its digits), `fssai_license` (shown as "FSSAI Lic. No. …" in the footer t
 badges). Settings are cached forever under `site-settings`; saving the
 settings page clears it, a direct SQL edit does not.
 
+**Header logo** (`x-brand-logo`): every header (public, shop/cart, dashboard
+sidebar, login) shows the emblem large with `site_title` written beside it,
+because the full logo's own company-name line is unreadable at header size.
+Emblem = Site Settings → "Header logo icon" (`site_logo_icon`), else the
+shipped `public/images/logo-emblem.png`, else the full `site_logo` alone. The
+full `site_logo` is still used on payslips and the landing pages.
+
 **Typography settings** (Admin → Site Settings → Typography): `font_body`,
 `font_heading`, `font_display` (picked from the curated Google Fonts list in
 `TypographyService::FONTS` — free text is rejected) and `font_size_base` (14–18px).

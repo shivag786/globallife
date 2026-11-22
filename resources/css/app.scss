@@ -1566,3 +1566,58 @@ $member-rail-width: 13.5rem;
         box-shadow: inset 3px 0 0 var(--color-brand-800);
     }
 }
+
+// Brand mark in every header: the GLW emblem shown large, with the site name
+// written beside it (the full logo image's own text is too small to read in a
+// header). See components/brand-logo.blade.php.
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: .625rem;
+    min-width: 0;
+}
+
+.brand-logo__icon {
+    height: 3.25rem;
+    width: auto;
+    flex-shrink: 0;
+
+    @media (min-width: 768px) { height: 4rem; }
+    @media (min-width: 1200px) { height: 4.5rem; }
+}
+
+.brand-logo__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.1;
+    font-size: 1.125rem;
+    color: var(--color-brand-800);
+    // Long names wrap onto two lines instead of pushing the header icons off.
+    max-width: 9.5rem;
+
+    @media (min-width: 400px) { max-width: 12rem; }
+    @media (min-width: 768px) { font-size: 1.375rem; max-width: 14rem; }
+    @media (min-width: 1200px) { font-size: 1.625rem; max-width: none; white-space: nowrap; }
+}
+
+// Dashboard sidebar (dark background, 16rem wide).
+.brand-logo--dark {
+    gap: .5rem;
+
+    .brand-logo__icon { height: 3rem; }
+    .brand-logo__name {
+        color: #fff;
+        font-size: 1.125rem;
+        max-width: 10rem;
+        white-space: normal;
+    }
+}
+
+// Login / forgot-password card: emblem on top, name below.
+.brand-logo--stacked {
+    flex-direction: column;
+    gap: .375rem;
+
+    .brand-logo__icon { height: 5rem; }
+    .brand-logo__name { max-width: none; font-size: 1.5rem; text-align: center; }
+}

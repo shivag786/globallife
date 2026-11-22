@@ -37,13 +37,9 @@
 
     <aside id="admin-sidebar" class="admin-sidebar">
         <div class="d-flex align-items-center justify-content-between gap-2 px-4 py-3 border-bottom border-light border-opacity-10">
-            <span class="d-flex align-items-center gap-2 min-w-0 fs-5 fw-bold text-white">
-                @if (! empty($adminSettings['site_logo']))
-                    <img src="{{ asset('storage/'.$adminSettings['site_logo']) }}" alt="{{ $adminSiteName }}"
-                         style="height: 1.75rem; width: auto">
-                @endif
-                <span class="text-truncate">{{ $adminSiteName }}</span>
-            </span>
+            <a href="{{ route('dashboard') }}" class="text-decoration-none min-w-0 p-0 bg-transparent" aria-label="Dashboard">
+                <x-brand-logo variant="dark" />
+            </a>
             <button type="button" class="btn btn-sm btn-link text-white-50 p-0 d-lg-none"
                     data-sidebar-close aria-label="Close menu">
                 <x-icon name="x-mark" class="w-5 h-5" />
