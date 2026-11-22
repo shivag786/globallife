@@ -221,7 +221,12 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     });
 })();
 
-// Chatbot: a small scripted (non-AI) lead-capture flow.
+// Chat assistant (lead capture).
+// Step 1 is always a button: the visitor picks what they are interested in.
+// Only then does the text box open, for name → mobile → email → city, each
+// checked before moving on; the lead is then saved through /enquiry. The box
+// stays locked (with a hint) whenever typing is not expected, so nothing a
+// visitor types is ever silently thrown away.
 (function () {
     const root = document.getElementById('chatbot-root');
     if (!root) return;
@@ -236,9 +241,26 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     const messagesEl = document.getElementById('chatbot-messages');
     const form = document.getElementById('chatbot-form');
     const input = document.getElementById('chatbot-input');
+    const sendBtn = form?.querySelector('button[type="submit"]');
 
-    let state = { step: 'menu', service: null, city: null, name: null, email: null };
+    const STEPS = {
+        name: { ask: "Great! What's your name?", placeholder: 'Your full name', type: 'text' },
+        phone: { ask: 'Thanks! Your 10-digit mobile number?', placeholder: 'e.g. 9876543210', type: 'tel' },
+        email: { ask: 'And your email address?', placeholder: 'you@example.com', type: 'email' },
+        city: { ask: 'Last one — which city are you in?', placeholder: 'Your city', type: 'text' },
+    };
+    const ORDER = ['name', 'phone', 'email', 'city'];
+
+    let state;
     let started = false;
+
+    function reset() {
+        state = { step: 'menu', service: null, name: null, phone: null, email: null, city: null };
+    }
+
+    function scrollDown() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
     function addMessage(text, from) {
         const bubble = document.createElement('div');
@@ -248,45 +270,146 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
         bubble.style.maxWidth = '85%';
         bubble.textContent = text;
         messagesEl.appendChild(bubble);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
+        scrollDown();
     }
 
-    function addServiceButtons() {
+    // Lock or open the text box. Locked = disabled with a hint saying why.
+    function setInput(open, placeholder, type) {
+        if (!input) return;
+        input.disabled = !open;
+        if (sendBtn) sendBtn.disabled = !open;
+        input.type = type || 'text';
+        input.placeholder = placeholder || '';
+        if (open) input.focus();
+    }
+
+    function addButtons(options, onPick) {
         const wrap = document.createElement('div');
         wrap.className = 'd-flex flex-wrap gap-2';
-        services.forEach((service) => {
+        options.forEach((option) => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.textContent = service.label;
+            btn.textContent = option.label;
             btn.className = 'btn btn-sm btn-outline-brand rounded-pill';
             btn.addEventListener('click', () => {
                 wrap.remove();
-                handleServiceChoice(service.label);
+                onPick(option);
             });
             wrap.appendChild(btn);
         });
         messagesEl.appendChild(wrap);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
+        scrollDown();
     }
 
-    function handleServiceChoice(label) {
-        state.service = label;
-        addMessage(label, 'user');
-        state.step = 'city';
-        addMessage('Great choice! Which city are you in?', 'bot');
+    function showMenu() {
+        state.step = 'menu';
+        addMessage("Hi! I'm the Global Life assistant. What are you interested in? Please pick one:", 'bot');
+        addButtons(services, (service) => {
+            state.service = service.label;
+            addMessage(service.label, 'user');
+            ask('name');
+        });
+        setInput(false, 'Please choose an option above 👆');
+    }
+
+    function ask(step) {
+        state.step = step;
+        addMessage(STEPS[step].ask, 'bot');
+        setInput(true, STEPS[step].placeholder, STEPS[step].type);
+    }
+
+    // Returns an error message, or null when the answer is fine. Also stores
+    // the cleaned value.
+    function accept(step, raw) {
+        const value = raw.trim();
+
+        if (step === 'name') {
+            if (value.length < 2) return 'Please enter your name.';
+            state.name = value.slice(0, 150);
+        } else if (step === 'phone') {
+            const digits = value.replace(/\D/g, '').replace(/^(91|0)(?=\d{10}$)/, '');
+            if (!/^[6-9]\d{9}$/.test(digits)) return 'That does not look like a valid 10-digit mobile number. Please try again.';
+            state.phone = digits;
+        } else if (step === 'email') {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) return 'Please enter a valid email, e.g. name@gmail.com.';
+            state.email = value.slice(0, 255);
+        } else if (step === 'city') {
+            if (value.length < 2) return 'Please enter your city.';
+            state.city = value.slice(0, 100);
+        }
+
+        return null;
+    }
+
+    function finish(successText) {
+        state.step = 'done';
+        addMessage(successText, 'bot');
+        setInput(false, 'Thank you!');
+        addButtons([{ label: 'Start a new enquiry' }], () => {
+            reset();
+            showMenu();
+        });
+    }
+
+    function submitLead() {
+        state.step = 'sending';
+        setInput(false, 'Sending…');
+        addMessage('Thanks! Sending your details now…', 'bot');
+
+        fetch(enquiryUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({
+                name: state.name,
+                phone: state.phone,
+                email: state.email,
+                city: state.city,
+                source: 'chatbot',
+                message: `Interested in: ${state.service}`,
+            }),
+        })
+            .then(async (response) => {
+                if (response.ok) {
+                    finish("You're all set — our team will call you shortly. 🎉");
+                    return;
+                }
+
+                // Validation error: ask that question again.
+                if (response.status === 422) {
+                    const body = await response.json().catch(() => ({}));
+                    const field = ORDER.find((f) => body.errors && body.errors[f]);
+                    if (field) {
+                        addMessage(body.errors[field][0], 'bot');
+                        ask(field);
+                        return;
+                    }
+                }
+
+                return Promise.reject(response);
+            })
+            .catch(() => {
+                state.step = 'error';
+                addMessage('Sorry, that did not go through. Please try again.', 'bot');
+                setInput(false, '');
+                addButtons([{ label: 'Try again' }], submitLead);
+            });
     }
 
     function startConversation() {
         if (started) return;
         started = true;
-        addMessage("Hi! I'm the Global Life assistant. What are you interested in?", 'bot');
-        addServiceButtons();
+        reset();
+        showMenu();
     }
 
     function openChat() {
         panel?.classList.remove('d-none');
         startConversation();
-        input?.focus();
+        if (!input?.disabled) input?.focus();
     }
 
     function closeChat() {
@@ -298,58 +421,25 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     });
     closeBtn?.addEventListener('click', closeChat);
 
-    function submitLead() {
-        addMessage("Thanks! Sending that over now...", 'bot');
-
-        fetch(enquiryUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify({
-                name: state.name,
-                email: state.email,
-                city: state.city,
-                source: 'chatbot',
-                message: `Interested in: ${state.service}`,
-            }),
-        })
-            .then((response) => (response.ok ? response.json() : Promise.reject(response)))
-            .then(() => {
-                addMessage("You're all set — a team member will reach out shortly. 🎉", 'bot');
-                state.step = 'done';
-            })
-            .catch(() => {
-                addMessage('Something went wrong sending that. Please try the Contact page instead.', 'bot');
-                state.step = 'done';
-            });
-    }
-
     form?.addEventListener('submit', (event) => {
         event.preventDefault();
-        const value = input.value.trim();
-        if (!value || state.step === 'done' || state.step === 'menu') {
-            input.value = '';
+        if (!ORDER.includes(state.step)) return;
+
+        const value = input.value;
+        if (!value.trim()) return;
+
+        addMessage(value.trim(), 'user');
+        input.value = '';
+
+        const error = accept(state.step, value);
+        if (error) {
+            addMessage(error, 'bot');
+            input.focus();
             return;
         }
 
-        addMessage(value, 'user');
-        input.value = '';
-
-        if (state.step === 'city') {
-            state.city = value;
-            state.step = 'name';
-            addMessage("And what's your name?", 'bot');
-        } else if (state.step === 'name') {
-            state.name = value;
-            state.step = 'email';
-            addMessage('Last thing — your email address?', 'bot');
-        } else if (state.step === 'email') {
-            state.email = value;
-            submitLead();
-        }
+        const next = ORDER[ORDER.indexOf(state.step) + 1];
+        next ? ask(next) : submitLead();
     });
 })();
 

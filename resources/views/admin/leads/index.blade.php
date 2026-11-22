@@ -15,8 +15,12 @@
             </thead>
             <tbody>
                 @forelse ($leads as $lead)
-                    <tr class="border-top">
-                        <td class="px-4 py-3 fw-medium">{{ $lead->name }}</td>
+                    <tr @class(['border-top', 'bg-danger-subtle text-danger-emphasis' => $lead->isNew()])>
+                        <td class="px-4 py-3 fw-medium">
+                            @if ($lead->isNew()) <span class="badge bg-danger me-1">NEW</span> @endif
+                            {{ $lead->name }}
+                            <div class="fs-xs text-secondary fw-normal"><x-ist :value="$lead->created_at" format="d M, h:i A" /></div>
+                        </td>
                         <td class="px-4 py-3">
                             <div>{{ $lead->email }}</div>
                             @if ($lead->phone)<div class="fs-xs text-secondary">{{ $lead->phone }}</div>@endif

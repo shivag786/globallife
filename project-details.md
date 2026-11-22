@@ -685,6 +685,18 @@ autofill often fires only `change`.
   URL can be another tab, or an image served through `storage.file`.
 - Neither bookkeeping field is stored; `product_id` is dropped unless
   `source` is `product`.
+- **New-lead alert**: `leads.seen_at` NULL = new. Everyone who can access the
+  `leads` module (Super Admin, Admin, Sub Admins granted it) gets
+  `partials.admin-lead-alert` in `layouts.app`: it polls `admin.leads.poll`
+  every 15s and plays a sound, shows a red toast and updates the red count on
+  the **Leads** link (moved to the top of the sidebar). The admin dashboard
+  lists unseen leads first in a red "New Leads" panel (refreshed in place).
+  The leads list shows unseen first with a red NEW badge. Opening a lead
+  (`LeadController::show`) sets `seen_at`. Browsers play sound only after the
+  admin has clicked once on the page.
+- **Chatbot** (`x-chatbot`, script in `resources/js/app.js`): step 1 is always
+  a button (the text box is locked until then), then name → mobile → email →
+  city, each validated in the browser; a server 422 re-asks that question.
 
 ### Form and permission UI conventions
 

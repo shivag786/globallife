@@ -47,8 +47,15 @@ class DashboardController extends Controller
             ]
             : null;
 
+        // Unseen leads, shown in red at the very top of the dashboard.
+        $newLeads = PermissionMatrixService::userCanAccessModule($user, 'leads')
+            ? app(\App\Repositories\LeadRepository::class)->latestUnseen(10)
+            : null;
+
         return view('dashboards.admin', [
             'user' => $user,
+            'newLeads' => $newLeads,
+            'unseenLeadCount' => $newLeads !== null ? Lead::unseen()->count() : 0,
             'stats' => $stats,
             'overview' => $isAdmin ? $this->overview() : null,
             'isSuperAdmin' => $user->hasRole('super_admin'),

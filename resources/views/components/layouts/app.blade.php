@@ -2,6 +2,10 @@
     $user = auth()->user();
     $adminSettings = app(\App\Services\SettingsService::class)->all();
     $adminSiteName = $adminSettings['site_title'] ?? config('app.name');
+    // Super Admin, Admin and Sub Admins granted the leads module.
+    $canSeeLeads = $user->hasAnyRole(['super_admin', 'admin', 'sub_admin'])
+        && \App\Services\PermissionMatrixService::userCanAccessModule($user, 'leads');
+    $unseenLeads = $canSeeLeads ? \App\Models\Lead::unseen()->count() : 0;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -48,6 +52,15 @@
         <nav class="px-3 py-3 small">
                 @if ($user->hasAnyRole(['super_admin', 'admin', 'sub_admin']))
                     <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+
+                    {{-- Leads sit at the top with a red count of unseen leads,
+                         kept live by partials.admin-lead-alert. --}}
+                    @if ($canSeeLeads)
+                        <a href="{{ route('admin.leads.index') }}" class="d-flex align-items-center justify-content-between">
+                            <span>Leads</span>
+                            <span data-lead-badge class="badge rounded-pill text-bg-danger {{ $unseenLeads > 0 ? '' : 'd-none' }}">{{ $unseenLeads > 99 ? '99+' : $unseenLeads }}</span>
+                        </a>
+                    @endif
 
                     @if ($user->hasRole('super_admin'))
                         <p class="admin-sidebar-heading">Website</p>
@@ -132,9 +145,6 @@
                     @endif
                     @if (\App\Services\PermissionMatrixService::userCanAccessModule($user, 'media'))
                         <a href="{{ route('admin.media.index') }}">Media</a>
-                    @endif
-                    @if (\App\Services\PermissionMatrixService::userCanAccessModule($user, 'leads'))
-                        <a href="{{ route('admin.leads.index') }}">Leads</a>
                     @endif
                     @if ($user->hasAnyRole(['super_admin', 'admin']))
                         <a href="{{ route('admin.orders.index') }}" data-order-nav
@@ -283,6 +293,9 @@
 
     @if ($user->hasAnyRole(['super_admin', 'admin']))
         @include('partials.admin-order-alert')
+    @endif
+    @if ($canSeeLeads)
+        @include('partials.admin-lead-alert')
     @endif
 </body>
 </html>

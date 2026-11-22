@@ -171,6 +171,8 @@ Route::middleware(['auth', 'active_account'])->group(function () {
         Route::delete('media/{mediaItem}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
         Route::patch('media/{mediaItem}/toggle-status', [AdminMediaController::class, 'toggleStatus'])->name('media.toggle-status');
 
+        // New-lead alert poll; before the resource so "poll" is not read as a lead id.
+        Route::get('leads/poll', [AdminLeadController::class, 'poll'])->name('leads.poll');
         Route::resource('leads', AdminLeadController::class)->only(['index', 'show', 'update', 'destroy']);
 
         // Order management — view orders, update status (delivering credits commission).

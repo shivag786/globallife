@@ -11,9 +11,53 @@ use Illuminate\Support\Str;
 
 class LeadRepository
 {
+    /** New (unseen) leads first, then newest first. */
     public function allPaginated(int $perPage = 20): LengthAwarePaginator
     {
-        return Lead::with(['interestedPlan', 'assignedManager', 'product'])->latest()->paginate($perPage);
+        return Lead::with(['interestedPlan', 'assignedManager', 'product'])
+            ->orderByRaw('seen_at IS NULL DESC')
+            ->latest()
+            ->latest('id')
+            ->paginate($perPage);
+    }
+
+    public function unseenCount(): int
+    {
+        return Lead::unseen()->count();
+    }
+
+    /**
+     * Unseen leads for the dashboard, newest first.
+     *
+     * @return \Illuminate\Support\Collection<int, Lead>
+     */
+    public function latestUnseen(int $limit = 10)
+    {
+        return Lead::unseen()->with('product')->latest()->latest('id')->limit($limit)->get();
+    }
+
+    /**
+     * What the admin lead alert polls for: leads created after `$sinceId`.
+     *
+     * @return array{new: int, latest_id: int, unseen: int, names: list<string>}
+     */
+    public function pollSince(int $sinceId): array
+    {
+        $fresh = Lead::where('id', '>', $sinceId)->orderBy('id')->get(['id', 'name']);
+
+        return [
+            'new' => $fresh->count(),
+            'latest_id' => (int) ($fresh->max('id') ?? $sinceId),
+            'unseen' => $this->unseenCount(),
+            'names' => $fresh->pluck('name')->take(3)->values()->all(),
+        ];
+    }
+
+    public function markSeen(Lead $lead): void
+    {
+        if ($lead->seen_at === null) {
+            $lead->forceFill(['seen_at' => now()])->saveQuietly();
+        }
     }
 
     public function forManager(User $manager, int $perPage = 20): LengthAwarePaginator

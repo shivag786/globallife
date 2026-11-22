@@ -26,10 +26,10 @@
 
         <div id="chatbot-messages" class="flex-grow-1 overflow-y-auto p-4 d-flex flex-column gap-3 fs-sm bg-cream"></div>
 
-        <form id="chatbot-form" data-no-loader="true" class="border-top p-3 d-flex gap-2 flex-shrink-0">
-            <input type="text" id="chatbot-input" autocomplete="off"
+        <form id="chatbot-form" data-no-loader="true" novalidate class="border-top p-3 d-flex gap-2 flex-shrink-0">
+            <input type="text" id="chatbot-input" autocomplete="off" disabled
                    class="flex-grow-1 rounded-pill fs-sm"
-                   placeholder="Type your message...">
+                   placeholder="Please choose an option above">
             <button type="submit" class="btn btn-brand btn-sm rounded-pill">
                 Send
             </button>

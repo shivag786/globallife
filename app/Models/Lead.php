@@ -17,9 +17,30 @@ class Lead extends Model
 {
     use HasFactory, LogsActivity;
 
+    protected function casts(): array
+    {
+        return ['seen_at' => 'datetime'];
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logOnlyDirty()->dontSubmitEmptyLogs();
+        return LogOptions::defaults()->logOnlyDirty()->logExcept(['seen_at'])->dontSubmitEmptyLogs();
+    }
+
+    /**
+     * Leads no admin has opened yet.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Lead>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<Lead>
+     */
+    public function scopeUnseen(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->whereNull('seen_at');
+    }
+
+    public function isNew(): bool
+    {
+        return $this->seen_at === null;
     }
 
     /**

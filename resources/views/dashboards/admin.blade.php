@@ -25,6 +25,16 @@
         @endif
     </x-dash-hero>
 
+    {{-- New leads first, in red. The lead alert refreshes this block in place
+         when one arrives (data-reload-on-lead), so the list is always current. --}}
+    @if ($newLeads !== null)
+        <div data-reload-on-lead>
+            @if ($newLeads->isNotEmpty())
+                @include('partials.new-leads-panel', ['leads' => $newLeads, 'count' => $unseenLeadCount])
+            @endif
+        </div>
+    @endif
+
     @if ($overview)
         @php
             $money = fn ($n) => '₹'.number_format((float) $n);
