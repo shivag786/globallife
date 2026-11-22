@@ -19,9 +19,14 @@ use Throwable;
  */
 class AccountMailService
 {
-    public function accountCreated(User $user, ?User $createdBy = null): void
+    /**
+     * Welcome email with the login email and password.
+     *
+     * @param  string|null  $password  the plain password the account was created with
+     */
+    public function accountCreated(User $user, ?User $createdBy = null, ?string $password = null): void
     {
-        $this->safely($user, new AccountCreatedNotification($createdBy?->name));
+        $this->safely($user, new AccountCreatedNotification($createdBy?->name, $password));
     }
 
     /**

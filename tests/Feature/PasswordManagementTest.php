@@ -187,7 +187,43 @@ class PasswordManagementTest extends TestCase
         ], 10, $bm);
 
         Notification::assertSentTo($partner, AccountCreatedNotification::class,
-            fn ($n) => $n->createdBy === $bm->name);
+            fn ($n) => $n->createdBy === $bm->name && $n->password === 'secret-123');
+    }
+
+    public function test_the_welcome_email_shows_the_login_email_and_password(): void
+    {
+        $user = $this->userWithRole('sub_admin');
+
+        $mail = (new AccountCreatedNotification('Super Admin', 'Pass#2026x'))->toMail($user);
+        $html = (string) view($mail->view, $mail->viewData);
+
+        $this->assertStringContainsString($user->email, $html);
+        $this->assertStringContainsString('Pass#2026x', $html);
+    }
+
+    public function test_every_admin_created_role_gets_its_password_by_email(): void
+    {
+        $owner = User::factory()->create(['status' => 'active']);
+        $owner->assignRole('super_admin');
+
+        $subAdmin = app(\App\Services\SubAdminService::class)->createSubAdmin(
+            ['name' => 'Sub', 'email' => 'sub@example.com', 'password' => 'sub-pass-1'], $owner);
+        $manager = app(\App\Services\BranchManagerService::class)->createBranchManager(
+            ['name' => 'BM', 'email' => 'bm@example.com', 'password' => 'bm-pass-12'], [], 30, $owner);
+
+        Notification::assertSentTo($subAdmin, AccountCreatedNotification::class, fn ($n) => $n->password === 'sub-pass-1');
+        Notification::assertSentTo($manager, AccountCreatedNotification::class, fn ($n) => $n->password === 'bm-pass-12');
+    }
+
+    public function test_a_customer_registering_at_checkout_gets_a_welcome_email_with_password(): void
+    {
+        $this->post('/checkout/register', [
+            'name' => 'Customer', 'email' => 'cust@example.com', 'mobile' => '9876543210',
+            'password' => 'cust-pass-1', 'password_confirmation' => 'cust-pass-1',
+        ])->assertSessionHasNoErrors();
+
+        $customer = User::where('email', 'cust@example.com')->firstOrFail();
+        Notification::assertSentTo($customer, AccountCreatedNotification::class, fn ($n) => $n->password === 'cust-pass-1');
     }
 
     public function test_account_emails_render(): void

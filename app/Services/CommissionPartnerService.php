@@ -39,7 +39,7 @@ class CommissionPartnerService
             return $partner;
         });
 
-        $this->mail->accountCreated($partner, $branchManager);
+        $this->mail->accountCreated($partner, $branchManager, $data['password']);
 
         return $partner;
     }

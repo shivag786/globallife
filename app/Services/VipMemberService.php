@@ -74,7 +74,7 @@ class VipMemberService
         });
 
         // After commit, so a failed activation never sends a welcome email.
-        $this->mail->accountCreated($member, $commissionPartner);
+        $this->mail->accountCreated($member, $commissionPartner, $data['password']);
 
         return $member;
     }

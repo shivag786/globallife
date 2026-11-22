@@ -44,7 +44,7 @@ class BranchManagerService
         });
 
         // After commit: never email about an account that was rolled back.
-        $this->mail->accountCreated($manager, $owner);
+        $this->mail->accountCreated($manager, $owner, $data['password']);
 
         return $manager;
     }

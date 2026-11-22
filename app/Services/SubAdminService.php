@@ -39,7 +39,7 @@ class SubAdminService
             return $subAdmin;
         });
 
-        $this->mail->accountCreated($subAdmin, $owner);
+        $this->mail->accountCreated($subAdmin, $owner, $data['password']);
 
         return $subAdmin;
     }

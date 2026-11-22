@@ -6,6 +6,7 @@ use App\Mail\OrderPlacedMail;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\AccountMailService;
 use App\Services\CartService;
 use App\Services\OrderService;
 use App\Services\PaymentGatewayService;
@@ -71,6 +72,10 @@ class CheckoutController extends Controller
 
         Role::findOrCreate('customer', 'web');
         $user->assignRole('customer');
+
+        // Welcome email with their login email and password (a failed send is
+        // logged, never blocks checkout).
+        app(AccountMailService::class)->accountCreated($user, null, $data['password']);
 
         Auth::login($user);
         $request->session()->regenerate();
