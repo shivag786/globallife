@@ -21,11 +21,14 @@
         @if ($product->discountPercentage())
             <span class="position-absolute top-3 start-3 fs-xs fw-bold text-white px-2 py-1 rounded-pill bg-success shadow-sm">{{ $product->discountPercentage() }}% OFF</span>
         @endif
-        <form method="POST" action="{{ route('wishlist.add') }}" class="position-absolute top-3 end-3">
+        @php $inWishlist = app(\App\Services\WishlistService::class)->has($product->id); @endphp
+        <form method="POST" action="{{ route($inWishlist ? 'wishlist.remove' : 'wishlist.add') }}" class="position-absolute top-3 end-3">
             @csrf
+            @if ($inWishlist) @method('DELETE') @endif
             <input type="hidden" name="product_id" value="{{ $product->id }}">
-            <button type="submit" class="btn btn-link p-0 text-decoration-none w-9 h-9 rounded-pill bg-white bg-opacity-100 shadow-sm d-flex align-items-center justify-content-center text-secondary" aria-label="Save to wishlist">
-                <x-icon name="heart" class="w-4 h-4" />
+            <button type="submit" class="btn btn-link p-0 text-decoration-none w-9 h-9 rounded-pill bg-white bg-opacity-100 shadow-sm d-flex align-items-center justify-content-center {{ $inWishlist ? 'text-danger' : 'text-secondary' }}"
+                    aria-label="{{ $inWishlist ? 'Remove from wishlist' : 'Save to wishlist' }}" title="{{ $inWishlist ? 'Remove from wishlist' : 'Save to wishlist' }}">
+                <x-icon name="heart" class="w-4 h-4" :filled="$inWishlist" />
             </button>
         </form>
     </div>

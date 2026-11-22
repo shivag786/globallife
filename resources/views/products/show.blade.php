@@ -113,6 +113,21 @@
                     </div>
                 @endif
 
+                {{-- Wishlist toggle --}}
+                @php $inWishlist = app(\App\Services\WishlistService::class)->has($product->id); @endphp
+                <form method="POST" action="{{ route($inWishlist ? 'wishlist.remove' : 'wishlist.add') }}" class="mt-3">
+                    @csrf
+                    @if ($inWishlist) @method('DELETE') @endif
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <button type="submit" class="btn btn-link p-0 text-decoration-none d-inline-flex align-items-center gap-2 fw-medium {{ $inWishlist ? 'text-danger' : 'text-secondary' }}">
+                        <x-icon name="heart" class="w-5 h-5" :filled="$inWishlist" />
+                        {{ $inWishlist ? 'Saved to Wishlist (remove)' : 'Add to Wishlist' }}
+                    </button>
+                    @if ($inWishlist)
+                        <a href="{{ route('wishlist.index') }}" class="small ms-2">View wishlist</a>
+                    @endif
+                </form>
+
                 {{-- Secondary CTAs — enquiry lead pipeline + WhatsApp --}}
                 <div class="mt-4 d-flex flex-wrap gap-3">
                     <a href="#enquire" class="d-inline-flex align-items-center justify-content-center gap-2 {{ $product->hasPrice() ? 'border border-brand text-brand' : 'bg-brand text-white premium-shadow' }} px-7 py-3 rounded-pill fw-medium">
@@ -121,7 +136,7 @@
                     @if ($whatsapp)
                         <a href="https://wa.me/{{ $whatsapp }}?text={{ $waText }}" target="_blank" rel="noopener"
                            class="d-inline-flex align-items-center justify-content-center gap-2 border border-success text-success px-7 py-3 rounded-pill fw-medium">
-                            <x-icon name="chat-bubble" class="w-5 h-5" /> Order on WhatsApp
+                            <x-whatsapp-icon class="w-5 h-5" /> Order on WhatsApp
                         </a>
                     @endif
                     <x-product-benefits :product="$product" class="px-7 py-3" />

@@ -1502,3 +1502,60 @@ $member-rail-width: 13.5rem;
 
 // Page builder + image cropper, last so it overrides the dark-mode input styling.
 @import 'page-builder';
+
+// ---------------------------------------------------------------- Site header
+// Logo: readable on laptops, still fits beside the icons on phones.
+.site-logo {
+    height: 3.5rem;
+    width: auto;
+    max-width: 52vw;
+    object-fit: contain;
+
+    @media (min-width: 768px) { height: 4.5rem; max-width: 20rem; }
+    @media (min-width: 1200px) { height: 5.5rem; }
+}
+
+// Main menu: the current page's tab is highlighted with brand colour + underline.
+.site-nav-link {
+    position: relative;
+    padding: .375rem 0;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+    transition: color .15s ease;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -.125rem;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--color-brand-800);
+        transform: scaleX(0);
+        transition: transform .2s ease;
+    }
+
+    &:hover { color: var(--color-brand-800); }
+    &:hover::after { transform: scaleX(.5); }
+
+    &.active { color: var(--color-brand-800); font-weight: 600; }
+    &.active::after { transform: scaleX(1); }
+}
+
+.site-nav-mobile-link {
+    display: block;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+
+    &:hover { background: color-mix(in srgb, var(--color-brand-50) 70%, transparent); }
+
+    &.active {
+        color: var(--color-brand-800);
+        font-weight: 600;
+        background: var(--color-brand-50);
+        box-shadow: inset 3px 0 0 var(--color-brand-800);
+    }
+}

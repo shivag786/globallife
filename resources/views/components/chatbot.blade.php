@@ -6,12 +6,14 @@
 
 <div id="chatbot-root" data-services="{{ $services->toJson() }}" data-enquiry-url="{{ route('enquiry.store') }}" data-csrf="{{ csrf_token() }}">
     <button type="button" id="chatbot-toggle"
-            class="btn btn-link p-0 text-decoration-none position-fixed bottom-6 start-6 z-floating w-14 h-14 rounded-pill bg-brand text-white d-flex align-items-center justify-content-center shadow"
+            class="btn btn-link p-0 text-decoration-none position-fixed bottom-6 end-6 z-floating w-14 h-14 rounded-pill bg-brand text-white d-flex align-items-center justify-content-center shadow"
             title="Chat with us" aria-label="Open chat assistant">
         <x-icon name="chat-left" class="w-7 h-7" />
     </button>
 
-    <div id="chatbot-panel" class="d-none position-fixed bottom-24 start-6 z-floating mw-sm bg-body rounded-4 shadow-lg border d-flex flex-column overflow-hidden" style="height: 70vh; max-height: 520px;">
+    {{-- Opens above both floating buttons (WhatsApp sits just above this toggle). --}}
+    <div id="chatbot-panel" class="d-none position-fixed end-6 z-floating mw-sm bg-body rounded-4 shadow-lg border d-flex flex-column overflow-hidden"
+         style="bottom: 10rem; width: calc(100vw - 3rem); height: 70vh; max-height: min(520px, calc(100vh - 11rem));">
         <div class="bg-brand text-white px-4 py-3 d-flex align-items-center justify-content-between flex-shrink-0">
             <div>
                 <p class="fw-semibold fs-sm">Global Life Assistant</p>

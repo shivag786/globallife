@@ -80,7 +80,7 @@ Things a newcomer will trip on:
 
 ## 3. Roles & RBAC
 
-Roles are seeded by `RolesAndPermissionsSeeder` (const `ROLES`). Eight roles:
+Roles are seeded by `RolesAndPermissionsSeeder` (const `ROLES`). Nine roles:
 
 | Role | Prefix / area | How created | Notes |
 |------|---------------|-------------|-------|
@@ -92,6 +92,7 @@ Roles are seeded by `RolesAndPermissionsSeeder` (const `ROLES`). Eight roles:
 | `vip_member` | `/vip` | Created by Commission Partner | Owns a public microsite + storefront |
 | `customer` | `/account` | Registers or logs in at checkout | Order history + saved addresses |
 | `visitor` | — | Guest | Unauthenticated |
+| `employee` | `/employee` | Created by HR in `/admin/hr/employees` | Company staff (HR module, §5h). Not part of the MLM hierarchy |
 
 ### 3a. The user hierarchy
 
@@ -386,6 +387,67 @@ business's; the company only collects it.
   stamps them with `business_settlement_id` so an order cannot be paid twice.
   The business sees each transfer and its proof on `/vip/orders`.
 
+## 5h. Employee Management (HR)
+
+A company-staff HR system, **separate from the MLM hierarchy and from every
+money flow above** (salaries are not commission). Code lives in
+`app/Models/Hr`, `app/Services/Hr`, `app/Http/Controllers/Admin/Hr` (HR screens),
+`app/Http/Controllers/Employee` (self-service portal), views in
+`resources/views/admin/hr`, `resources/views/employee`, `resources/views/hr`.
+
+- **Employee = `users` row (role `employee`) + `employees` row** (HR record:
+  `employee_code`, department, designation, shift, reporting manager, joining /
+  exit dates, personal, bank & statutory numbers) + optional `employee_salaries`
+  (monthly structure). `User::employee()` links them.
+- **Creating an employee** (`EmployeeService::create`) generates the code
+  (`GL-EMP-0001`, prefix configurable in HR settings) and, if HR leaves it blank,
+  a password — and **emails both** (`EmployeeCredentialsNotification`). This is
+  same as every other role's welcome mail (which now also carries the
+  password). If the mail fails, the password is shown to HR once instead.
+  Resetting a password re-emails it and drops sessions.
+- **Login by Employee ID**: `FortifyServiceProvider` `authenticateUsing` — input
+  with `@` is an email (unchanged for every role), otherwise an employee code.
+- **Status**: `active | on_notice` can log in; `resigned | terminated` sets the
+  user `blocked` (so `active_account` signs them out).
+- **Time zone**: the app runs in UTC, but HR stores/compares **IST wall-clock**
+  times. Always use `App\Support\HrClock::now()/today()` in HR code, never
+  `now()/today()`.
+- **Attendance** (`AttendanceService`): self check-in/out (optional office-IP
+  allow-list, setting `hr_attendance_ips`), late = after shift start + grace,
+  status at check-out from worked minutes (shift `full_day_minutes` /
+  `half_day_minutes`). HR can mark/edit any day; employees request corrections
+  (`attendance_regularizations`) that HR approves. `hr:close-attendance` (daily
+  00:30 via scheduler) turns a check-in without check-out into a half day.
+- **`WorkCalendarService` is the single source of "what was this day"**
+  (present / half day / paid or unpaid leave / holiday / weekly off / absent /
+  outside employment, with a paid fraction). The monthly report, the
+  employee's calendar and payroll all read days through it.
+- **Leave** (`LeaveService`): balances per employee/type/year are created on
+  first use (yearly quota + capped carry-forward). Days count working days only.
+  Pending days are reserved against the balance; `used` moves on approval.
+  Approvers: HR with `leaves.approve`, or the employee's **reporting manager**
+  from the portal (`/employee/team-leaves`). Approved leave can be cancelled
+  only before it starts.
+- **Payroll** (`PayrollService`): only for a month that has ended. Draft run →
+  HR adjusts bonus/incentive/overtime/other deduction → finalize (locks, recovers
+  salary-advance EMIs, emails "payslip ready"). LOP = gross × unpaid days / days
+  in month (days before joining/after exit are unpaid). PF 12% of earned basic
+  capped at 15,000; ESI 0.75% when gross ≤ 21,000; PT and TDS fixed monthly.
+  Employees see only finalized payslips. Payslip is a printable page
+  (`hr/payslip.blade.php`, browser "Save as PDF") — no PDF library is installed.
+- **Assets** (assign/return with `asset_assignments` history), **expense
+  claims** (pending → approved/rejected → paid, receipt upload),
+  **announcements** (portal notice board), **holidays**.
+- **Files** (photo, documents, receipts) are on the private `kyc` disk under
+  `hr/{employee_id}/`, served only by `HrFileController` (the employee
+  themselves or HR with the module).
+- **Access**: admin HR routes sit in the `/admin` group (`super_admin|admin|
+  sub_admin`); `App\Support\HrAccess` checks the HR modules of the permission
+  matrix: `employees` (create/edit/export — `edit` also covers HR setup
+  masters), `attendance` (edit/approve/export), `leaves` (approve), `payroll`
+  (create = draft/advances, approve = finalize, export), `assets`
+  (create/edit/delete), `expenses` (approve). Admin role holds them all.
+
 ## 5c. VIP member withdrawals
 
 `WithdrawalService` — **VIP members only**. Commission Partners and Branch
@@ -513,7 +575,11 @@ Each `setPassword()` now also emails the target a "password changed by …" noti
   also signs out every device and sends the notice.
 - **Welcome email**: `AccountCreatedNotification` after commit from
   `create*()` in `SubAdminService`, `BranchManagerService`,
-  `CommissionPartnerService`, `VipMemberService`. It never contains the password.
+  `CommissionPartnerService`, `VipMemberService`, and `CheckoutController::register`
+  (customers). **It contains the login email AND the password** (owner's
+  decision, 2026-11-22) and asks the user to change it after logging in.
+  Employees get `EmployeeCredentialsNotification` (also has the Employee ID).
+  Admin password *resets* still send only the "password changed" notice.
 - `AccountMailService` sends the informational emails and **swallows + logs**
   failures, so a mail outage never blocks creating an account or changing a
   password. Templates: `resources/views/emails/{layout,reset-password,
@@ -759,6 +825,13 @@ autofill often fires only `change`.
     fulfilment), marketplace, gallery, videos, faqs, reviews, leads.
   - `/admin` `super_admin|admin` sub-group: `settings/selling` (catalogue vs
     direct per package) and `business-sales` (+ `{microsite}`, `settle`).
+  - `/admin/hr/*` (HR, gated per module by `HrAccess`) — dashboard, employees
+    (+ password, status, documents, export), organisation, shifts + settings,
+    holidays, leave-types, announcements, attendance (+ report/export,
+    corrections), leaves, payroll (+ payslips, advances), assets, expenses.
+  - `/employee/*` (`employee`) — dashboard, profile, attendance (check-in/out,
+    correction), leaves (+ cancel), team-leaves (reporting managers), payslips,
+    expenses. `/hr-files/*` serves private HR files.
 - **Microsite (registered last, tight regex constraints so it never shadows other
   routes)**: `/{citySlug}/{businessSlug}/{secureId}` (`microsite.show`),
   review POST, and `/microsite/{id}/click/{type}` analytics redirect.
@@ -835,7 +908,9 @@ Seeder order: Roles → Cities → VipPlans → Users → Products → Blog → 
 
 ## 10. Tests (`tests/Feature`)
 
-`CommissionSplitTest`, `ProductCommissionTest`, `OrderCommissionTest`,
+`EmployeeManagementTest` (HR: credentials email, Employee-ID login, attendance
+rules in IST, leave balance + manager approval, payroll LOP/PF/advances,
+permission-matrix gating), `CommissionSplitTest`, `ProductCommissionTest`, `OrderCommissionTest`,
 `RevenueVisibilityTest`, `RbacBoundariesTest`, `ReviewModerationTest`,
 `CartAjaxTest`, `AdminDashboardOverviewTest`, `AdminVipMembersTest`,
 `PanelDashboardsRenderTest`, `CheckoutAuthTest`, `DeliveryTrackingTest`,

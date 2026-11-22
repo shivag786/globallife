@@ -65,6 +65,11 @@ Windows + XAMPP dev environment; shell is PowerShell (Bash tool also available).
    The cart never mixes them with another shop's lines (`conflictFor()`).
 7. **Read `page_layout` only through `$microsite->layout()`**
    (`BusinessPageLayout`) — it is optional and falls back to defaults.
+8. **HR module (`employee` role, `/admin/hr`, `/employee`) uses IST
+   wall-clock time.** The app is UTC; in HR code always use
+   `App\Support\HrClock::now()/today()`. Days are classified only by
+   `WorkCalendarService` (reports + payroll share it). Every new account's welcome
+   email (all roles, incl. employees and checkout customers) carries the password.
 
 ## Before finishing a change
 

@@ -29,7 +29,7 @@
     <x-flash />
 
     <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
-        <div class="container-lg d-flex align-items-center justify-content-between gap-3" style="height: 4rem">
+        <div class="container-lg d-flex align-items-center justify-content-between gap-3" style="min-height: 4rem; padding-top: .5rem; padding-bottom: .5rem">
             @if ($storefront)
                 {{-- Shopping a VIP storefront → keep the customer in that store's context. --}}
                 <a href="{{ url($storefront->publicPath()) }}"
@@ -57,8 +57,7 @@
                    class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
                    style="color: var(--color-brand-800)">
                     @if (! empty($settings['site_logo']))
-                        <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}"
-                             style="height: 2.5rem; width: auto">
+                        <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="site-logo">
                     @else
                         {{ $siteName }}
                     @endif

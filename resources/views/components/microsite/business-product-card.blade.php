@@ -97,7 +97,7 @@
             @elseif ($whatsapp)
                 <a href="{{ $whatsapp }}" target="_blank" rel="noopener"
                    class="msite-btn msite-btn-whatsapp msite-btn-sm w-100 justify-content-center">
-                    <x-icon name="chat-bubble" class="w-4 h-4" /> Order on WhatsApp
+                    <x-whatsapp-icon class="w-4 h-4" /> Order on WhatsApp
                 </a>
             @else
                 <a href="#enquiry" class="btn btn-brand btn-sm rounded-pill w-100">Enquire to order</a>

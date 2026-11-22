@@ -1,9 +1,9 @@
 <div class="position-fixed bottom-6 end-6 z-floating d-flex flex-column gap-3" data-msite-float-group>
     @if ($microsite->isModuleVisible('float_whatsapp') && $microsite->whatsapp_number)
         <a href="{{ route('microsite.click', [$microsite, 'whatsapp']) }}"
-           class="msite-float-btn w-14 h-14 rounded-pill bg-success text-white d-flex align-items-center justify-content-center shadow"
-           title="WhatsApp">
-            <x-icon name="chat-bubble" class="w-7 h-7" />
+           class="msite-float-btn w-14 h-14 rounded-pill text-white d-flex align-items-center justify-content-center shadow"
+           style="background: #25d366" title="WhatsApp">
+            <x-whatsapp-icon class="w-8 h-8" />
         </a>
     @endif
     @if ($microsite->isModuleVisible('float_call') && $microsite->phone_number)

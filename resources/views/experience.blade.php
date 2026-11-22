@@ -860,7 +860,7 @@
 
     @if ($whatsapp)
         <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="lx-wa" aria-label="Chat on WhatsApp">
-            <x-icon name="chat-bubble" class="w-7 h-7" />
+            <x-whatsapp-icon class="w-8 h-8" />
         </a>
     @endif
 </body>

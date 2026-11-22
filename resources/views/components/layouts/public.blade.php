@@ -20,6 +20,15 @@
             ->map(fn ($w) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($w, 0, 1)))
             ->implode('') ?: 'U';
     }
+
+    // Main menu. `active` decides which tab is highlighted for the current page.
+    $navItems = [
+        ['label' => 'Home', 'url' => url('/'), 'active' => request()->is('/')],
+        ['label' => 'Products', 'url' => route('products.index'), 'active' => request()->routeIs('products.*')],
+        ['label' => 'Blog', 'url' => route('blog.index'), 'active' => request()->routeIs('blog.*')],
+        ['label' => 'Events', 'url' => route('events.index'), 'active' => request()->routeIs('events.*')],
+        ['label' => 'Contact', 'url' => route('contact'), 'active' => request()->routeIs('contact*')],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -113,24 +122,23 @@
     @endif
 
     <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
-        <div class="container-lg py-3 d-flex align-items-center justify-content-between">
+        <div class="container-lg py-2 d-flex align-items-center justify-content-between gap-3">
             <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 font-display fs-3 fw-bold text-decoration-none"
                style="color: var(--color-brand-800)">
                 @if (! empty($settings['site_logo']))
-                    <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}"
-                         style="height: 2.5rem; width: auto">
+                    <img src="{{ asset('storage/'.$settings['site_logo']) }}" alt="{{ $siteName }}" class="site-logo">
                 @else
                     {{ $siteName }}
                 @endif
             </a>
-            <nav class="d-none d-md-flex align-items-center gap-4 small fw-medium">
-                <a href="{{ url('/') }}" class="text-secondary text-decoration-none">Home</a>
-                <a href="{{ route('products.index') }}" class="text-secondary text-decoration-none">Products</a>
-                <a href="{{ route('blog.index') }}" class="text-secondary text-decoration-none">Blog</a>
-                <a href="{{ route('events.index') }}" class="text-secondary text-decoration-none">Events</a>
-                <a href="{{ route('contact') }}" class="text-secondary text-decoration-none">Contact</a>
+            <nav class="d-none d-md-flex align-items-center gap-4 fw-medium">
+                @foreach ($navItems as $item)
+                    <a href="{{ $item['url'] }}" @class(['site-nav-link', 'active' => $item['active']])
+                       @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @endforeach
             </nav>
-            <div class="d-flex align-items-center gap-2 gap-sm-3 small">
+            <div class="d-flex align-items-center gap-3 small">
+                @include('partials.wishlist-icon')
                 @include('partials.cart-icon')
 
                 @auth
@@ -179,21 +187,21 @@
         </div>
 
         <div id="mobile-nav" class="d-none border-top bg-cream">
-            <nav class="container-lg py-3 d-flex flex-column gap-2 small fw-medium">
-                <a href="{{ url('/') }}" class="text-secondary text-decoration-none">Home</a>
-                <a href="{{ route('products.index') }}" class="text-secondary text-decoration-none">Products</a>
-                <a href="{{ route('blog.index') }}" class="text-secondary text-decoration-none">Blog</a>
-                <a href="{{ route('events.index') }}" class="text-secondary text-decoration-none">Events</a>
-                <a href="{{ route('contact') }}" class="text-secondary text-decoration-none">Contact</a>
+            <nav class="container-lg py-3 d-flex flex-column gap-1 small fw-medium">
+                @foreach ($navItems as $item)
+                    <a href="{{ $item['url'] }}" @class(['site-nav-mobile-link', 'active' => $item['active']])
+                       @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @endforeach
+                <a href="{{ route('wishlist.index') }}" @class(['site-nav-mobile-link', 'active' => request()->routeIs('wishlist.*')])>Wishlist</a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="text-secondary text-decoration-none">Dashboard</a>
-                    <a href="{{ route('account.password.edit') }}" class="text-secondary text-decoration-none">Change Password</a>
+                    <a href="{{ route('dashboard') }}" class="site-nav-mobile-link">Dashboard</a>
+                    <a href="{{ route('account.password.edit') }}" class="site-nav-mobile-link">Change Password</a>
                     <form method="POST" action="{{ route('logout', [], false) }}">
                         @csrf
-                        <button type="submit" class="btn btn-link btn-sm text-danger p-0">Logout</button>
+                        <button type="submit" class="site-nav-mobile-link text-danger border-0 bg-transparent w-100 text-start">Logout</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="text-secondary text-decoration-none">Login</a>
+                    <a href="{{ route('login') }}" class="site-nav-mobile-link">Login</a>
                 @endauth
             </nav>
         </div>
@@ -342,12 +350,14 @@
         </div>
     </footer>
 
+    {{-- Floating buttons, bottom-right: WhatsApp on top, the chat assistant
+         (x-chatbot, fixed at the corner) right below it. --}}
     @if ($settings['contact_whatsapp'] ?? null)
-        <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}"
-           class="position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm animate-pulse-ring text-decoration-none"
-           style="bottom: 1.5rem; right: 1.5rem; z-index: 1030; width: 3.5rem; height: 3.5rem; background: #25d366"
-           title="Chat on WhatsApp">
-            <x-icon name="chat-bubble" class="w-7 h-7" />
+        <a href="https://wa.me/{{ preg_replace('/\D/', '', $settings['contact_whatsapp']) }}" target="_blank" rel="noopener"
+           class="position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow animate-pulse-ring text-decoration-none"
+           style="bottom: 5.75rem; right: 1.5rem; z-index: 1030; width: 3.5rem; height: 3.5rem; background: #25d366"
+           title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+            <x-whatsapp-icon class="w-8 h-8" />
         </a>
     @endif
 
