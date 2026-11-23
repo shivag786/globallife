@@ -217,14 +217,29 @@ foreach (D::departments() as $dept => $designations) {
         $w('INSERT INTO `designations` (`department_id`, `name`, `is_active`, `created_at`, `updated_at`) SELECT p.id, '.$q($d).', 1, NOW(), NOW() FROM `departments` p WHERE p.name = '.$q($dept).' AND NOT EXISTS (SELECT 1 FROM `designations` x WHERE x.department_id = p.id AND x.name = '.$q($d).');');
     }
 }
-$cats = DB::table('categories')->whereIn('slug', collect(D::catalogueProducts())->map(fn ($p) => Illuminate\Support\Str::slug($p['category']))->unique())->get();
+// Every company product the data points at (order lines, commission earnings,
+// business pages) is created on live if missing — not just the seeder's own
+// catalogue — so no line ends up linked to nothing.
+$productIds = collect(array_keys($shared))
+    ->filter(fn ($var) => str_starts_with($var, '@products_'))
+    ->map(fn ($var) => (int) substr($var, strlen('@products_')))
+    ->merge(DB::table('vip_products')->whereIn('vip_microsite_id', $S)->pluck('product_id'))
+    ->unique()->values()->all();
+$products = DB::table('products')->whereIn('id', $productIds)
+    ->orWhereIn('slug', array_column(D::catalogueProducts(), 'slug'))->orderBy('id')->get();
+$cats = DB::table('categories')->whereIn('id', $products->pluck('category_id')->filter()->unique())->get();
 foreach ($cats as $c) {
     $w('INSERT INTO `categories` (`name`, `slug`, `status`, `display_order`, `created_at`, `updated_at`) SELECT '.$q($c->name).', '.$q($c->slug).", 'active', 0, NOW(), NOW() FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `categories` WHERE slug = ".$q($c->slug).');');
 }
-foreach (DB::table('products')->whereIn('slug', array_column(D::catalogueProducts(), 'slug'))->get() as $p) {
+foreach ($products as $p) {
     $p = (array) $p;
-    $p['category_id'] = '(SELECT id FROM `categories` WHERE slug = '.$q(DB::table('categories')->where('id', $p['category_id'])->value('slug')).' LIMIT 1)';
+    $p['category_id'] = $p['category_id'] === null ? 'NULL'
+        : '(SELECT id FROM `categories` WHERE slug = '.$q(DB::table('categories')->where('id', $p['category_id'])->value('slug')).' LIMIT 1)';
     unset($p['id'], $p['brand_id']);
+    // Only demo photos ship with the code; any other local upload would be a broken image on live.
+    if ($p['main_image'] !== null && ! str_starts_with($p['main_image'], 'uploads/demo/')) {
+        $p['main_image'] = null;
+    }
     $cols = array_keys($p);
     $vals = array_map(fn ($c) => $c === 'category_id' ? $p[$c] : $q($p[$c]), $cols);
     $w('INSERT INTO `products` (`'.implode('`, `', $cols).'`) SELECT '.implode(', ', $vals).' FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `products` WHERE slug = '.$q($p['slug']).');');

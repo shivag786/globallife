@@ -631,6 +631,13 @@ SVG;
         $path = self::PHOTOS."/{$b['key']}/logo.svg";
         Storage::disk('public')->put($path, $svg);
 
+        // Also keep a copy in the committed folder (storage/app/public), which is
+        // what reaches the live server; the public disk may point outside the repo.
+        $committed = \App\Support\UploadsRoot::legacy().DIRECTORY_SEPARATOR.$path;
+        if (! is_file($committed) && is_dir(dirname($committed))) {
+            file_put_contents($committed, $svg);
+        }
+
         return $path;
     }
 
