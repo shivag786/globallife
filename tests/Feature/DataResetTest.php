@@ -107,6 +107,19 @@ class DataResetTest extends TestCase
         DB::table('addresses')->insert(['user_id' => $customer->id, 'name' => 'C', 'phone' => '9999999999',
             'address' => 'x', 'city' => 'y', 'state' => 'z', 'pincode' => '123456', 'created_at' => now(), 'updated_at' => now()]);
 
+        // A VIP member with their own page, products and services, reselling a company product.
+        $plan = $this->makePlan(4999);
+        [$vip, $site] = $this->makeVipMember($partner, $plan, $city = $this->makeCity());
+        $companyProduct = \App\Models\Product::create([
+            'name' => 'Company Kit', 'slug' => 'company-kit', 'short_description' => 'x', 'price' => 900,
+            'status' => 'active', 'main_image' => 'uploads/company-kit.jpg',
+        ]);
+        $site->catalogProducts()->attach($companyProduct->id, ['is_visible' => true]);
+        \App\Models\BusinessProduct::create(['vip_microsite_id' => $site->id, 'name' => 'Own Sweet Box', 'slug' => 'own-sweet-box', 'mrp' => 300, 'status' => 'published']);
+        DB::table('business_services')->insert(['vip_microsite_id' => $site->id, 'name' => 'Catering', 'slug' => 'catering', 'created_at' => now(), 'updated_at' => now()]);
+        app(\App\Services\CompanyProductsSwitch::class)->setHidden(true);
+        Storage::disk('public')->put('uploads/company-kit.jpg', 'company photo');
+
         // Site content that must stay, including a post written by a user who is removed.
         $post = BlogPost::create(['title' => 'Kept post', 'slug' => 'kept-post', 'content' => 'x', 'status' => 'published', 'author_id' => $bm->id]);
         app(SettingsService::class)->set('site_logo', 'uploads/logo-kept.png');
@@ -132,6 +145,18 @@ class DataResetTest extends TestCase
         $this->assertSame('uploads/logo-kept.png', app(SettingsService::class)->get('site_logo'));
         $this->assertGreaterThan(0, DB::table('roles')->count());
         $this->assertGreaterThan(0, DB::table('leave_types')->count());
+
+        // Company products, packages, cities and company settings stay; VIP members,
+        // their pages, own products, services and catalogue picks go.
+        $this->assertDatabaseHas('products', ['id' => $companyProduct->id, 'main_image' => 'uploads/company-kit.jpg']);
+        $this->assertDatabaseHas('vip_plans', ['id' => $plan->id]);
+        $this->assertDatabaseHas('cities', ['id' => $city->id]);
+        $this->assertTrue(app(\App\Services\CompanyProductsSwitch::class)->hidden());
+        $this->assertDatabaseMissing('users', ['id' => $vip->id]);
+        foreach (['vip_microsites', 'vip_products', 'business_products', 'business_services'] as $table) {
+            $this->assertSame(0, DB::table($table)->count(), "{$table} should be empty");
+        }
+        Storage::disk('public')->assertExists('uploads/company-kit.jpg');
 
         // Files: referenced ones stay, the rest move into the backup.
         $backup = app(DataResetService::class)->backups()[0]['name'];
