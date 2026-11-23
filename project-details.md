@@ -376,8 +376,9 @@ business's; the company only collects it.
   `CompanyProductsSwitch`. While on: `Product::onSale()` (used by the shop,
   homepage sections, landing pages, cart, wishlist, VIP My Store and microsite
   catalogue) returns nothing, product pages 404, the public "Products" menu
-  link is hidden, and the two Catalogue only / Direct sell explainer boxes at the
-  top of Selling Options are hidden. Package selling modes are **not** affected
+  link is hidden, the admin sidebar's "Selling Options by Package" link is hidden
+  (the page still opens by URL), and the two Catalogue only / Direct sell
+  explainer boxes at the top of that page are hidden. Package selling modes are **not** affected
   and stay editable. Nothing is deleted — VIP store choices return when switched
   off. Admin screens query `Product` directly and still list everything.
 - **Cart** lines have a `type`: `catalog` (old lines have none) or `business`

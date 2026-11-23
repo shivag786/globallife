@@ -153,7 +153,10 @@
 
                         <p class="admin-sidebar-heading">Business Selling</p>
                         <a href="{{ route('admin.business-sales.index') }}">Business Sales &amp; Payouts</a>
-                        <a href="{{ route('admin.settings.selling.edit') }}">Selling Options by Package</a>
+                        {{-- Hidden while company products are hidden (/admin/settings/company-products). --}}
+                        @unless (app(\App\Services\CompanyProductsSwitch::class)->hidden())
+                            <a href="{{ route('admin.settings.selling.edit') }}">Selling Options by Package</a>
+                        @endunless
                     @endif
                 @endif
 

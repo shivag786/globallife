@@ -68,6 +68,10 @@ class CompanyProductsSwitchTest extends TestCase
         $this->toggle();
 
         $this->assertTrue(app(CompanyProductsSwitch::class)->hidden());
+        // The sidebar link goes.
+        $this->actingAs($this->admin)->get(route('admin.business-sales.index'))
+            ->assertOk()->assertDontSee('Selling Options by Package');
+
         // Only the two boxes at the top go; the per-package options stay.
         $this->actingAs($this->admin)->get(route('admin.settings.selling.edit'))
             ->assertOk()
