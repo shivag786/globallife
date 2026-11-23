@@ -54,6 +54,6 @@ class WishlistService
             return collect();
         }
 
-        return Product::whereIn('id', $ids)->where('status', 'active')->get();
+        return Product::onSale()->whereIn('id', $ids)->get();
     }
 }

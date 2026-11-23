@@ -257,6 +257,12 @@ Route::middleware(['auth', 'active_account'])->group(function () {
                 ->name('settings.selling.edit');
             Route::put('settings/selling', [App\Http\Controllers\Admin\SellingSettingsController::class, 'update'])
                 ->name('settings.selling.update');
+            // One switch: hide the company's own products everywhere and lock
+            // every package to Catalogue only (CompanyProductsSwitch).
+            Route::get('settings/company-products', [App\Http\Controllers\Admin\CompanyProductsController::class, 'show'])
+                ->name('settings.company-products.show');
+            Route::post('settings/company-products/toggle', [App\Http\Controllers\Admin\CompanyProductsController::class, 'toggle'])
+                ->name('settings.company-products.toggle');
 
             Route::get('business-sales', [App\Http\Controllers\Admin\BusinessSalesController::class, 'index'])
                 ->name('business-sales.index');

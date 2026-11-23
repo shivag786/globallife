@@ -31,7 +31,7 @@ class ProductController extends Controller
 
     public function show(Product $product, ProductRepository $products, Request $request): View
     {
-        abort_unless($product->status === 'active', 404);
+        abort_unless(Product::onSale()->whereKey($product->getKey())->exists(), 404);
 
         $product->load(['benefits' => fn ($query) => $query->where('status', 'active')->orderBy('display_order')]);
 

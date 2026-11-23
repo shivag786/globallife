@@ -22,6 +22,20 @@ class Product extends Model
 {
     use HasFactory, LogsActivity;
 
+    /**
+     * Products a customer or VIP may see and buy: active, and not taken off sale
+     * by the admin's "hide company products" switch (CompanyProductsSwitch).
+     * Admin screens query Product directly, so they still list everything.
+     */
+    public function scopeOnSale(Builder $query): void
+    {
+        $query->where('products.status', 'active');
+
+        if (app(\App\Services\CompanyProductsSwitch::class)->hidden()) {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
     protected function casts(): array
     {
         return [

@@ -369,6 +369,17 @@ business's; the company only collects it.
     (`VipMicrosite::whatsappOrderUrl()`, wa.me with the order pre-typed; falls
     back to the phone number, then to the enquiry form).
   - *direct*: Add to cart / Buy now → normal checkout (address, Razorpay, COD).
+- **Hide company products switch** — `POST /admin/settings/company-products/toggle`
+  (`admin.settings.company-products.toggle`, super_admin|admin) from its own page
+  `GET /admin/settings/company-products` — **URL only, deliberately no menu link**.
+  Stored as setting `company_products_hidden`, read via
+  `CompanyProductsSwitch`. While on: `Product::onSale()` (used by the shop,
+  homepage sections, landing pages, cart, wishlist, VIP My Store and microsite
+  catalogue) returns nothing, product pages 404, the public "Products" menu
+  link is hidden, and the two Catalogue only / Direct sell explainer boxes at the
+  top of Selling Options are hidden. Package selling modes are **not** affected
+  and stay editable. Nothing is deleted — VIP store choices return when switched
+  off. Admin screens query `Product` directly and still list everything.
 - **Cart** lines have a `type`: `catalog` (old lines have none) or `business`
   (key `b{id}:{microsite}`). A business line can only share the cart with the
   same business's lines — `CartService::conflictFor()`; the add endpoint answers

@@ -4,6 +4,8 @@
         This does not affect the company products they resell under My Store.
     </p>
 
+    {{-- Hidden while company products are hidden (/admin/settings/company-products). --}}
+    @unless ($companyProductsHidden)
     <div class="d-grid grid-cols-md-2 gap-4 mb-6 mw-5xl">
         <div class="bg-body border rounded-3 p-5">
             <p class="fw-semibold mb-1">📒 Catalogue only</p>
@@ -22,6 +24,7 @@
             </p>
         </div>
     </div>
+    @endunless
 
     <form method="POST" action="{{ route('admin.settings.selling.update') }}" class="mw-5xl">
         @csrf

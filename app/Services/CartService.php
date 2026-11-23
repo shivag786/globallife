@@ -215,7 +215,7 @@ class CartService
 
         $catalogIds = $byType->get(self::TYPE_CATALOG, collect())->pluck('product_id')->unique();
         $products = $catalogIds->isNotEmpty()
-            ? Product::whereIn('id', $catalogIds)->where('status', 'active')->get()->keyBy('id')
+            ? Product::onSale()->whereIn('id', $catalogIds)->get()->keyBy('id')
             : collect();
 
         $businessIds = $byType->get(self::TYPE_BUSINESS, collect())->pluck('product_id')->unique();

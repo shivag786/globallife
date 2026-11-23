@@ -131,7 +131,7 @@ class VipMicrosite extends Model
                 $join->on('vip_products.product_id', '=', 'products.id')
                     ->where('vip_products.vip_microsite_id', '=', $this->id);
             })
-            ->where('products.status', 'active')
+            ->onSale()
             // No row at all counts as visible.
             ->where(fn (Builder $q) => $q
                 ->whereNull('vip_products.is_visible')

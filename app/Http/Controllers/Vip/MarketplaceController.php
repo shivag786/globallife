@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vip;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\CompanyProductsSwitch;
 use App\Services\ProductCommissionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -18,19 +19,27 @@ class MarketplaceController extends Controller
     public function index(): View
     {
         $microsite = Auth::user()->vipMicrosite;
-        $products = Product::where('status', 'active')->with('category')->orderBy('name')->get();
+        $products = Product::onSale()->with('category')->orderBy('name')->get();
 
         return view('vip.marketplace.index', [
             'microsite' => $microsite,
             'products' => $products,
             'pivots' => DB::table('vip_products')->where('vip_microsite_id', $microsite->id)->get()->keyBy('product_id'),
             'earnings' => $this->earningsPerProduct($products),
+            'companyProductsHidden' => app(CompanyProductsSwitch::class)->hidden(),
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request, CompanyProductsSwitch $switch): RedirectResponse
     {
         $microsite = Auth::user()->vipMicrosite;
+
+        // While company products are off sale there is nothing to choose from,
+        // and syncing an empty list would wipe this member's saved choices.
+        if ($switch->hidden()) {
+            return redirect()->route('vip.marketplace.index')
+                ->with('error', 'Company products are not on sale right now, so your store cannot be changed.');
+        }
 
         $validated = $request->validate([
             'products' => ['nullable', 'array'],
@@ -47,7 +56,7 @@ class MarketplaceController extends Controller
         // is the only thing that takes a product off their page. The VIP controls
         // visibility, featured and order only; price, description and commission
         // stay Super-Admin owned.
-        foreach (Product::where('status', 'active')->pluck('id') as $productId) {
+        foreach (Product::onSale()->pluck('id') as $productId) {
             $row = $selections[$productId] ?? [];
 
             $sync[$productId] = [

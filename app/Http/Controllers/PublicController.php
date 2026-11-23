@@ -25,7 +25,7 @@ class PublicController extends Controller
      */
     public function experience(VipPlanRepository $plans): View
     {
-        $products = Product::where('status', 'active')
+        $products = Product::onSale()
             ->orderByDesc('is_featured')
             ->orderBy('display_order')
             ->limit(4)
@@ -55,7 +55,7 @@ class PublicController extends Controller
      */
     public function third(VipPlanRepository $plans, BlogPostRepository $posts): View
     {
-        $products = Product::where('status', 'active')
+        $products = Product::onSale()
             ->orderByDesc('is_featured')
             ->orderBy('display_order')
             ->limit(8)
@@ -81,7 +81,7 @@ class PublicController extends Controller
      */
     public function fourth(VipPlanRepository $plans): View
     {
-        $products = Product::where('status', 'active')
+        $products = Product::onSale()
             ->orderByDesc('is_featured')
             ->orderBy('display_order')
             ->limit(8)

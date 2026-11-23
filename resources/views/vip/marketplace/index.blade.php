@@ -85,7 +85,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('vip.marketplace.update') }}">
+    @if ($companyProductsHidden)
+        <div class="alert alert-warning mb-4">
+            Company products are not on sale right now. Your store choices are saved
+            and come back as soon as they return.
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('vip.marketplace.update') }}" @class(['d-none' => $companyProductsHidden])>
         @csrf
         @method('PUT')
         <div class="bg-body rounded-2 shadow-sm border overflow-hidden">

@@ -19,7 +19,7 @@ class ProductRepository
 
     public function publishedPaginated(int $perPage = 12): LengthAwarePaginator
     {
-        return Product::where('status', 'active')->orderBy('display_order')->paginate($perPage);
+        return Product::onSale()->orderBy('display_order')->paginate($perPage);
     }
 
     /**
@@ -27,7 +27,7 @@ class ProductRepository
      */
     public function featured(int $limit = 4): Collection
     {
-        return Product::where('status', 'active')->where('is_featured', true)
+        return Product::onSale()->where('is_featured', true)
             ->orderBy('display_order')->limit($limit)->get();
     }
 
@@ -39,7 +39,7 @@ class ProductRepository
      */
     public function related(Product $product, int $limit = 4): Collection
     {
-        return Product::where('status', 'active')
+        return Product::onSale()
             ->whereKeyNot($product->getKey())
             ->orderByRaw('CASE WHEN category = ? THEN 0 ELSE 1 END', [$product->category])
             ->orderBy('display_order')
@@ -57,8 +57,8 @@ class ProductRepository
     public function activeCategoriesWithProducts(): Collection
     {
         return Category::active()
-            ->whereHas('products', fn ($query) => $query->where('status', 'active'))
-            ->withCount(['products' => fn ($query) => $query->where('status', 'active')])
+            ->whereHas('products', fn ($query) => $query->onSale())
+            ->withCount(['products' => fn ($query) => $query->onSale()])
             ->orderBy('display_order')
             ->get();
     }
@@ -73,8 +73,8 @@ class ProductRepository
     public function groupedByCategory(int $perCategory = 8): Collection
     {
         return Category::active()
-            ->whereHas('products', fn ($query) => $query->where('status', 'active'))
-            ->with(['products' => fn ($query) => $query->where('status', 'active')->orderBy('display_order')])
+            ->whereHas('products', fn ($query) => $query->onSale())
+            ->with(['products' => fn ($query) => $query->onSale()->orderBy('display_order')])
             ->orderBy('display_order')
             ->get()
             ->each(fn (Category $category) => $category->setRelation('products', $category->products->take($perCategory)))
@@ -87,7 +87,7 @@ class ProductRepository
      */
     public function publishedInCategory(Category $category, int $perPage = 12): LengthAwarePaginator
     {
-        return Product::where('status', 'active')
+        return Product::onSale()
             ->where('category_id', $category->id)
             ->orderBy('display_order')
             ->paginate($perPage);

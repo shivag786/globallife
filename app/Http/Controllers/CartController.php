@@ -40,7 +40,7 @@ class CartController extends Controller
             return $this->addBusinessProduct($request, $data);
         }
 
-        $product = Product::where('id', $data['product_id'])->where('status', 'active')->first();
+        $product = Product::onSale()->whereKey($data['product_id'])->first();
 
         if (! $product || ! $product->hasPrice()) {
             if ($request->wantsJson()) {

@@ -22,13 +22,16 @@
     }
 
     // Main menu. `active` decides which tab is highlighted for the current page.
-    $navItems = [
+    // The admin can take company products off sale (CompanyProductsSwitch).
+    $companyProductsHidden = app(\App\Services\CompanyProductsSwitch::class)->hidden();
+
+    $navItems = array_values(array_filter([
         ['label' => 'Home', 'url' => url('/'), 'active' => request()->is('/')],
-        ['label' => 'Products', 'url' => route('products.index'), 'active' => request()->routeIs('products.*')],
+        $companyProductsHidden ? null : ['label' => 'Products', 'url' => route('products.index'), 'active' => request()->routeIs('products.*')],
         ['label' => 'Blog', 'url' => route('blog.index'), 'active' => request()->routeIs('blog.*')],
         ['label' => 'Events', 'url' => route('events.index'), 'active' => request()->routeIs('events.*')],
         ['label' => 'Contact', 'url' => route('contact'), 'active' => request()->routeIs('contact*')],
-    ];
+    ]));
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -278,7 +281,7 @@
                 <div class="col-6 col-lg-2">
                     <p class="small fw-semibold text-white mb-2 text-uppercase">Explore</p>
                     <ul class="list-unstyled small mb-0" style="color: var(--color-brand-200)">
-                        <li class="mb-2"><a href="{{ route('products.index') }}" class="text-reset text-decoration-none">All Products</a></li>
+                        @unless ($companyProductsHidden)<li class="mb-2"><a href="{{ route('products.index') }}" class="text-reset text-decoration-none">All Products</a></li>@endunless
                         <li><a href="{{ url('/') }}#testimonials" class="text-reset text-decoration-none">Testimonials</a></li>
                     </ul>
                 </div>
