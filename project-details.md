@@ -912,6 +912,35 @@ Demo photos live in `storage/app/public/uploads/demo/{hospital,rangoli-boutique,
 and are **force-added** to git (that folder is otherwise ignored). Store and blog
 photos are Pexels-licensed; sources in `database/demo-store-photo-credits.txt`.
 
+**One-year report data — `DemoYearSeeder`** (opt-in, not in `DatabaseSeeder`;
+~5 min): `php artisan db:seed --class=DemoYearSeeder`. Needs the base seeders
+(super admin, the four VIP plans, cities). It replays the 12 months up to today
+as a timeline (`Carbon::setTestNow` per event) and calls the real services:
+`VipMemberService` (activation split), `OrderService::persistOrder` (via a bound
+closure — pending upline commission, stock) → `updateStatus`/`markDelivered`
+(wallet credit), `VipRenewalService`, `PartnerPayoutService::markPaid` (6th of
+each month), `WithdrawalService`, `BusinessSalesService::settle` (1st/16th),
+`EmployeeService`, `AttendanceService` (daily), `LeaveService`,
+`ExpenseService`, `AssetService`, `PayrollService` (generate/adjust/finalize
+each month; October includes a Diwali bonus). Mail is forced to `array`.
+Creates 2 admins, 3 sub admins, 3 branch managers, 8 commission partners
+(`first.last@globallife.co.in`), 19 VIP businesses (`<key>@demo.globallife.co.in`,
+e.g. `sweets@…`, `restaurant@…`; one lapsed and one rejected renewal),
+14 employees (`GL-EMP-0001…`, one resigned) and ~400 shoppers / ~1,150 orders,
+~300 leads, 7 catalogue products. All passwords `Password!123`. Content lives in
+`database/seeders/DemoYear/DemoYearData.php`. Re-runnable: it first deletes users
+on the staff list or the `demo.globallife.co.in` domain plus their orders,
+payslips, assets and announcements. Real (Pexels) photos — people, business
+pages, products — are in `storage/app/public/uploads/demo/year` (force-add to
+git); credits in `database/demo-year-photo-credits.txt`.
+For the live server the same data ships as **`database/demo-year-data.sql`**
+(phpMyAdmin import, re-runnable): it deletes its own earlier copy, then inserts
+with ids offset above each table's current max, shared rows (super admin, plans,
+cities, products, leave types, departments) looked up by slug/code/name, and
+employee codes continuing the `GL-EMP-` sequence. KYC/employee photo paths and the
+encrypted PAN/Aadhaar columns are left NULL (private disk + APP_KEY differ).
+Regenerate after re-seeding: `php database/export-demo-year-sql.php database/demo-year-data.sql`.
+
 **Contact settings** (`settings` table, Admin → Site Settings → Contact):
 `contact_email` (footer + contact page), `contact_email_hr` (HR email, footer +
 contact page), `contact_whatsapp` (store with `+91`; the wa.me links are built
