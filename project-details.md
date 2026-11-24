@@ -759,8 +759,10 @@ autofill often fires only `change`.
   product_id + seller_id (VIP microsite) + qty; **all prices re-looked-up from DB**
   at read time (session can't influence price). Free shipping ≥ ₹999, else ₹49
   flat. Max qty 99.
-- **Wishlist** (`WishlistService`), **Checkout** (`CheckoutController` +
-  `OrderService`).
+- **Wishlist** (`WishlistService`) — session-backed; two id lists: catalogue
+  `products` (`product_id`) and a VIP's own `business_products`
+  (`business_product_id`, saved from microsite pages). **Checkout**
+  (`CheckoutController` + `OrderService`).
 - **Payment methods are admin-driven** — `PaymentGatewayService` reads the
   `settings` table and decides which `payment_choice` values checkout may render
   *and* accept (`options()` / `allowedChoices()`); it never returns an empty list
@@ -879,7 +881,14 @@ autofill often fires only `change`.
     expenses. `/hr-files/*` serves private HR files.
 - **Microsite (registered last, tight regex constraints so it never shadows other
   routes)**: `/{citySlug}/{businessSlug}/{secureId}` (`microsite.show`),
-  review POST, and `/microsite/{id}/click/{type}` analytics redirect.
+  detail pages `…/product/{id-slug}` (`microsite.product`) and
+  `…/service/{id-slug}` (`microsite.service`) — build them with
+  `VipMicrosite::productPath()` / `servicePath()` — review POST, and
+  `/microsite/{id}/click/{type}` analytics redirect.
+- **Mobile menus** on the public site and microsites are a right-side drawer
+  (`.nav-drawer`, `[data-drawer-open]` in `resources/js/app.js`); the panel
+  sidebar also slides in from the right below `lg`. Social links render real
+  brand logos via `<x-social-icon>`.
 
 ## 8. Architecture patterns
 

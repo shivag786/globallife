@@ -502,6 +502,17 @@ Route::get('/{citySlug}/{businessSlug}/{secureId}', [MicrositeController::class,
     ->where(['citySlug' => '[a-z0-9-]+', 'businessSlug' => '[a-z0-9-]+', 'secureId' => '\d+-[A-Za-z0-9]+-\d+'])
     ->name('microsite.show');
 
+// Detail pages for a microsite's own products and services, e.g.
+// /jhansi/lifeline-hospital/22-LSTWEFF-44/product/7-herbal-tea (id, then an
+// optional name slug that is ignored when resolving).
+Route::get('/{citySlug}/{businessSlug}/{secureId}/product/{item}', [MicrositeController::class, 'product'])
+    ->where(['citySlug' => '[a-z0-9-]+', 'businessSlug' => '[a-z0-9-]+', 'secureId' => '\d+-[A-Za-z0-9]+-\d+', 'item' => '\d+(-[a-z0-9-]+)?'])
+    ->name('microsite.product');
+
+Route::get('/{citySlug}/{businessSlug}/{secureId}/service/{item}', [MicrositeController::class, 'service'])
+    ->where(['citySlug' => '[a-z0-9-]+', 'businessSlug' => '[a-z0-9-]+', 'secureId' => '\d+-[A-Za-z0-9]+-\d+', 'item' => '\d+(-[a-z0-9-]+)?'])
+    ->name('microsite.service');
+
 Route::post('/{citySlug}/{businessSlug}/{secureId}/reviews', [MicrositeController::class, 'storeReview'])
     ->where(['citySlug' => '[a-z0-9-]+', 'businessSlug' => '[a-z0-9-]+', 'secureId' => '\d+-[A-Za-z0-9]+-\d+'])
     ->middleware('throttle:5,1')

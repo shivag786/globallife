@@ -1,17 +1,18 @@
 @php
     $links = collect([
-        'facebook_url' => 'FB', 'instagram_url' => 'IG', 'youtube_url' => 'YT',
-        'linkedin_url' => 'IN', 'twitter_url' => 'X', 'telegram_url' => 'TG', 'pinterest_url' => 'PN',
-    ])->filter(fn ($label, $field) => $microsite->{$field});
+        'facebook_url' => 'facebook', 'instagram_url' => 'instagram', 'youtube_url' => 'youtube',
+        'linkedin_url' => 'linkedin', 'twitter_url' => 'x', 'telegram_url' => 'telegram', 'pinterest_url' => 'pinterest',
+    ])->filter(fn ($network, $field) => $microsite->{$field});
 @endphp
 @if ($links->isNotEmpty())
     <section class="pb-20 text-center reveal">
         <p class="fs-sm text-secondary mb-4">{{ $microsite->layout()->heading('social_media')['title'] }}</p>
-        <div class="d-flex justify-content-center gap-3">
-            @foreach ($links as $field => $label)
-                <a href="{{ $microsite->{$field} }}" target="_blank"
-                   class="w-11 h-11 rounded-pill bg-body border text-brand d-flex align-items-center justify-content-center fs-xs fw-bold shadow-sm">
-                    {{ $label }}
+        <div class="d-flex flex-wrap justify-content-center gap-3 px-4">
+            @foreach ($links as $field => $network)
+                <a href="{{ $microsite->{$field} }}" target="_blank" rel="noopener"
+                   class="social-chip" style="width: 2.75rem; height: 2.75rem"
+                   aria-label="{{ ucfirst($network) }}" title="{{ ucfirst($network) }}">
+                    <x-social-icon :name="$network" class="w-6 h-6" />
                 </a>
             @endforeach
         </div>

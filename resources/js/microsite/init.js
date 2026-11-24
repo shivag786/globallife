@@ -5,20 +5,11 @@
 
 function initStickyNav() {
     const header = document.getElementById('msite-nav');
-    const menuOpenBtn = document.querySelector('[data-msite-menu-open]');
-    const mobileNav = document.getElementById('msite-mobile-nav');
     if (!header) return;
 
+    // The mobile menu is the shared right-hand drawer (resources/js/app.js).
     window.addEventListener('scroll', () => {
         header.classList.toggle('shadow-sm', window.scrollY > 12);
-    });
-
-    menuOpenBtn?.addEventListener('click', () => {
-        mobileNav?.classList.toggle('d-none');
-    });
-
-    document.querySelectorAll('[data-msite-nav-link]').forEach((link) => {
-        link.addEventListener('click', () => mobileNav?.classList.add('d-none'));
     });
 
     const navLinks = document.querySelectorAll('[data-msite-nav-link]');

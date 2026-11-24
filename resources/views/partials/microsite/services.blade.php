@@ -4,8 +4,9 @@
             @include('partials.microsite.section-heading', ['heading' => $microsite->layout()->heading('services')])
             <div class="d-grid grid-cols-sm-2 grid-cols-lg-3 gap-8">
                 @foreach ($microsite->services as $index => $service)
-                    <div class="msite-card msite-card-img overflow-hidden reveal" data-reveal="up" style="transition-delay: {{ ($index % 3) * 0.1 }}s">
-                        <div class="position-relative msite-card-img h-52">
+                    @php $serviceUrl = url($microsite->servicePath($service)); @endphp
+                    <div class="msite-card msite-card-img overflow-hidden reveal d-flex flex-column" data-reveal="up" style="transition-delay: {{ ($index % 3) * 0.1 }}s">
+                        <a href="{{ $serviceUrl }}" class="d-block position-relative msite-card-img h-52" aria-label="{{ $service->name }}">
                             @if ($service->image_path)
                                 <img src="{{ asset('storage/'.$service->image_path) }}" loading="lazy" class="w-100 h-100 object-fit-cover">
                             @else
@@ -18,17 +19,17 @@
                                     {{ $service->discountPercentage() }}% OFF
                                 </span>
                             @endif
-                        </div>
-                        <div class="p-6">
+                        </a>
+                        <div class="p-6 d-flex flex-column flex-grow-1">
                             @if ($service->category)
                                 <p class="fs-xs fw-semibold text-brand text-uppercase tracking-wide mb-1">{{ $service->category }}</p>
                             @endif
-                            <p class="font-heading fw-bold fs-lg text-brand-emphasis">{{ $service->name }}</p>
+                            <a href="{{ $serviceUrl }}" class="d-block font-heading fw-bold fs-lg text-brand-emphasis text-decoration-none">{{ $service->name }}</a>
                             @if ($service->short_description)
                                 <p class="fs-sm text-secondary mt-2 line-clamp-2">{{ $service->short_description }}</p>
                             @endif
 
-                            <div class="d-flex align-items-center justify-content-between mt-5">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-auto pt-5">
                                 {{-- One price when only the MRP or only the sale price is set;
                                      sale price plus a struck-through MRP when both are. --}}
                                 @if ($service->show_pricing && $service->hasPrice())
@@ -45,11 +46,9 @@
                                 @else
                                     <span></span>
                                 @endif
-                                @if ($service->long_description)
-                                    <button type="button" data-modal-open="#service-detail-{{ $service->id }}" class="btn btn-link p-0 fs-sm fw-semibold text-brand text-decoration-none ms-auto me-3">
-                                        Details
-                                    </button>
-                                @endif
+                                <a href="{{ $serviceUrl }}" class="fs-sm fw-semibold text-brand text-decoration-none ms-auto me-2">
+                                    Details
+                                </a>
                                 @if ($service->show_book_now)
                                     <a href="{{ route('microsite.click', [$microsite, 'booking']) }}" class="msite-btn msite-btn-primary h-10 px-5 fs-sm">
                                         Book Now
@@ -58,10 +57,6 @@
                             </div>
                         </div>
                     </div>
-                    @if ($service->long_description)
-                        <x-microsite.detail-modal :id="'service-detail-'.$service->id" :title="$service->name" :subtitle="$service->category"
-                                                  :image="$service->image_path" :short="$service->short_description" :long="$service->long_description" />
-                    @endif
                 @endforeach
             </div>
         </div>

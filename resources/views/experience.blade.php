@@ -829,9 +829,11 @@
                         transparent revenue — one link at a time.
                     </p>
                     <div class="d-flex align-items-center gap-3 mt-5">
-                        @foreach (['social_facebook' => 'Facebook', 'social_instagram' => 'Instagram', 'social_youtube' => 'YouTube', 'social_linkedin' => 'LinkedIn'] as $key => $label)
+                        @foreach (['social_facebook' => ['facebook', 'Facebook'], 'social_instagram' => ['instagram', 'Instagram'], 'social_youtube' => ['youtube', 'YouTube'], 'social_linkedin' => ['linkedin', 'LinkedIn']] as $key => [$network, $label])
                             @if (! empty($settings[$key]))
-                                <a href="{{ $settings[$key] }}" target="_blank" rel="noopener" class="lx-navlink fs-xs">{{ $label }}</a>
+                                <a href="{{ $settings[$key] }}" target="_blank" rel="noopener" class="social-chip social-chip-sm" aria-label="{{ $label }}" title="{{ $label }}">
+                                    <x-social-icon :name="$network" class="w-4 h-4" />
+                                </a>
                             @endif
                         @endforeach
                     </div>

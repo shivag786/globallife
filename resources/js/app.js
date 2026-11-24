@@ -199,11 +199,51 @@ sidebarOverlay?.addEventListener('click', closeSidebar);
     }
 })();
 
-// Public header mobile nav toggle
-const mobileNav = document.getElementById('mobile-nav');
-document.querySelectorAll('[data-mobile-nav-open]').forEach((btn) => {
-    btn.addEventListener('click', () => mobileNav?.classList.toggle('d-none'));
-});
+// Mobile nav drawer (public site + VIP microsites): [data-drawer-open="#id"]
+// slides the [data-drawer] in from the right; the close button, the backdrop,
+// Escape, any link inside it, or growing past the breakpoint closes it.
+(function navDrawers() {
+    const backdrop = (drawer) => document.querySelector(`[data-drawer-backdrop="#${drawer.id}"]`);
+
+    function setOpen(drawer, open) {
+        if (!drawer) return;
+        drawer.classList.toggle('is-open', open);
+        drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+        backdrop(drawer)?.classList.toggle('is-open', open);
+        document.body.classList.toggle('drawer-open', open);
+        document.querySelectorAll(`[data-drawer-open="#${drawer.id}"]`)
+            .forEach((btn) => btn.setAttribute('aria-expanded', open ? 'true' : 'false'));
+    }
+
+    const closeAll = () => document.querySelectorAll('[data-drawer].is-open').forEach((d) => setOpen(d, false));
+
+    document.addEventListener('click', (event) => {
+        const opener = event.target.closest('[data-drawer-open]');
+        if (opener) {
+            const drawer = document.querySelector(opener.getAttribute('data-drawer-open'));
+            setOpen(drawer, !drawer?.classList.contains('is-open'));
+            return;
+        }
+        if (event.target.closest('[data-drawer-close]') || event.target.matches('[data-drawer-backdrop]')) {
+            closeAll();
+            return;
+        }
+        if (event.target.closest('[data-drawer] a[href]')) closeAll();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeAll();
+    });
+
+    // Grown past the breakpoint where the menu button hides: close the drawer.
+    window.addEventListener('resize', () => {
+        document.querySelectorAll('[data-drawer].is-open').forEach((drawer) => {
+            const visibleOpener = [...document.querySelectorAll(`[data-drawer-open="#${drawer.id}"]`)]
+                .some((btn) => btn.offsetParent !== null);
+            if (!visibleOpener) setOpen(drawer, false);
+        });
+    });
+})();
 
 // Password show/hide toggle: <button data-password-toggle="#password-field-id">
 document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {

@@ -61,13 +61,13 @@
                 <span class="fs-xs text-secondary d-flex align-items-center gap-1"><x-icon name="share" class="w-4 h-4" /> Share:</span>
                 @php $shareUrl = urlencode(url()->current()); $shareText = urlencode($post->title); @endphp
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener"
-                   class="w-8 h-8 rounded-pill bg-brand-subtle text-brand d-flex align-items-center justify-content-center fs-xs fw-semibold">FB</a>
+                   class="social-chip social-chip-sm" aria-label="Share on Facebook" title="Share on Facebook"><x-social-icon name="facebook" class="w-4 h-4" /></a>
                 <a href="https://twitter.com/intent/tweet?url={{ $shareUrl }}&text={{ $shareText }}" target="_blank" rel="noopener"
-                   class="w-8 h-8 rounded-pill bg-brand-subtle text-brand d-flex align-items-center justify-content-center fs-xs fw-semibold">X</a>
+                   class="social-chip social-chip-sm" aria-label="Share on X" title="Share on X"><x-social-icon name="x" class="w-4 h-4" /></a>
                 <a href="https://wa.me/?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" rel="noopener"
-                   class="w-8 h-8 rounded-pill bg-brand-subtle text-brand d-flex align-items-center justify-content-center fs-xs fw-semibold">WA</a>
+                   class="social-chip social-chip-sm" aria-label="Share on Whatsapp" title="Share on Whatsapp"><x-social-icon name="whatsapp" class="w-4 h-4" /></a>
                 <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ $shareUrl }}" target="_blank" rel="noopener"
-                   class="w-8 h-8 rounded-pill bg-brand-subtle text-brand d-flex align-items-center justify-content-center fs-xs fw-semibold">IN</a>
+                   class="social-chip social-chip-sm" aria-label="Share on Linkedin" title="Share on Linkedin"><x-social-icon name="linkedin" class="w-4 h-4" /></a>
                 <button type="button" data-copy-link="{{ url()->current() }}"
                         class="btn btn-link p-0 text-decoration-none w-8 h-8 rounded-pill bg-brand-subtle text-brand d-flex align-items-center justify-content-center" title="Copy link">
                     <x-icon name="share" class="w-4 h-4" />

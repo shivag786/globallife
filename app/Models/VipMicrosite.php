@@ -426,6 +426,31 @@ class VipMicrosite extends Model
     }
 
     /**
+     * Public detail page of one of this business's own products, e.g.
+     * "/jhansi/lifeline-hospital/22-LSTWEFF-44/product/7-herbal-tea". The id
+     * resolves it; the name part is only there for people and search engines.
+     */
+    public function productPath(BusinessProduct $product): string
+    {
+        return $this->publicPath().'/product/'.$this->itemSegment($product->id, $product->name);
+    }
+
+    /**
+     * Public detail page of one of this business's services.
+     */
+    public function servicePath(BusinessService $service): string
+    {
+        return $this->publicPath().'/service/'.$this->itemSegment($service->id, $service->name);
+    }
+
+    private function itemSegment(int $id, ?string $name): string
+    {
+        $slug = \Illuminate\Support\Str::slug((string) $name);
+
+        return $slug === '' ? (string) $id : $id.'-'.\Illuminate\Support\Str::limit($slug, 60, '');
+    }
+
+    /**
      * A simple weighted completion score to power the Dashboard's "Profile Completion %" tile.
      */
     public function completionPercentage(): int

@@ -43,6 +43,50 @@ class MicrositeController extends Controller
         return view('microsite.show', ['microsite' => $microsite]);
     }
 
+    /**
+     * Full page for one of the business's own products.
+     */
+    public function product(string $citySlug, string $businessSlug, string $secureId, string $item): View|Response
+    {
+        $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
+
+        if (! $microsite->isLive()) {
+            return $this->maintenance($microsite);
+        }
+
+        abort_unless($microsite->isModuleVisible('products'), 404);
+
+        $product = $microsite->products()->where('status', 'published')->findOrFail((int) $item);
+        $product->setRelation('vipMicrosite', $microsite);
+
+        $related = $microsite->products()->where('status', 'published')
+            ->whereKeyNot($product->id)->limit(4)->get()
+            ->each->setRelation('vipMicrosite', $microsite);
+
+        return view('microsite.product', compact('microsite', 'product', 'related'));
+    }
+
+    /**
+     * Full page for one of the business's services.
+     */
+    public function service(string $citySlug, string $businessSlug, string $secureId, string $item): View|Response
+    {
+        $microsite = $this->resolve($citySlug, $businessSlug, $secureId);
+
+        if (! $microsite->isLive()) {
+            return $this->maintenance($microsite);
+        }
+
+        abort_unless($microsite->isModuleVisible('services'), 404);
+
+        $service = $microsite->services()->where('status', 'published')->findOrFail((int) $item);
+
+        $related = $microsite->services()->where('status', 'published')
+            ->whereKeyNot($service->id)->limit(3)->get();
+
+        return view('microsite.service', compact('microsite', 'service', 'related'));
+    }
+
     public function storeReview(StorePublicReviewRequest $request, string $citySlug, string $businessSlug, string $secureId): RedirectResponse
     {
         $microsite = $this->resolve($citySlug, $businessSlug, $secureId);

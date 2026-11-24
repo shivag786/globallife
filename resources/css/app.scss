@@ -871,6 +871,33 @@ dialog::backdrop {
     }
 }
 
+// Phones: a smaller floating stack hugging the corner, so WhatsApp / Call /
+// Directions don't cover the page's own content and buttons.
+@include media-breakpoint-down(sm) {
+    [data-msite-float-group] {
+        right: 1rem !important;
+        bottom: 1rem !important;
+        gap: .5rem !important;
+
+        .msite-float-btn {
+            width: 3rem !important;
+            height: 3rem !important;
+
+            svg { width: 1.375rem !important; height: 1.375rem !important; }
+        }
+    }
+
+    // Keep the page's last lines (footer) clear of the floating stack.
+    #msite-body footer { padding-bottom: 4.5rem !important; }
+}
+
+// No sideways page scroll on phones from an over-wide element. `clip` (not
+// `hidden`) so sticky headers keep working.
+body { overflow-x: clip; }
+
+// Header bars (public site, shop, VIP microsites): a soft shadow under the bar.
+.site-header { box-shadow: 0 4px 18px rgb(15 23 42 / 0.08); }
+
 // =====================================================================
 // A few utilities Bootstrap does not ship, kept deliberately small.
 // Anything Bootstrap already has a name for is NOT redefined here.
@@ -1398,10 +1425,22 @@ $member-rail-width: 13.5rem;
     color: #fff;
     transition: transform 250ms ease;
 
+    // Below lg the menu is a drawer that slides in from the RIGHT edge
+    // (right-to-left), with a shadow to lift it off the page.
     @include media-breakpoint-down(lg) {
-        transform: translateX(-100%);
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+        width: min(18rem, 85vw);
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform 280ms ease, visibility 0s linear 280ms;
 
-        &.is-open { transform: translateX(0); }
+        &.is-open {
+            transform: translateX(0);
+            visibility: visible;
+            transition: transform 280ms ease, visibility 0s;
+            box-shadow: -12px 0 32px rgb(15 23 42 / 0.35);
+        }
     }
 }
 
@@ -1548,6 +1587,80 @@ $member-rail-width: 13.5rem;
 
     &.active { color: var(--color-brand-800); font-weight: 600; }
     &.active::after { transform: scaleX(1); }
+}
+
+// =====================================================================
+// Mobile nav drawer — public site + VIP microsites. Slides in from the
+// right (right-to-left) over a dimmed backdrop, with a shadow. Driven by
+// [data-drawer-open="#id"] / [data-drawer-close] in resources/js/app.js.
+// =====================================================================
+.nav-drawer {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    z-index: 1060;
+    width: min(20rem, 85vw);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-cream, #f8f5ef);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 280ms ease, visibility 0s linear 280ms;
+
+    &.is-open {
+        transform: translateX(0);
+        visibility: visible;
+        transition: transform 280ms ease, visibility 0s;
+        box-shadow: -12px 0 32px rgb(15 23 42 / 0.25);
+    }
+}
+
+.nav-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .875rem 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    box-shadow: 0 2px 8px rgb(15 23 42 / 0.06);
+}
+
+.nav-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1055;
+    background: rgb(15 23 42 / 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 280ms ease, visibility 0s linear 280ms;
+
+    &.is-open {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 280ms ease, visibility 0s;
+    }
+}
+
+body.drawer-open { overflow: hidden; }
+
+// Brand-coloured social logos (components/social-icon.blade.php) on a white chip.
+.social-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.15);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    flex-shrink: 0;
+
+    &:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgb(15 23 42 / 0.2); }
+
+    &.social-chip-sm { width: 2rem; height: 2rem; }
 }
 
 .site-nav-mobile-link {

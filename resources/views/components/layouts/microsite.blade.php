@@ -1,10 +1,14 @@
-@props(['microsite', 'navSections' => [], 'title' => null, 'metaDescription' => null])
+@props(['microsite', 'navSections' => [], 'title' => null, 'metaDescription' => null, 'ogImage' => null])
 
 @php
     $settings = app(\App\Services\SettingsService::class)->all();
     $siteName = $settings['site_title'] ?? config('app.name');
     $pageDescription = $metaDescription ?? $microsite->short_description ?? $microsite->description;
-    $ogImageValue = $microsite->cover_banner_path ? asset('storage/'.$microsite->cover_banner_path) : (! empty($settings['og_image']) ? asset('storage/'.$settings['og_image']) : null);
+    // On a product / service detail page the menu links point back to the
+    // sections of the main page; on the main page they are plain anchors.
+    $homeUrl = request()->routeIs('microsite.show') ? '' : url($microsite->publicPath());
+    $ogImageValue = $ogImage ? asset('storage/'.$ogImage) : null;
+    $ogImageValue ??= $microsite->cover_banner_path ? asset('storage/'.$microsite->cover_banner_path) : (! empty($settings['og_image']) ? asset('storage/'.$settings['og_image']) : null);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -57,9 +61,9 @@
         </noscript>
     @endif
 
-    <header id="msite-nav" class="sticky-top msite-glass border-bottom">
+    <header id="msite-nav" class="sticky-top msite-glass border-bottom site-header">
         <div class="msite-container d-flex align-items-center justify-content-between" style="height: 4rem">
-            <a href="#top" class="d-flex align-items-center gap-2 min-w-0 text-decoration-none">
+            <a href="{{ $homeUrl ?: '#top' }}" class="d-flex align-items-center gap-2 min-w-0 text-decoration-none">
                 @if ($microsite->logo_path)
                     <img src="{{ asset('storage/'.$microsite->logo_path) }}" alt="{{ $microsite->business_name }}"
                          class="rounded-circle object-fit-cover flex-shrink-0" width="36" height="36">
@@ -72,12 +76,13 @@
 
             <nav class="d-none d-lg-flex align-items-center gap-4 small fw-medium text-secondary">
                 @foreach ($navSections as $anchor => $label)
-                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}"
+                    <a href="{{ $homeUrl }}#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}"
                        class="msite-nav-link text-reset">{{ $label }}</a>
                 @endforeach
             </nav>
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                @include('partials.wishlist-icon')
                 @include('partials.cart-icon')
                 @if ($microsite->phone_number)
                     <a href="{{ route('microsite.click', [$microsite, 'call']) }}"
@@ -86,21 +91,35 @@
                     </a>
                 @endif
                 <button type="button" class="btn btn-link text-secondary p-0 d-lg-none"
-                        data-msite-menu-open aria-label="Open menu">
+                        data-drawer-open="#msite-mobile-nav" aria-controls="msite-mobile-nav" aria-expanded="false" aria-label="Open menu">
                     <x-icon name="bars" class="w-6 h-6" />
                 </button>
             </div>
         </div>
-
-        <div id="msite-mobile-nav" class="d-none border-top bg-body">
-            <nav class="msite-container py-3 d-flex flex-column gap-1 small fw-medium">
-                @foreach ($navSections as $anchor => $label)
-                    <a href="#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}"
-                       class="px-2 py-2 rounded text-secondary text-decoration-none">{{ $label }}</a>
-                @endforeach
-            </nav>
-        </div>
     </header>
+
+    {{-- Mobile menu: a drawer that slides in from the right (resources/js/app.js). --}}
+    <div class="nav-drawer-backdrop" data-drawer-backdrop="#msite-mobile-nav"></div>
+    <aside id="msite-mobile-nav" class="nav-drawer" data-drawer aria-hidden="true" aria-label="Menu">
+        <div class="nav-drawer-head">
+            <span class="font-heading fw-bold text-truncate" style="color: var(--color-brand-950)">{{ $microsite->business_name }}</span>
+            <button type="button" class="btn btn-link text-secondary p-0 flex-shrink-0" data-drawer-close aria-label="Close menu">
+                <x-icon name="x-mark" class="w-6 h-6" />
+            </button>
+        </div>
+        <nav class="px-3 py-3 d-flex flex-column gap-1 small fw-medium">
+            @if ($homeUrl)
+                <a href="{{ $homeUrl }}" class="site-nav-mobile-link">Home</a>
+            @endif
+            @foreach ($navSections as $anchor => $label)
+                <a href="{{ $homeUrl }}#{{ $anchor }}" data-msite-nav-link="{{ $anchor }}" class="site-nav-mobile-link">{{ $label }}</a>
+            @endforeach
+            <a href="{{ route('wishlist.index') }}" class="site-nav-mobile-link">Wishlist</a>
+            @if ($microsite->phone_number)
+                <a href="{{ route('microsite.click', [$microsite, 'call']) }}" class="site-nav-mobile-link">Call Now</a>
+            @endif
+        </nav>
+    </aside>
 
     <x-flash />
 
@@ -119,7 +138,7 @@
 
     <button type="button" id="msite-back-to-top" data-msite-back-to-top
             class="btn btn-link p-0 text-decoration-none msite-float-btn is-hidden position-fixed rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm border-0"
-            style="bottom: 6rem; right: 1.5rem; z-index: 1030; width: 3rem; height: 3rem; background: var(--color-brand-900)"
+            style="bottom: 1.5rem; left: 1.25rem; z-index: 1030; width: 3rem; height: 3rem; background: var(--color-brand-900)"
             aria-label="Back to top">
         <x-icon name="arrow-up" class="w-5 h-5" />
     </button>

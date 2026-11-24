@@ -168,14 +168,6 @@ class HomeSectionSeeder extends Seeder
                 'subtitle' => 'Send us your details and a city manager will get back to you.',
                 'display_order' => 15,
             ],
-            [
-                'type' => 'cta',
-                'title' => 'Ready to Get Started?',
-                'subtitle' => 'Talk to us today. No pressure, just answers.',
-                'cta_label' => 'View VIP Plans',
-                'cta_url' => '/vip-plans',
-                'display_order' => 16,
-            ],
         ];
 
         foreach (array_values($sections) as $index => $section) {

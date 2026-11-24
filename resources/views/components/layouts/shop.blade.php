@@ -28,7 +28,7 @@
 <body class="bg-cream">
     <x-flash />
 
-    <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
+    <header class="sticky-top border-bottom site-header" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
         <div class="container-lg d-flex align-items-center justify-content-between gap-3" style="min-height: 4rem; padding-top: .5rem; padding-bottom: .5rem">
             @if ($storefront)
                 {{-- Shopping a VIP storefront → keep the customer in that store's context. --}}

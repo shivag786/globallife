@@ -242,12 +242,8 @@
     </aside>
 
     <div class="admin-main d-flex flex-column min-vh-100">
-        <header class="bg-body border-bottom d-flex align-items-center justify-content-between gap-3 px-3 px-sm-4 py-3">
+        <header class="bg-body border-bottom shadow-sm sticky-top d-flex align-items-center justify-content-between gap-3 px-3 px-sm-4 py-3">
             <div class="d-flex align-items-center gap-3 min-w-0">
-                <button type="button" class="btn btn-sm btn-link text-secondary p-0 d-lg-none"
-                        data-sidebar-open aria-label="Open menu">
-                    <x-icon name="bars" class="w-6 h-6" />
-                </button>
                 <h1 class="h5 fw-semibold mb-0 text-truncate">{{ $heading ?? 'Dashboard' }}</h1>
             </div>
             <div class="d-flex align-items-center gap-2 gap-sm-3 small flex-shrink-0">
@@ -268,6 +264,11 @@
                     @csrf
                     <button type="submit" class="btn btn-sm btn-link text-danger p-0">Logout</button>
                 </form>
+                {{-- Below lg the sidebar is a drawer that slides in from the right. --}}
+                <button type="button" class="btn btn-sm btn-link text-secondary p-0 d-lg-none"
+                        data-sidebar-open aria-label="Open menu">
+                    <x-icon name="bars" class="w-6 h-6" />
+                </button>
             </div>
         </header>
 

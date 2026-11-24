@@ -124,7 +124,7 @@
         </div>
     @endif
 
-    <header class="sticky-top border-bottom" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
+    <header class="sticky-top border-bottom site-header" style="background: rgb(248 245 239 / 0.9); backdrop-filter: blur(8px)">
         <div class="container-lg py-2 d-flex align-items-center justify-content-between gap-3">
             <a href="{{ url('/') }}" class="text-decoration-none min-w-0" aria-label="{{ $siteName }} home">
                 <x-brand-logo />
@@ -178,32 +178,40 @@
                 @endauth
 
                 <button type="button" class="btn btn-link text-secondary p-0 d-md-none"
-                        data-mobile-nav-open aria-label="Open menu">
+                        data-drawer-open="#mobile-nav" aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu">
                     <x-icon name="bars" class="w-6 h-6" />
                 </button>
             </div>
         </div>
-
-        <div id="mobile-nav" class="d-none border-top bg-cream">
-            <nav class="container-lg py-3 d-flex flex-column gap-1 small fw-medium">
-                @foreach ($navItems as $item)
-                    <a href="{{ $item['url'] }}" @class(['site-nav-mobile-link', 'active' => $item['active']])
-                       @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
-                @endforeach
-                <a href="{{ route('wishlist.index') }}" @class(['site-nav-mobile-link', 'active' => request()->routeIs('wishlist.*')])>Wishlist</a>
-                @auth
-                    <a href="{{ route('dashboard') }}" class="site-nav-mobile-link">Dashboard</a>
-                    <a href="{{ route('account.password.edit') }}" class="site-nav-mobile-link">Change Password</a>
-                    <form method="POST" action="{{ route('logout', [], false) }}">
-                        @csrf
-                        <button type="submit" class="site-nav-mobile-link text-danger border-0 bg-transparent w-100 text-start">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="site-nav-mobile-link">Login</a>
-                @endauth
-            </nav>
-        </div>
     </header>
+
+    {{-- Mobile menu: a drawer that slides in from the right (resources/js/app.js). --}}
+    <div class="nav-drawer-backdrop" data-drawer-backdrop="#mobile-nav"></div>
+    <aside id="mobile-nav" class="nav-drawer" data-drawer aria-hidden="true" aria-label="Menu">
+        <div class="nav-drawer-head">
+            <span class="fw-semibold" style="color: var(--color-brand-900)">Menu</span>
+            <button type="button" class="btn btn-link text-secondary p-0" data-drawer-close aria-label="Close menu">
+                <x-icon name="x-mark" class="w-6 h-6" />
+            </button>
+        </div>
+        <nav class="px-3 py-3 d-flex flex-column gap-1 small fw-medium">
+            @foreach ($navItems as $item)
+                <a href="{{ $item['url'] }}" @class(['site-nav-mobile-link', 'active' => $item['active']])
+                   @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
+            @endforeach
+            <a href="{{ route('wishlist.index') }}" @class(['site-nav-mobile-link', 'active' => request()->routeIs('wishlist.*')])>Wishlist</a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="site-nav-mobile-link">Dashboard</a>
+                <a href="{{ route('account.password.edit') }}" class="site-nav-mobile-link">Change Password</a>
+                <form method="POST" action="{{ route('logout', [], false) }}">
+                    @csrf
+                    <button type="submit" class="site-nav-mobile-link text-danger border-0 bg-transparent w-100 text-start">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="site-nav-mobile-link">Login</a>
+            @endauth
+        </nav>
+    </aside>
 
     <x-flash />
 
@@ -259,11 +267,11 @@
                         nationwide distributor community.
                     </p>
                     <div class="d-flex gap-2 mt-4">
-                        @foreach (['social_facebook' => 'FB', 'social_instagram' => 'IG', 'social_youtube' => 'YT', 'social_linkedin' => 'IN'] as $key => $label)
+                        @foreach (['social_facebook' => 'facebook', 'social_instagram' => 'instagram', 'social_youtube' => 'youtube', 'social_linkedin' => 'linkedin'] as $key => $network)
                             @if ($settings[$key] ?? null)
-                                <a href="{{ $settings[$key] }}"
-                                   class="rounded-circle d-flex align-items-center justify-content-center text-white text-decoration-none"
-                                   style="width: 2.25rem; height: 2.25rem; font-size: 0.75rem; background: var(--color-brand-800)">{{ $label }}</a>
+                                <a href="{{ $settings[$key] }}" target="_blank" rel="noopener" class="social-chip" aria-label="{{ ucfirst($network) }}" title="{{ ucfirst($network) }}">
+                                    <x-social-icon :name="$network" class="w-5 h-5" />
+                                </a>
                             @endif
                         @endforeach
                     </div>

@@ -10,7 +10,8 @@
     $canBuy = $direct && $product->isPurchasable();
     $showPrice = $product->show_pricing && $product->hasPrice();
     $whatsapp = $direct ? null : $microsite->whatsappOrderUrl($product);
-    $modalId = 'product-detail-'.$product->id;
+    $detailUrl = url($microsite->productPath($product));
+    $inWishlist = app(\App\Services\WishlistService::class)->hasBusiness($product->id);
 
     $cart = app(\App\Services\CartService::class);
     $cartKey = $cart->businessKeyFor($product->id, $microsite->id);
@@ -18,7 +19,8 @@
 @endphp
 
 <div id="product-{{ $product->id }}" data-product-card class="msite-card msite-card-img overflow-hidden d-flex flex-column h-100">
-    <button type="button" data-modal-open="#{{ $modalId }}" class="btn btn-link p-0 text-decoration-none position-relative msite-card-img aspect-square d-block w-100 bg-brand-subtle">
+    <div class="position-relative">
+    <a href="{{ $detailUrl }}" class="text-decoration-none position-relative msite-card-img aspect-square d-block w-100 bg-brand-subtle" aria-label="{{ $product->name }}">
         @if ($product->image_path)
             <img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}" loading="lazy" class="w-100 h-100 object-fit-cover">
         @else
@@ -32,15 +34,17 @@
             </span>
         @endif
         @if (! $product->isInStock())
-            <span class="position-absolute top-3 end-3 bg-dark text-white fs-xs fw-bold px-3 py-1 rounded-pill">Out of stock</span>
+            <span class="position-absolute bottom-3 start-3 bg-dark text-white fs-xs fw-bold px-3 py-1 rounded-pill">Out of stock</span>
         @endif
-    </button>
+    </a>
+    @include('partials.microsite.wishlist-toggle', ['product' => $product, 'inWishlist' => $inWishlist])
+    </div>
 
     <div class="p-4 d-flex flex-column flex-grow-1">
         @if ($product->category)
             <p class="fs-xs fw-semibold text-brand text-uppercase tracking-wide mb-1">{{ $product->category }}</p>
         @endif
-        <p class="font-heading fw-semibold text-brand-emphasis line-clamp-2">{{ $product->name }}</p>
+        <a href="{{ $detailUrl }}" class="d-block font-heading fw-semibold text-brand-emphasis text-decoration-none line-clamp-2">{{ $product->name }}</a>
         @if ($product->short_description)
             <p class="fs-sm text-secondary mt-1 line-clamp-2">{{ $product->short_description }}</p>
         @endif
@@ -103,31 +107,9 @@
                 <a href="#enquiry" class="btn btn-brand btn-sm rounded-pill w-100">Enquire to order</a>
             @endif
 
-            <button type="button" data-modal-open="#{{ $modalId }}" class="btn btn-link p-0 fs-sm text-brand text-decoration-none">
+            <a href="{{ $detailUrl }}" class="fs-sm text-brand text-decoration-none text-center">
                 View details
-            </button>
+            </a>
         </div>
     </div>
 </div>
-
-<x-microsite.detail-modal :id="$modalId" :title="$product->name" :subtitle="$product->category"
-                          :image="$product->image_path" :short="$product->short_description" :long="$product->long_description">
-    @if ($showPrice)
-        <x-slot:price>
-            <span class="fs-xl fw-bold text-brand">{{ $money($product->sellingPrice()) }}</span>
-            @if ($product->strikeThroughPrice())
-                <span class="fs-sm text-secondary text-decoration-line-through ms-2">{{ $money($product->strikeThroughPrice()) }}</span>
-            @endif
-        </x-slot:price>
-    @endif
-    @if ($canBuy)
-        <form method="POST" action="{{ route('cart.add') }}">
-            @csrf
-            <input type="hidden" name="business_product_id" value="{{ $product->id }}">
-            <input type="hidden" name="buy_now" value="1">
-            <button type="submit" class="msite-btn msite-btn-primary">Buy Now</button>
-        </form>
-    @elseif ($whatsapp)
-        <a href="{{ $whatsapp }}" target="_blank" rel="noopener" class="msite-btn msite-btn-whatsapp">Order on WhatsApp</a>
-    @endif
-</x-microsite.detail-modal>
